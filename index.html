@@ -459,7 +459,53 @@
   </head>
 
   <body>
-    <section class="search-page">
+    <div id="bg-canvas-container" aria-hidden="true"></div>
+
+    <div class="topbar">
+      <div class="topbar-inner">
+        <strong>Amigos 4.0</strong>
+        <nav>
+          <div class="navBtn"><a href="#">Search</a></div>
+          <div class="navBtn active"><a href="#">Blog</a></div>
+          <div class="navBtn"><a href="#">Games</a></div>
+          <div class="navBtn"><a href="#">Messenger</a></div>
+        </nav>
+        <button type="button">What's New?</button>
+      </div>
+    </div>
+
+    <main class="amigos-page">
+      <header class="amigos-header">
+        <div class="amigos-brand">AMIGOS!<span>Blog</span></div>
+        <div class="amigos-search-box">
+          <label for="shell-search">Search the Web:</label>
+          <input id="shell-search" placeholder="Search...">
+          <button type="button">Search</button>
+        </div>
+        <nav class="amigos-main-nav">
+          <a>Home</a><a>My Page</a><a>My Blog</a><a>My Friends</a><a>Mailbox</a><a>Settings</a>
+        </nav>
+      </header>
+
+      <div class="banner" aria-label="Campaign message"></div>
+
+      <section class="amigos-layout">
+        <aside class="amigos-left-column">
+          <div class="amigos-box shell-ad">
+            <small>ADVERTISEMENT</small>
+            <h4>FREE 2010s RINGTONES!</h4>
+            <p>Download the hottest tracks straight to your phone.</p>
+            <button type="button">Download Now</button>
+          </div>
+          <div class="amigos-box shell-widget">
+            <div class="fake-window"><span></span><span></span><span></span></div>
+            <p>◉ Inside</p><p>Display results as:</p><small>◉ Posts</small>
+          </div>
+          <div class="amigos-box shell-comments"><h2>top comments</h2></div>
+        </aside>
+
+        <section class="amigos-centre-column">
+          <section class="search-page">
       <aside
         class="message-notification"
         aria-label="New message notification"
@@ -640,7 +686,25 @@
           Privacy Policy &nbsp;|&nbsp; Terms of Service
         </footer>
       </section>
-    </section>
+          </section>
+        </section>
+
+        <aside class="amigos-right-column">
+          <div class="amigos-box shell-quote">
+            <h3>Quote of the Day</h3>
+            <p>“I finally summed up the courage to say the words that would change my life: I need help.”</p>
+            <small>- Elton John</small>
+          </div>
+          <div class="amigos-box shell-promo"></div>
+          <div class="amigos-box shell-topics"><h3>★ Latest topics ★</h3></div>
+        </aside>
+      </section>
+
+      <footer class="amigos-footer">
+        <p>COMM2754, Digital Media Specialisation 1, Semester 2 2026</p>
+        <p>RMIT University Vietnam, Saigon South Campus, School of Communication and Design, Digital Media Program</p>
+      </footer>
+    </main>
 
     <script>
       const searchInput = document.getElementById("search-input");
@@ -790,6 +854,7 @@
       }
     </script>
 
+    <script src="sketchUI.js"></script>
     <script src="sketch.js"></script>
   </body>
 </html>

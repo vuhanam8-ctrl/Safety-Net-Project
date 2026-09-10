@@ -406,7 +406,7 @@ class Food {
     );
 
     this.requiredBallCount = 25;
-    this.reproductionRate = 25;
+    this.reproductionRate = 2;
 
     this.waveRadius = this.radius;
     this.waveSpeed = 1.2;
@@ -674,7 +674,7 @@ let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
 
-const STARTING_BALL_COUNT = 400;
+const STARTING_BALL_COUNT = 250;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;

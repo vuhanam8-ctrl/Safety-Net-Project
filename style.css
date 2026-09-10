@@ -3,8 +3,6 @@
   --text: #ffffff;
   --secondary-text: #d5d5d5;
   --border: rgba(255, 255, 255, 0.22);
-  --amigos-purple: #3700c0;
-  --amigos-gradient: linear-gradient(180deg, #7355bd 12%, #3700c0 64%, #a1716c 110%, #f7cd26 126%);
 }
 
 * {
@@ -26,76 +24,6 @@ body {
   background: #000000;
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
-}
-
-#bg-canvas-container {
-  position: fixed;
-  inset: 0;
-  z-index: -1;
-  overflow: hidden;
-  pointer-events: none;
-}
-
-#bg-canvas-container canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
-
-.topbar { height: 52px; background: var(--amigos-gradient); color: white; }
-.topbar-inner { width: min(96vw, 1800px); height: 100%; margin: auto; display: flex; align-items: center; gap: 22px; }
-.topbar strong { font-family: Georgia, serif; font-size: 18px; }
-.topbar nav { display: flex; height: 100%; }
-.topbar a { color: white; text-decoration: none; font-weight: 800; }
-.topbar .navBtn { display: flex; align-items: center; height: 100%; padding: 0 12px; }
-.topbar .navBtn:hover, .topbar .navBtn.active { background: rgba(255,255,255,.12); }
-.topbar button { margin-left: auto; padding: 4px 10px; border: 2px solid #b9acd0; background: transparent; color: white; font-weight: bold; }
-
-.amigos-page { width: 80vw; margin: 4px auto 30px; color: #2c2c2c; font-family: Arial, Helvetica, sans-serif; }
-.amigos-header { min-height: 78px; display: grid; grid-template-columns: 1fr auto; align-items: start; padding: 8px 12px; border: 2px solid #9670ff; background: linear-gradient(0deg, #f7cd26 6%, #9670ff 36%, #d2cdf3 120%); }
-.amigos-brand { color: var(--amigos-purple); font-family: Georgia, serif; font-size: 30px; font-weight: bold; }
-.amigos-brand span { margin-left: 4px; color: #f7cd26; font-family: Arial, sans-serif; font-size: 18px; }
-.amigos-search-box { display: flex; align-items: center; gap: 4px; padding: 6px; border: 1px solid white; background: linear-gradient(0deg, #fff 9%, #d9d9d9 42%, #f5f5f5 100%); font-size: 12px; }
-.amigos-search-box input { width: clamp(130px, 14vw, 210px); height: 22px; border: 1px solid #aaa; }
-.amigos-search-box button { height: 22px; border: 0; background: var(--amigos-gradient); color: white; font-weight: bold; }
-.amigos-main-nav { grid-column: 1 / -1; justify-self: center; display: flex; gap: 14px; margin-top: 10px; }
-.amigos-main-nav a { color: var(--amigos-purple); font-size: 12px; font-weight: bold; }
-.amigos-main-nav a + a::before { content: "|"; margin-right: 14px; }
-
-.banner { width: 100%; height: 54px; margin: 6px 0; overflow: hidden; border: 2px solid #f8f9f1; background: var(--amigos-gradient); }
-.banner canvas { display: block; width: 100% !important; height: 100% !important; }
-
-.amigos-layout { display: grid; grid-template-columns: minmax(160px,.6fr) minmax(0,1.8fr) minmax(160px,.6fr); gap: 6px; align-items: start; }
-.amigos-left-column, .amigos-centre-column, .amigos-right-column { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
-.amigos-centre-column { padding: 0 6px; }
-.amigos-box { width: 100%; padding: 10px; border: 1px solid #c9c8c2; background: linear-gradient(110deg,#fff,#e9e7df); overflow-wrap: break-word; }
-.shell-ad { min-height: 150px; text-align: center; }
-.shell-ad small { color: #888; letter-spacing: 1px; }
-.shell-ad button { width: 100%; padding: 6px; border: 0; background: #67449e; color: white; font-weight: bold; }
-.fake-window { height: 85px; margin-bottom: 8px; border: 2px solid #e7c35a; background: white; }
-.fake-window span { display: block; height: 10px; margin: 8px; background: #f3e1a4; }
-.shell-comments { min-height: 230px; }
-.shell-comments h2 { margin: 0; font-size: 20px; }
-.shell-quote h3, .shell-topics h3 { margin: -10px -10px 10px; padding: 6px 9px; background: #68459f; color: white; font-family: Georgia, serif; font-size: 14px; }
-.shell-quote p { font-style: italic; line-height: 1.45; }
-.shell-promo { min-height: 130px; background: repeating-linear-gradient(120deg,#ddd 0 8px,#222 8px 13px,#e7c52a 13px 19px); }
-.shell-topics { min-height: 160px; }
-.amigos-footer { margin-top: 6px; padding: 14px 42px; border: 2px solid #f8f9f1; background: var(--amigos-gradient); color: white; font-weight: bold; text-align: center; text-shadow: 1px 1px var(--amigos-purple); }
-.amigos-footer p { margin: 3px 0; }
-
-/* Keep the complete existing Safety Net page in the new layout's middle column. */
-.amigos-centre-column .search-page { width: 100%; min-height: 0; }
-.amigos-centre-column .search-content { width: 100%; max-width: none; min-height: 780px; }
-.amigos-centre-column .search-content:not(.showing-secondary-content) { transform: none; padding: 30px 18px; }
-.amigos-centre-column .search-content.showing-secondary-content { padding: 30px 0 0; }
-.amigos-centre-column .amigos-name { font-size: clamp(46px, 5vw, 82px); }
-.amigos-centre-column .search-name { font-size: clamp(24px, 2.8vw, 42px); }
-.amigos-centre-column .fake-content-page { width: 100%; margin-left: 0; transform: none; }
-.amigos-centre-column .news-layout { grid-template-columns: 1fr; }
-.amigos-centre-column .news-article { grid-row: 1; }
-.amigos-centre-column .news-sidebar { grid-template-columns: repeat(2,minmax(0,1fr)); }
-
-@media (max-width: 1000px) {
-  .amigos-page { width: calc(100% - 16px); }
-  .amigos-layout { grid-template-columns: 1fr; }
-  .amigos-centre-column { grid-row: 1; padding: 0; }
-  .amigos-left-column, .amigos-right-column { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 
 .project-header {
@@ -212,3 +140,4 @@ canvas {
     font-size: clamp(2.25rem, 11vw, 4.5rem);
   }
 }
+

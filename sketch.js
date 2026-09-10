@@ -184,6 +184,11 @@ class Ball {
 
   checkFoodArrival() {
     if (this.distanceFromFood() >= food.reachRadius) return;
+    if (food.isFull()) {
+      this.isSearchingForFood = false;
+      this.wasPulledByWave = false;
+      return;
+    }
 
     if (!food.isActive) food.activate();
 
@@ -407,6 +412,8 @@ class Food {
 
     this.requiredBallCount = 25;
     this.reproductionRate = 2;
+    this.fullSince = null;
+    this.reproductionDelay = 15000;
 
     this.waveRadius = this.radius;
     this.waveSpeed = 1.2;
@@ -431,9 +438,23 @@ class Food {
   }
 
   recordBallArrival() {
-    this.reachedBallCount++;
+    if (this.isFull()) return;
+
+    this.reachedBallCount = min(
+      this.reachedBallCount + 1,
+      this.requiredBallCount
+    );
 
     if (phoneToneSound?.isPlaying()) phoneToneSound.stop();
+
+    if (this.isFull()) {
+      this.fullSince = millis();
+      this.cancelRemainingSearches();
+    }
+  }
+
+  isFull() {
+    return this.reachedBallCount >= this.requiredBallCount;
   }
 
   update() {
@@ -450,12 +471,15 @@ class Food {
       this.updateWave();
     }
 
-    if (
-      this.reachedBallCount >=
-      this.requiredBallCount
-    ) {
+    if (this.isReadyToReproduce()) {
       this.consume();
     }
+  }
+
+  isReadyToReproduce() {
+    if (!this.isFull() || this.fullSince === null) return false;
+
+    return millis() - this.fullSince >= this.reproductionDelay;
   }
 
   updateUntouchedLifetime() {

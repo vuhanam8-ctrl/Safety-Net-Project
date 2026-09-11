@@ -93,6 +93,9 @@ body {
 .shell-comments p { font-size: 12px; font-weight: bold; line-height: 1.2; }
 .shell-widget { min-height: 150px; font-size: 11px; }
 .shell-widget h4 { margin-top: 14px; font-size: 12px; line-height: 1.3; }
+.shell-news-nav { display: flex; flex-direction: column; width: 100%; text-align: right; }
+.shell-news-nav strong { margin-bottom: 6px; padding: 6px 8px; background: #aaa; color: #22305e; font-size: 14px; }
+.shell-news-nav a { padding: 4px 8px; color: #172a72; font-size: 13px; font-weight: bold; cursor: default; }
 .shell-quote h3, .shell-topics h3 { margin: -10px -10px 10px; padding: 6px 9px; background: #68459f; color: white; font-family: Georgia, serif; font-size: 14px; }
 .shell-quote p { font-style: italic; line-height: 1.45; }
 .shell-promo { min-height: 130px; position: relative; overflow: hidden; background: repeating-linear-gradient(120deg,#ddd 0 8px,#222 8px 13px,#e7c52a 13px 19px); }
@@ -142,12 +145,11 @@ body {
 .fake-content-page > .news-layout { display: none; }
 
 .bbc-news-placeholder { padding: 10px; background: #fff; color: #111; font-family: Arial, Helvetica, sans-serif; }
-.bbc-placeholder-header { margin-bottom: 8px; }
-.bbc-placeholder-utility { padding: 2px 4px; border-bottom: 1px solid #777; font-size: 10px; font-weight: bold; }
-.bbc-placeholder-brand { display: flex; align-items: center; gap: 3px; padding: 5px; background: #a90000; color: #fff; font-size: 25px; }
-.bbc-placeholder-brand b { display: grid; width: 26px; height: 26px; place-items: center; background: #fff; color: #a90000; }
+.bbc-placeholder-header { margin-bottom: 10px; }
+.bbc-placeholder-brand { display: flex; min-height: 62px; align-items: center; gap: 5px; padding: 10px 12px; background: #a90000; color: #fff; font-size: 36px; }
+.bbc-placeholder-brand b { display: grid; width: 40px; height: 40px; place-items: center; background: #fff; color: #a90000; }
 .bbc-placeholder-brand span { margin-left: 5px; letter-spacing: 1px; }
-.bbc-placeholder-grid { display: grid; grid-template-columns: 110px minmax(0,1fr) 190px; gap: 10px; align-items: start; }
+.bbc-placeholder-grid { display: grid; grid-template-columns: minmax(0,1fr) 190px; gap: 10px; align-items: start; }
 .bbc-placeholder-nav { display: flex; flex-direction: column; text-align: right; font-family: Arial, Helvetica, sans-serif; }
 .bbc-placeholder-nav strong { margin-bottom: 5px; padding: 3px 6px; background: #aaa; color: #22305e; }
 .bbc-placeholder-nav a { padding: 2px 6px; color: #172a72; font-size: 12px; font-weight: bold; }

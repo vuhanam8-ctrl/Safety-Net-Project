@@ -754,7 +754,7 @@ function draw() {
 function windowResized() {
   const oldTrails = permanentTrailLayer;
 
-  resizeCanvasToDisplayMode();
+  if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
   keepFoodInsideCanvas();
 }
@@ -1110,7 +1110,13 @@ function toggleCanvasSound() {
 
 function resizeCanvasToDisplayMode() {
   const canvasPocket = document.getElementById("canvas-pocket");
-  resizeCanvas(canvasPocket.clientWidth, canvasPocket.clientHeight);
+  const displayWidth = canvasPocket.clientWidth;
+  const displayHeight = canvasPocket.clientHeight;
+
+  if (displayWidth <= 0 || displayHeight <= 0) return false;
+
+  resizeCanvas(displayWidth, displayHeight);
+  return true;
 }
 
 function stopCanvasSounds() {

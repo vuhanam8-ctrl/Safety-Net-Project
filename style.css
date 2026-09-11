@@ -147,7 +147,7 @@ body {
 .fake-content-page > .news-menu,
 .fake-content-page > .news-layout { display: none; }
 
-.bbc-news-placeholder { min-height: clamp(650px, calc(100vh - 210px), 850px); padding: 10px; background: #fff; color: #111; font-family: Arial, Helvetica, sans-serif; }
+.bbc-news-placeholder { padding: 10px; background: #fff; color: #111; font-family: Arial, Helvetica, sans-serif; }
 .bbc-placeholder-header { margin-bottom: 10px; }
 .bbc-placeholder-brand { display: flex; min-height: 62px; align-items: center; gap: 5px; padding: 10px 12px; background: #5520ae; color: #fff; font-size: 36px; }
 .bbc-placeholder-brand b { display: grid; width: 40px; height: 40px; place-items: center; background: #fff; color: #5520ae; }
@@ -170,10 +170,9 @@ body {
 .news-canvas-pocket { width: 100%; aspect-ratio: 4 / 3; margin: 0; border: 0; }
 .bbc-secondary-stories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; border-bottom: 1px solid #aaa; }
 .bbc-secondary-stories .bbc-placeholder-story { grid-template-columns: minmax(105px,.75fr) minmax(0,1fr); }
-.bbc-story-strip { display: grid; grid-template-columns: 118px 1fr 118px 1fr 118px 1fr; gap: 10px; margin-top: 28px; padding: 10px; background: #deded2; color: #182b80; }
-.bbc-story-strip-second { margin-top: 12px; }
-.bbc-story-strip h3 { margin: 0; font-size: 16px; line-height: 1.08; }
-.bbc-story-strip .small-grey-image { min-height: 92px; }
+.bbc-story-strip { display: grid; grid-template-columns: 92px 1fr 92px 1fr 92px 1fr; gap: 8px; margin-top: 28px; padding: 7px; background: #deded2; color: #182b80; }
+.bbc-story-strip-second { margin-top: 8px; }
+.bbc-story-strip h3 { margin: 0; font-size: 14px; line-height: 1.05; }
 .grey-image { display: grid; min-height: 115px; place-items: center; background: #aaa; color: #eee; font-size: 10px; letter-spacing: 1px; }
 .large-grey-image { min-height: 135px; }
 .small-grey-image { min-height: 70px; }

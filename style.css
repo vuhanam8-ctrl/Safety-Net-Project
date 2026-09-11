@@ -149,7 +149,7 @@ body {
 .bbc-placeholder-brand { display: flex; min-height: 62px; align-items: center; gap: 5px; padding: 10px 12px; background: #5520ae; color: #fff; font-size: 36px; }
 .bbc-placeholder-brand b { display: grid; width: 40px; height: 40px; place-items: center; background: #fff; color: #5520ae; }
 .bbc-placeholder-brand span { margin-left: 5px; letter-spacing: 1px; }
-.bbc-placeholder-grid { display: grid; grid-template-columns: minmax(0,2.15fr) minmax(180px,.85fr); gap: 18px; align-items: start; }
+.bbc-placeholder-grid { display: grid; grid-template-columns: minmax(0,1fr) clamp(180px,16vw,240px); gap: 16px; align-items: start; }
 .bbc-placeholder-nav { display: flex; flex-direction: column; text-align: right; font-family: Arial, Helvetica, sans-serif; }
 .bbc-placeholder-nav strong { margin-bottom: 5px; padding: 3px 6px; background: #aaa; color: #22305e; }
 .bbc-placeholder-nav a { padding: 2px 6px; color: #172a72; font-size: 12px; font-weight: bold; }

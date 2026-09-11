@@ -15,7 +15,7 @@ html {
   margin: 0;
   padding: 0;
   scroll-behavior: smooth;
-  background: #000000;
+  background: #3700c0;
 }
 
 body {
@@ -23,7 +23,7 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  background: #000000;
+  background: transparent;
   color: var(--text);
   font-family: Arial, Helvetica, sans-serif;
 }

@@ -6,7 +6,7 @@
 
     <title>Safety Net News | Amigos 4.0</title>
 
-    <link rel="stylesheet" type="text/css" href="style.css?v=news-sidebar-tight-8">
+    <link rel="stylesheet" type="text/css" href="style.css?v=sidebar-ads-9">
 
     <style>
       .search-page {
@@ -739,26 +739,7 @@
             <p>“I finally summed up the courage to say the words that would change my life: I need help.”</p>
             <small>- Elton John</small>
           </div>
-          <div class="amigos-box shell-promo">
-            <div class="shell-person"></div>
-            <strong>IT'S QUA!</strong>
-            <em>some old-school promo banner</em>
-          </div>
-          <div class="amigos-box shell-topics">
-            <h3>★ Latest topics ★</h3>
-            <p>› Kiem The Long Mieu - Open</p>
-            <p>› [Webgame] - Phongvan</p>
-            <p>› Another topic title</p>
-          </div>
-          <div class="amigos-box shell-hot">
-            <p>kieu cho sdg va bai ba cai link dan khac vao ig, neu bao nguoi ban nghien, link qua forum</p>
-            <b>Hot TOPIC</b>
-          </div>
-          <div class="amigos-box shell-games">
-            <small>New Yahoo Games</small>
-            <div><i>8</i><i>♦</i><i>BINGO</i></div>
-            <small>Follow Yahoo Games</small>
-          </div>
+          <div id="shell-advertisement-list" class="shell-advertisement-list" aria-label="Advertisements"></div>
         </aside>
       </section>
 
@@ -778,6 +759,7 @@
       const fakeContentPage = document.getElementById("fake-content-page");
       const leftAdvertisementList = document.getElementById("left-advertisement-list");
       const rightAdvertisementList = document.getElementById("right-advertisement-list");
+      const shellAdvertisementList = document.getElementById("shell-advertisement-list");
       const messageNotification = document.querySelector(".message-notification");
       const notificationClose = document.querySelector(".notification-close");
       const recommendedSearch = suggestion.textContent.trim();
@@ -824,10 +806,7 @@
         }
       ];
 
-      const advertisementZones = [
-        leftAdvertisementList,
-        rightAdvertisementList
-      ];
+      const advertisementZones = [shellAdvertisementList];
 
       advertisements
         .sort(function () {

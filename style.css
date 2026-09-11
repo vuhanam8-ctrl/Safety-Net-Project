@@ -140,7 +140,7 @@ body {
 .amigos-centre-column .search-footer { display: none !important; }
 .amigos-centre-column .search-content:not(.showing-secondary-content),
 .amigos-centre-column .search-content.showing-secondary-content { padding: 0; }
-.amigos-centre-column .fake-content-page { display: block !important; margin-top: 0; }
+.amigos-centre-column .fake-content-page { display: block !important; min-height: 0; margin-top: 0; }
 
 /* BBC 2000-inspired placeholder arrangement for the new news-page direction. */
 .fake-content-page > .news-header,
@@ -171,6 +171,7 @@ body {
 .bbc-secondary-stories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; border-bottom: 1px solid #aaa; }
 .bbc-secondary-stories .bbc-placeholder-story { grid-template-columns: minmax(105px,.75fr) minmax(0,1fr); }
 .bbc-story-strip { display: grid; grid-template-columns: 92px 1fr 92px 1fr 92px 1fr; gap: 8px; margin-top: 28px; padding: 7px; background: #deded2; color: #182b80; }
+.bbc-story-strip-second { margin-top: 8px; }
 .bbc-story-strip h3 { margin: 0; font-size: 14px; line-height: 1.05; }
 .grey-image { display: grid; min-height: 115px; place-items: center; background: #aaa; color: #eee; font-size: 10px; letter-spacing: 1px; }
 .large-grey-image { min-height: 135px; }

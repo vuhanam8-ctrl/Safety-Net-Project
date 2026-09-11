@@ -52,7 +52,7 @@ body {
 .topbar button { margin-left: auto; padding: 4px 10px; border: 2px solid #b9acd0; background: transparent; color: white; font-weight: bold; }
 
 .amigos-page { width: 80vw; margin: 4px auto 30px; color: #2c2c2c; font-family: Arial, Helvetica, sans-serif; }
-.amigos-header { min-height: 78px; display: grid; grid-template-columns: 1fr auto; align-items: start; padding: 8px 12px; border: 2px solid #9670ff; background: linear-gradient(0deg, #f7cd26 6%, #9670ff 36%, #d2cdf3 120%); }
+.amigos-header { min-height: 78px; display: grid; grid-template-columns: 1fr; align-items: start; padding: 8px 12px; border: 2px solid #9670ff; background: linear-gradient(0deg, #f7cd26 6%, #9670ff 36%, #d2cdf3 120%); }
 .amigos-brand { color: var(--amigos-purple); font-family: Georgia, serif; font-size: 30px; font-weight: bold; }
 .amigos-brand span { margin-left: 4px; color: #f7cd26; font-family: Arial, sans-serif; font-size: 18px; }
 .amigos-search-box { display: flex; align-items: center; gap: 4px; padding: 6px; border: 1px solid white; background: linear-gradient(0deg, #fff 9%, #d9d9d9 42%, #f5f5f5 100%); font-size: 12px; }
@@ -115,7 +115,7 @@ body {
 
 /* Keep the complete existing Safety Net page in the new layout's middle column. */
 .amigos-centre-column .search-page { width: 100%; min-height: 0; }
-.amigos-centre-column .search-content { width: 100%; max-width: none; min-height: 780px; }
+.amigos-centre-column .search-content { display: block; width: 100%; max-width: none; min-height: 0; padding: 0; }
 .amigos-centre-column .search-content:not(.showing-secondary-content) { transform: none; padding: 30px 18px; }
 .amigos-centre-column .search-content.showing-secondary-content { padding: 30px 0 0; }
 .amigos-centre-column .amigos-name { font-size: clamp(46px, 5vw, 82px); }
@@ -124,6 +124,17 @@ body {
 .amigos-centre-column .news-layout { grid-template-columns: 1fr; }
 .amigos-centre-column .news-article { grid-row: 1; }
 .amigos-centre-column .news-sidebar { grid-template-columns: repeat(2,minmax(0,1fr)); }
+
+/* The new version is now a news page, not a staged search experience. */
+.amigos-centre-column .search-heading,
+.amigos-centre-column .search-tabs,
+.amigos-centre-column .search-form,
+.amigos-centre-column .small-links,
+.amigos-centre-column .search-results,
+.amigos-centre-column .search-footer { display: none !important; }
+.amigos-centre-column .search-content:not(.showing-secondary-content),
+.amigos-centre-column .search-content.showing-secondary-content { padding: 0; }
+.amigos-centre-column .fake-content-page { display: block !important; margin-top: 0; }
 
 /* BBC 2000-inspired placeholder arrangement for the new news-page direction. */
 .fake-content-page > .news-header,

@@ -2,6 +2,8 @@ const scrollingAdSketch = (p) => {
   const message = "You saw the addiction. Did you see the person?";
   let x = 0;
   let messageWidth = 0;
+  let flowers = [];
+  let wasHovering = false;
 
   p.setup = () => {
     const container = document.querySelector(".banner");
@@ -17,6 +19,18 @@ const scrollingAdSketch = (p) => {
 
   p.draw = () => {
     p.clear();
+    const hovering = p.mouseX >= 0 && p.mouseX <= p.width && p.mouseY >= 0 && p.mouseY <= p.height;
+    if (hovering && !wasHovering) {
+      flowers.push(...Array.from({ length: 25 }, () => new BannerFlower(p, p.mouseX, p.mouseY)));
+    }
+    wasHovering = hovering;
+
+    flowers = flowers.filter(flower => {
+      flower.update();
+      flower.draw();
+      return flower.life > 0;
+    });
+
     p.noStroke();
     p.fill(255);
     const repeatWidth = messageWidth + 400;
@@ -138,5 +152,49 @@ const backgroundSketch = (p) => {
     );
   };
 };
+
+class BannerFlower {
+  constructor(p, x, y) {
+    this.p = p;
+    this.x = x;
+    this.y = y;
+    this.vx = p.random(-3.5, 3.5);
+    this.vy = p.random(-4.5, 0.5);
+    this.rotation = p.random(p.TWO_PI);
+    this.rotationSpeed = p.random(-0.04, 0.04);
+    this.size = p.random(12, 20);
+    this.life = 180;
+    this.color = p.color(p.random(150, 255), p.random(50, 150), p.random(150, 255));
+  }
+
+  update() {
+    this.x += this.vx;
+    this.y += this.vy;
+    this.vy += 0.1;
+    this.rotation += this.rotationSpeed;
+    this.life--;
+  }
+
+  draw() {
+    const p = this.p;
+    const alpha = p.map(this.life, 0, 180, 0, 255);
+    p.push();
+    p.translate(this.x, this.y);
+    p.rotate(this.rotation);
+    const flowerColor = p.color(this.color);
+    flowerColor.setAlpha(alpha);
+    p.fill(flowerColor);
+    p.noStroke();
+    for (let petal = 0; petal < 6; petal++) {
+      p.push();
+      p.rotate((p.TWO_PI / 6) * petal);
+      p.ellipse(this.size * 0.3, 0, this.size * 0.7, this.size * 0.4);
+      p.pop();
+    }
+    p.fill(255, 220, 100, alpha);
+    p.circle(0, 0, this.size * 0.3);
+    p.pop();
+  }
+}
 
 new p5(backgroundSketch);

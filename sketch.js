@@ -731,6 +731,7 @@ const PHONE_TONE_GAP = 2500;
 const GUIDANCE_RADIUS = 155;
 const GUIDANCE_LIFETIME = 2400;
 const MAX_GUIDANCE_POINTS = 70;
+const TRAIL_FADE_STRENGTH = 3;
 
 
 
@@ -918,7 +919,7 @@ function drawBackground() {
 }
 
 function fadePermanentTrails() {
-  permanentTrailLayer.erase(1, 1);
+  permanentTrailLayer.erase(TRAIL_FADE_STRENGTH, TRAIL_FADE_STRENGTH);
   permanentTrailLayer.noStroke();
   permanentTrailLayer.rect(0, 0, permanentTrailLayer.width, permanentTrailLayer.height);
   permanentTrailLayer.noErase();

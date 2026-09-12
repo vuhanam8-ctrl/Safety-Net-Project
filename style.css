@@ -163,7 +163,7 @@ body {
 .bbc-placeholder-story { display: grid; grid-template-columns: minmax(110px,.72fr) minmax(0,1fr); gap: 10px; padding: 10px 0; }
 .bbc-placeholder-story h2 { margin: 0 0 4px; color: #182b80; font-family: Arial,Helvetica,sans-serif; font-size: 20px; line-height: 1; }
 .bbc-placeholder-story p { margin: 0; font-size: 14px; line-height: 1.18; }
-.lead-story { grid-template-columns: minmax(260px,1.15fr) minmax(180px,.85fr); padding-bottom: 12px; border-bottom: 1px solid #aaa; }
+.lead-story { grid-template-columns: minmax(360px,1.7fr) minmax(170px,.55fr); padding-bottom: 12px; border-bottom: 1px solid #aaa; }
 .lead-story h2 { font-size: 27px; }
 .lead-story-copy > p { font-size: 18px; }
 .bbc-placeholder-related { margin-top: 10px !important; color: #182b80; font-weight: bold; }

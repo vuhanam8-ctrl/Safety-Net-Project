@@ -722,10 +722,6 @@ let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
 let guidanceTrail = [];
 let guidanceGestureActive = false;
-let lastGuidanceBrushPoint = null;
-let faceMapData;
-let faceMapPoints = [];
-let activeFaceMapIndex = 0;
 
 const STARTING_BALL_COUNT = 250;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
@@ -735,14 +731,11 @@ const PHONE_TONE_GAP = 2500;
 const GUIDANCE_RADIUS = 155;
 const GUIDANCE_LIFETIME = 2400;
 const MAX_GUIDANCE_POINTS = 70;
-const FACE_BRUSH_RADIUS = 105;
 
 
 
 
 function preload() {
-  faceMapData = loadJSON("assets/face-maps.json");
-
   heartbeatSound = loadSound(
     "assets/audio/COMM2754-2026-S2-A2w10-HeartBeat-EditedSound.wav"
   );
@@ -766,8 +759,6 @@ function setup() {
   angleMode(DEGREES);
 
   createDrawingLayers();
-  buildFaceMaps();
-  activeFaceMapIndex = floor(random(faceMapPoints.length));
   createStartingBalls();
   spawnRandomFood();
   setupHeartbeatAudio();
@@ -795,7 +786,6 @@ function windowResized() {
 
   if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
-  buildFaceMaps();
   keepFoodInsideCanvas();
 }
 
@@ -805,7 +795,6 @@ function setupCanvasGuidance(canvasElement) {
   canvasElement.addEventListener("pointerdown", event => {
     guidanceGestureActive = true;
     guidanceTrail = [];
-    lastGuidanceBrushPoint = null;
     canvasElement.setPointerCapture(event.pointerId);
     addGuidancePoint(event, canvasElement);
   });
@@ -817,7 +806,6 @@ function setupCanvasGuidance(canvasElement) {
 
   const endGuidanceGesture = event => {
     guidanceGestureActive = false;
-    lastGuidanceBrushPoint = null;
     if (canvasElement.hasPointerCapture(event.pointerId)) {
       canvasElement.releasePointerCapture(event.pointerId);
     }
@@ -839,67 +827,11 @@ function addGuidancePoint(event, canvasElement) {
   });
 
   if (guidanceTrail.length > MAX_GUIDANCE_POINTS) guidanceTrail.shift();
-  smearTrailsTowardFace(canvasX, canvasY);
 }
 
 function updateGuidanceTrail() {
   const cutoff = millis() - GUIDANCE_LIFETIME;
   guidanceTrail = guidanceTrail.filter(point => point.createdAt >= cutoff);
-}
-
-function buildFaceMaps() {
-  const maps = faceMapData?.maps || [];
-
-  faceMapPoints = maps.map(faceMap => {
-    const mapHeight = min(height * 0.9, width * 0.72 / faceMap.aspect);
-    const mapWidth = mapHeight * faceMap.aspect;
-    const offsetX = (width - mapWidth) / 2;
-    const offsetY = (height - mapHeight) / 2;
-
-    return faceMap.points.map(point => ({
-      x: offsetX + point[0] * mapWidth,
-      y: offsetY + point[1] * mapHeight,
-      strength: point[2]
-    }));
-  });
-}
-
-function smearTrailsTowardFace(brushX, brushY) {
-  const currentBrushPoint = createVector(brushX, brushY);
-  const previousBrushPoint = lastGuidanceBrushPoint;
-  lastGuidanceBrushPoint = currentBrushPoint;
-
-  if (!previousBrushPoint || faceMapPoints.length === 0) return;
-
-  const dragDirection = p5.Vector.sub(currentBrushPoint, previousBrushPoint);
-  if (dragDirection.magSq() < 0.2) return;
-  dragDirection.normalize();
-
-  const targetPoints = faceMapPoints[activeFaceMapIndex] || [];
-  const radiusSquared = FACE_BRUSH_RADIUS * FACE_BRUSH_RADIUS;
-
-  permanentTrailLayer.noFill();
-  permanentTrailLayer.strokeWeight(0.8);
-
-  for (const point of targetPoints) {
-    const dx = point.x - brushX;
-    const dy = point.y - brushY;
-    if (dx * dx + dy * dy > radiusSquared || random(1) > 0.22) continue;
-
-    const strokeLength = random(4, 15) * point.strength;
-    const opacity = 30 + 55 * point.strength;
-    const usePurple = random(1) < 0.68;
-
-    if (usePurple) permanentTrailLayer.stroke(148, 88, 202, opacity);
-    else permanentTrailLayer.stroke(255, 255, 255, opacity * 0.72);
-
-    permanentTrailLayer.line(
-      point.x - dragDirection.x * strokeLength,
-      point.y - dragDirection.y * strokeLength,
-      point.x + dragDirection.x * 2,
-      point.y + dragDirection.y * 2
-    );
-  }
 }
 
 

@@ -633,6 +633,7 @@ class Food {
     this.releaseAttachedBalls(attachedBalls);
     this.createNewBalls(attachedBalls.length);
     this.cancelRemainingSearches();
+    portraitSandActive = true;
 
     scheduleNextFood();
   }
@@ -697,17 +698,29 @@ let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
+let faceMapData;
+let faceMapPoints = [];
+let faceMapGrid = new Map();
+let portraitSandActive = false;
+let lastPortraitBrushTime = 0;
 
 const STARTING_BALL_COUNT = 250;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
 const PHONE_TONE_GAP = 2500;
+const PORTRAIT_GRID_SIZE = 16;
+const PORTRAIT_BRUSH_RADIUS = 58;
+const PORTRAIT_TARGET_RADIUS = 42;
+const PORTRAIT_BRUSH_INTERVAL = 28;
+const PORTRAIT_GRAINS_PER_PASS = 150;
 
 
 
 
 function preload() {
+  faceMapData = loadJSON("assets/face-maps.json");
+
   heartbeatSound = loadSound(
     "assets/audio/COMM2754-2026-S2-A2w10-HeartBeat-EditedSound.wav"
   );
@@ -730,6 +743,8 @@ function setup() {
   angleMode(DEGREES);
 
   createDrawingLayers();
+  buildPortraitSandMap();
+  setupPortraitSandBrush(mainCanvas.elt);
   createStartingBalls();
   spawnRandomFood();
   setupHeartbeatAudio();
@@ -756,6 +771,7 @@ function windowResized() {
 
   if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
+  buildPortraitSandMap();
   keepFoodInsideCanvas();
 }
 
@@ -911,6 +927,122 @@ function recreateDrawingLayers(oldTrails) {
   );
 
   sensorLayer = createSensorLayer();
+}
+
+function buildPortraitSandMap() {
+  const sourceMap = faceMapData?.maps?.[0];
+  faceMapPoints = [];
+  faceMapGrid = new Map();
+  if (!sourceMap?.points?.length) return;
+
+  const mapHeight = min(height * 0.88, width * 0.7 / sourceMap.aspect);
+  const mapWidth = mapHeight * sourceMap.aspect;
+  const offsetX = (width - mapWidth) / 2;
+  const offsetY = (height - mapHeight) / 2;
+
+  for (const sourcePoint of sourceMap.points) {
+    const point = {
+      x: offsetX + sourcePoint[0] * mapWidth,
+      y: offsetY + sourcePoint[1] * mapHeight,
+      strength: sourcePoint[2]
+    };
+    faceMapPoints.push(point);
+
+    const key = portraitGridKey(point.x, point.y);
+    if (!faceMapGrid.has(key)) faceMapGrid.set(key, []);
+    faceMapGrid.get(key).push(point);
+  }
+}
+
+function setupPortraitSandBrush(canvasElement) {
+  canvasElement.addEventListener("pointermove", event => {
+    if (!portraitSandActive || millis() - lastPortraitBrushTime < PORTRAIT_BRUSH_INTERVAL) return;
+
+    const bounds = canvasElement.getBoundingClientRect();
+    const brushX = (event.clientX - bounds.left) * width / bounds.width;
+    const brushY = (event.clientY - bounds.top) * height / bounds.height;
+    if (brushX < 0 || brushX >= width || brushY < 0 || brushY >= height) return;
+
+    lastPortraitBrushTime = millis();
+    nudgePurpleTrailSand(brushX, brushY);
+  });
+}
+
+function nudgePurpleTrailSand(brushX, brushY) {
+  if (!faceMapPoints.length) return;
+
+  permanentTrailLayer.loadPixels();
+  const pixels = permanentTrailLayer.pixels;
+
+  for (let grain = 0; grain < PORTRAIT_GRAINS_PER_PASS; grain++) {
+    const angle = random(360);
+    const radius = sqrt(random()) * PORTRAIT_BRUSH_RADIUS;
+    const sourceX = floor(brushX + cos(angle) * radius);
+    const sourceY = floor(brushY + sin(angle) * radius);
+    if (sourceX < 0 || sourceX >= width || sourceY < 0 || sourceY >= height) continue;
+
+    const sourceIndex = 4 * (sourceY * width + sourceX);
+    if (!isPurpleTrailPixel(pixels, sourceIndex)) continue;
+
+    const target = nearestPortraitPoint(sourceX, sourceY);
+    if (!target) continue;
+
+    const pull = 0.12 + target.strength * 0.13;
+    const destinationX = constrain(round(lerp(sourceX, target.x, pull)), 0, width - 1);
+    const destinationY = constrain(round(lerp(sourceY, target.y, pull)), 0, height - 1);
+    if (destinationX === sourceX && destinationY === sourceY) continue;
+
+    movePurpleSandPixel(pixels, sourceIndex, destinationX, destinationY);
+  }
+
+  permanentTrailLayer.updatePixels();
+}
+
+function isPurpleTrailPixel(pixels, index) {
+  return pixels[index + 3] > 12 &&
+    pixels[index] > 55 &&
+    pixels[index + 2] - pixels[index] > 22 &&
+    pixels[index + 2] - pixels[index + 1] > 45;
+}
+
+function nearestPortraitPoint(x, y) {
+  const cellX = floor(x / PORTRAIT_GRID_SIZE);
+  const cellY = floor(y / PORTRAIT_GRID_SIZE);
+  const cellReach = ceil(PORTRAIT_TARGET_RADIUS / PORTRAIT_GRID_SIZE);
+  let closest = null;
+  let closestDistanceSquared = PORTRAIT_TARGET_RADIUS * PORTRAIT_TARGET_RADIUS;
+
+  for (let offsetY = -cellReach; offsetY <= cellReach; offsetY++) {
+    for (let offsetX = -cellReach; offsetX <= cellReach; offsetX++) {
+      const candidates = faceMapGrid.get(`${cellX + offsetX},${cellY + offsetY}`) || [];
+      for (const point of candidates) {
+        const dx = point.x - x;
+        const dy = point.y - y;
+        const distanceSquared = dx * dx + dy * dy;
+        if (distanceSquared < closestDistanceSquared) {
+          closest = point;
+          closestDistanceSquared = distanceSquared;
+        }
+      }
+    }
+  }
+
+  return closest;
+}
+
+function portraitGridKey(x, y) {
+  return `${floor(x / PORTRAIT_GRID_SIZE)},${floor(y / PORTRAIT_GRID_SIZE)}`;
+}
+
+function movePurpleSandPixel(pixels, sourceIndex, destinationX, destinationY) {
+  const destinationIndex = 4 * (destinationY * width + destinationX);
+  const movedAlpha = max(7, pixels[sourceIndex + 3] * 0.42);
+
+  pixels[destinationIndex] = max(pixels[destinationIndex], pixels[sourceIndex]);
+  pixels[destinationIndex + 1] = max(pixels[destinationIndex + 1], pixels[sourceIndex + 1]);
+  pixels[destinationIndex + 2] = max(pixels[destinationIndex + 2], pixels[sourceIndex + 2]);
+  pixels[destinationIndex + 3] = min(255, pixels[destinationIndex + 3] + movedAlpha);
+  pixels[sourceIndex + 3] = max(0, pixels[sourceIndex + 3] - movedAlpha);
 }
 
 

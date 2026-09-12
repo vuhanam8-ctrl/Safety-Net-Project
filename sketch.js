@@ -41,6 +41,7 @@ class Ball {
     this.isDispersing = false;
     this.dispersalTimer = 0;
     this.faceTarget = null;
+    this.faceSettling = false;
   }
 
   update() {
@@ -139,29 +140,26 @@ class Ball {
   }
 
   respondToFaceFormation() {
-    if (!this.isDispersing || !this.faceTarget || !isFacePointerActive()) return;
+    if (
+      !this.isDispersing ||
+      this.faceSettling ||
+      !this.faceTarget ||
+      !isFacePointerActive()
+    ) return;
 
     const pointerDistance = dist(this.x, this.y, facePointer.x, facePointer.y);
     if (pointerDistance > FACE_POINTER_RADIUS) return;
 
-    const targetDirection = atan2(
-      this.faceTarget.y - this.y,
-      this.faceTarget.x - this.x
-    );
-    const influence = map(
-      pointerDistance,
-      0,
-      FACE_POINTER_RADIUS,
-      0.16,
-      0.025,
-      true
-    );
-
-    this.direction += angleDifference(this.direction, targetDirection) * influence;
-    this.direction += random(-2.8, 2.8);
+    this.faceSettling = true;
+    this.speed = 0;
   }
 
   updateFoodMovement() {
+    if (this.faceSettling) {
+      this.settleIntoFace();
+      return;
+    }
+
     if (this.shouldMoveTowardFood()) {
       this.moveTowardFood();
     }
@@ -171,6 +169,20 @@ class Ball {
     } else {
       this.moveForward();
     }
+  }
+
+  settleIntoFace() {
+    const distanceToTarget = dist(
+      this.x,
+      this.y,
+      this.faceTarget.x,
+      this.faceTarget.y
+    );
+    const settlingStrength = map(distanceToTarget, 0, 180, 0.035, 0.085, true);
+    const grainJitter = map(distanceToTarget, 0, 180, 0.08, 0.65, true);
+
+    this.x = lerp(this.x, this.faceTarget.x, settlingStrength) + random(-grainJitter, grainJitter);
+    this.y = lerp(this.y, this.faceTarget.y, settlingStrength) + random(-grainJitter, grainJitter);
   }
 
   shouldMoveTowardFood() {
@@ -347,6 +359,7 @@ class Ball {
     this.dispersalTimer = random(220, 340);
     this.speed = random(0.8, 1.55);
     this.faceTarget = getNextFaceTarget();
+    this.faceSettling = false;
   }
 
   resetFoodState() {
@@ -359,12 +372,13 @@ class Ball {
     if (!this.isDispersing) return;
 
     this.dispersalTimer--;
-    this.direction += random(-2, 2);
+    if (!this.faceSettling) this.direction += random(-2, 2);
 
     if (this.dispersalTimer <= 0) {
       this.isDispersing = false;
       this.speed = 1;
       this.faceTarget = null;
+      this.faceSettling = false;
     }
   }
 

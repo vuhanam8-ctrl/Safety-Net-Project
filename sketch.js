@@ -863,11 +863,11 @@ function drawBall(ball) {
 
 function getBallColor(ball) {
   if (ball.hasReachedFood) {
-    return [238, 125, 220];
+    return [166, 105, 214];
   }
 
   if (ball.isDispersing) {
-    return [174, 72, 225];
+    return [105, 55, 174];
   }
 
   if (ball.wasPulledByWave) {
@@ -954,11 +954,11 @@ function depositPermanentTrail(ball) {
 
 function getTrailColor(ball) {
   if (ball.hasReachedFood) {
-    return [238, 125, 220, 105];
+    return [166, 105, 214, 100];
   }
 
   if (ball.isDispersing) {
-    return [174, 72, 225, 105];
+    return [105, 55, 174, 100];
   }
 
   return [255, 255, 255, 100];
@@ -1260,7 +1260,7 @@ function drawConnection(firstBall, secondBall) {
 function drawWebLine(firstBall, secondBall, distance) {
   const opacity = map(distance, 5, 28, 90, 10);
 
-  stroke(224, 118, 244, opacity);
+  stroke(148, 88, 202, opacity);
   strokeWeight(0.6);
 
   line(

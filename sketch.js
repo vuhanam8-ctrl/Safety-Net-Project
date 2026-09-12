@@ -40,13 +40,14 @@ class Ball {
 
     this.isDispersing = false;
     this.dispersalTimer = 0;
+    this.faceTarget = null;
   }
 
   update() {
     this.detectFood();
     this.updateSensorPositions();
     this.respondToSensorSignals();
-    this.respondToGuidance();
+    this.respondToFaceFormation();
     this.updateFoodMovement();
     this.updateDispersal();
 
@@ -137,26 +138,27 @@ class Ball {
     }
   }
 
-  respondToGuidance() {
-    if (this.hasReachedFood || this.isDispersing || guidanceTrail.length === 0) return;
+  respondToFaceFormation() {
+    if (!this.isDispersing || !this.faceTarget || !isFacePointerActive()) return;
 
-    let closestPoint = null;
-    let closestDistance = Infinity;
+    const pointerDistance = dist(this.x, this.y, facePointer.x, facePointer.y);
+    if (pointerDistance > FACE_POINTER_RADIUS) return;
 
-    for (const point of guidanceTrail) {
-      const pointDistance = dist(this.x, this.y, point.x, point.y);
-      if (pointDistance < closestDistance) {
-        closestDistance = pointDistance;
-        closestPoint = point;
-      }
-    }
+    const targetDirection = atan2(
+      this.faceTarget.y - this.y,
+      this.faceTarget.x - this.x
+    );
+    const influence = map(
+      pointerDistance,
+      0,
+      FACE_POINTER_RADIUS,
+      0.16,
+      0.025,
+      true
+    );
 
-    if (!closestPoint || closestDistance > GUIDANCE_RADIUS) return;
-
-    const targetDirection = atan2(closestPoint.y - this.y, closestPoint.x - this.x);
-    const influence = map(closestDistance, 0, GUIDANCE_RADIUS, 0.075, 0.012, true);
     this.direction += angleDifference(this.direction, targetDirection) * influence;
-    this.direction += random(-3.5, 3.5);
+    this.direction += random(-2.8, 2.8);
   }
 
   updateFoodMovement() {
@@ -342,8 +344,9 @@ class Ball {
       outwardDirection + random(-35, 35);
 
     this.isDispersing = true;
-    this.dispersalTimer = random(50, 100);
-    this.speed = random(1.5, 2.5);
+    this.dispersalTimer = random(220, 340);
+    this.speed = random(0.8, 1.55);
+    this.faceTarget = getNextFaceTarget();
   }
 
   resetFoodState() {
@@ -361,6 +364,7 @@ class Ball {
     if (this.dispersalTimer <= 0) {
       this.isDispersing = false;
       this.speed = 1;
+      this.faceTarget = null;
     }
   }
 
@@ -650,6 +654,8 @@ class Food {
       ball => ball.hasReachedFood
     );
 
+    beginFaceFormation(this.x, this.y);
+
     this.isAvailable = false;
     this.isActive = false;
 
@@ -720,22 +726,20 @@ let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
-let guidanceTrail = [];
-let guidanceGestureActive = false;
-let lastGuidanceBrushPoint = null;
 let faceMapData;
 let faceMapPoints = [];
 let activeFaceMapIndex = 0;
+let activeFaceFormation = [];
+let nextFaceTargetIndex = 0;
+let facePointer = { x: 0, y: 0, lastMovedAt: -Infinity };
 
 const STARTING_BALL_COUNT = 250;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
 const PHONE_TONE_GAP = 2500;
-const GUIDANCE_RADIUS = 155;
-const GUIDANCE_LIFETIME = 2400;
-const MAX_GUIDANCE_POINTS = 70;
-const FACE_BRUSH_RADIUS = 105;
+const FACE_POINTER_RADIUS = 125;
+const FACE_POINTER_ACTIVE_TIME = 260;
 
 
 
@@ -778,7 +782,6 @@ function setup() {
 }
 
 function draw() {
-  updateGuidanceTrail();
   drawBackground();
   updateSensorLayer();
   updateFoodRespawn();
@@ -800,106 +803,63 @@ function windowResized() {
 }
 
 function setupCanvasGuidance(canvasElement) {
-  canvasElement.style.touchAction = "none";
-
-  canvasElement.addEventListener("pointerdown", event => {
-    guidanceGestureActive = true;
-    guidanceTrail = [];
-    lastGuidanceBrushPoint = null;
-    canvasElement.setPointerCapture(event.pointerId);
-    addGuidancePoint(event, canvasElement);
-  });
-
   canvasElement.addEventListener("pointermove", event => {
-    if (!guidanceGestureActive) return;
-    addGuidancePoint(event, canvasElement);
+    updateFacePointer(event, canvasElement);
   });
-
-  const endGuidanceGesture = event => {
-    guidanceGestureActive = false;
-    lastGuidanceBrushPoint = null;
-    if (canvasElement.hasPointerCapture(event.pointerId)) {
-      canvasElement.releasePointerCapture(event.pointerId);
-    }
-  };
-
-  canvasElement.addEventListener("pointerup", endGuidanceGesture);
-  canvasElement.addEventListener("pointercancel", endGuidanceGesture);
 }
 
-function addGuidancePoint(event, canvasElement) {
+function updateFacePointer(event, canvasElement) {
   const bounds = canvasElement.getBoundingClientRect();
-  const canvasX = (event.clientX - bounds.left) * width / bounds.width;
-  const canvasY = (event.clientY - bounds.top) * height / bounds.height;
-
-  guidanceTrail.push({
-    x: constrain(canvasX, 0, width),
-    y: constrain(canvasY, 0, height),
-    createdAt: millis()
-  });
-
-  if (guidanceTrail.length > MAX_GUIDANCE_POINTS) guidanceTrail.shift();
-  smearTrailsTowardFace(canvasX, canvasY);
-}
-
-function updateGuidanceTrail() {
-  const cutoff = millis() - GUIDANCE_LIFETIME;
-  guidanceTrail = guidanceTrail.filter(point => point.createdAt >= cutoff);
+  facePointer.x = constrain((event.clientX - bounds.left) * width / bounds.width, 0, width);
+  facePointer.y = constrain((event.clientY - bounds.top) * height / bounds.height, 0, height);
+  facePointer.lastMovedAt = millis();
 }
 
 function buildFaceMaps() {
   const maps = faceMapData?.maps || [];
 
-  faceMapPoints = maps.map(faceMap => {
-    const mapHeight = min(height * 0.9, width * 0.72 / faceMap.aspect);
-    const mapWidth = mapHeight * faceMap.aspect;
-    const offsetX = (width - mapWidth) / 2;
-    const offsetY = (height - mapHeight) / 2;
-
-    return faceMap.points.map(point => ({
-      x: offsetX + point[0] * mapWidth,
-      y: offsetY + point[1] * mapHeight,
+  faceMapPoints = maps.map(faceMap => ({
+    aspect: faceMap.aspect,
+    points: faceMap.points.map(point => ({
+      x: point[0],
+      y: point[1],
       strength: point[2]
-    }));
-  });
+    }))
+  }));
 }
 
-function smearTrailsTowardFace(brushX, brushY) {
-  const currentBrushPoint = createVector(brushX, brushY);
-  const previousBrushPoint = lastGuidanceBrushPoint;
-  lastGuidanceBrushPoint = currentBrushPoint;
+function beginFaceFormation(centerX, centerY) {
+  if (faceMapPoints.length === 0) return;
 
-  if (!previousBrushPoint || faceMapPoints.length === 0) return;
+  activeFaceMapIndex = floor(random(faceMapPoints.length));
+  const faceMap = faceMapPoints[activeFaceMapIndex];
+  const mapHeight = min(height * 0.62, 210);
+  const mapWidth = mapHeight * faceMap.aspect;
+  const boundedCenterX = constrain(centerX, mapWidth / 2 + 8, width - mapWidth / 2 - 8);
+  const boundedCenterY = constrain(centerY, mapHeight / 2 + 8, height - mapHeight / 2 - 8);
 
-  const dragDirection = p5.Vector.sub(currentBrushPoint, previousBrushPoint);
-  if (dragDirection.magSq() < 0.2) return;
-  dragDirection.normalize();
+  activeFaceFormation = faceMap.points.map(point => ({
+    x: boundedCenterX + (point.x - 0.5) * mapWidth,
+    y: boundedCenterY + (point.y - 0.5) * mapHeight,
+    strength: point.strength
+  }));
+  nextFaceTargetIndex = floor(random(max(activeFaceFormation.length, 1)));
+}
 
-  const targetPoints = faceMapPoints[activeFaceMapIndex] || [];
-  const radiusSquared = FACE_BRUSH_RADIUS * FACE_BRUSH_RADIUS;
+function getNextFaceTarget() {
+  if (activeFaceFormation.length === 0) return null;
 
-  permanentTrailLayer.noFill();
-  permanentTrailLayer.strokeWeight(0.8);
+  const point = activeFaceFormation[nextFaceTargetIndex % activeFaceFormation.length];
+  nextFaceTargetIndex = (nextFaceTargetIndex + 97) % activeFaceFormation.length;
 
-  for (const point of targetPoints) {
-    const dx = point.x - brushX;
-    const dy = point.y - brushY;
-    if (dx * dx + dy * dy > radiusSquared || random(1) > 0.22) continue;
+  return {
+    x: point.x + random(-4, 4),
+    y: point.y + random(-4, 4)
+  };
+}
 
-    const strokeLength = random(4, 15) * point.strength;
-    const opacity = 30 + 55 * point.strength;
-    const usePurple = random(1) < 0.68;
-
-    if (usePurple) permanentTrailLayer.stroke(148, 88, 202, opacity);
-    else permanentTrailLayer.stroke(255, 255, 255, opacity * 0.72);
-
-    permanentTrailLayer.line(
-      point.x - dragDirection.x * strokeLength,
-      point.y - dragDirection.y * strokeLength,
-      point.x + dragDirection.x * 2,
-      point.y + dragDirection.y * 2
-    );
-  }
+function isFacePointerActive() {
+  return millis() - facePointer.lastMovedAt <= FACE_POINTER_ACTIVE_TIME;
 }
 
 

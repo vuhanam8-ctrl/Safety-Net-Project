@@ -633,7 +633,7 @@ class Food {
     this.releaseAttachedBalls(attachedBalls);
     this.createNewBalls(attachedBalls.length);
     this.cancelRemainingSearches();
-    addPortraitField(this.x, this.y);
+    portraitSandActive = true;
 
     scheduleNextFood();
   }
@@ -699,8 +699,9 @@ let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
 let faceMapData;
-let portraitFields = [];
-let nextPortraitMapIndex = 0;
+let faceMapPoints = [];
+let faceMapGrid = new Map();
+let portraitSandActive = false;
 let lastPortraitBrushTime = 0;
 
 const STARTING_BALL_COUNT = 250;
@@ -713,7 +714,6 @@ const PORTRAIT_BRUSH_RADIUS = 58;
 const PORTRAIT_TARGET_RADIUS = 42;
 const PORTRAIT_BRUSH_INTERVAL = 28;
 const PORTRAIT_GRAINS_PER_PASS = 150;
-const MAXIMUM_PORTRAIT_FIELDS = 8;
 
 
 
@@ -743,6 +743,7 @@ function setup() {
   angleMode(DEGREES);
 
   createDrawingLayers();
+  buildPortraitSandMap();
   setupPortraitSandBrush(mainCanvas.elt);
   createStartingBalls();
   spawnRandomFood();
@@ -770,7 +771,7 @@ function windowResized() {
 
   if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
-  rebuildPortraitFields();
+  buildPortraitSandMap();
   keepFoodInsideCanvas();
 }
 
@@ -928,33 +929,16 @@ function recreateDrawingLayers(oldTrails) {
   sensorLayer = createSensorLayer();
 }
 
-function addPortraitField(centerX, centerY) {
-  const mapCount = faceMapData?.maps?.length || 0;
-  if (!mapCount) return;
+function buildPortraitSandMap() {
+  const sourceMap = faceMapData?.maps?.[0];
+  faceMapPoints = [];
+  faceMapGrid = new Map();
+  if (!sourceMap?.points?.length) return;
 
-  const mapIndex = nextPortraitMapIndex % mapCount;
-  nextPortraitMapIndex++;
-  portraitFields.push(buildPortraitField(centerX / width, centerY / height, mapIndex));
-  if (portraitFields.length > MAXIMUM_PORTRAIT_FIELDS) portraitFields.shift();
-}
-
-function buildPortraitField(normalizedX, normalizedY, mapIndex) {
-  const sourceMap = faceMapData.maps[mapIndex];
-  const centerX = normalizedX * width;
-  const centerY = normalizedY * height;
-  const mapHeight = min(210, height * 0.76, width * 0.36 / sourceMap.aspect);
+  const mapHeight = min(height * 0.88, width * 0.7 / sourceMap.aspect);
   const mapWidth = mapHeight * sourceMap.aspect;
-  const offsetX = centerX - mapWidth / 2;
-  const offsetY = centerY - mapHeight / 2;
-  const field = {
-    normalizedX,
-    normalizedY,
-    mapIndex,
-    centerX,
-    centerY,
-    radius: max(mapWidth, mapHeight) * 0.56,
-    grid: new Map()
-  };
+  const offsetX = (width - mapWidth) / 2;
+  const offsetY = (height - mapHeight) / 2;
 
   for (const sourcePoint of sourceMap.points) {
     const point = {
@@ -962,23 +946,17 @@ function buildPortraitField(normalizedX, normalizedY, mapIndex) {
       y: offsetY + sourcePoint[1] * mapHeight,
       strength: sourcePoint[2]
     };
+    faceMapPoints.push(point);
+
     const key = portraitGridKey(point.x, point.y);
-    if (!field.grid.has(key)) field.grid.set(key, []);
-    field.grid.get(key).push(point);
+    if (!faceMapGrid.has(key)) faceMapGrid.set(key, []);
+    faceMapGrid.get(key).push(point);
   }
-
-  return field;
-}
-
-function rebuildPortraitFields() {
-  portraitFields = portraitFields.map(field =>
-    buildPortraitField(field.normalizedX, field.normalizedY, field.mapIndex)
-  );
 }
 
 function setupPortraitSandBrush(canvasElement) {
   canvasElement.addEventListener("pointermove", event => {
-    if (!portraitFields.length || millis() - lastPortraitBrushTime < PORTRAIT_BRUSH_INTERVAL) return;
+    if (!portraitSandActive || millis() - lastPortraitBrushTime < PORTRAIT_BRUSH_INTERVAL) return;
 
     const bounds = canvasElement.getBoundingClientRect();
     const brushX = (event.clientX - bounds.left) * width / bounds.width;
@@ -991,10 +969,7 @@ function setupPortraitSandBrush(canvasElement) {
 }
 
 function nudgePurpleTrailSand(brushX, brushY) {
-  const nearbyFields = portraitFields.filter(field =>
-    dist(brushX, brushY, field.centerX, field.centerY) <= field.radius + PORTRAIT_BRUSH_RADIUS
-  );
-  if (!nearbyFields.length) return;
+  if (!faceMapPoints.length) return;
 
   permanentTrailLayer.loadPixels();
   const pixels = permanentTrailLayer.pixels;
@@ -1009,7 +984,7 @@ function nudgePurpleTrailSand(brushX, brushY) {
     const sourceIndex = 4 * (sourceY * width + sourceX);
     if (!isPurpleTrailPixel(pixels, sourceIndex)) continue;
 
-    const target = nearestPortraitPoint(sourceX, sourceY, nearbyFields);
+    const target = nearestPortraitPoint(sourceX, sourceY);
     if (!target) continue;
 
     const pull = 0.12 + target.strength * 0.13;
@@ -1030,7 +1005,7 @@ function isPurpleTrailPixel(pixels, index) {
     pixels[index + 2] - pixels[index + 1] > 45;
 }
 
-function nearestPortraitPoint(x, y, fields) {
+function nearestPortraitPoint(x, y) {
   const cellX = floor(x / PORTRAIT_GRID_SIZE);
   const cellY = floor(y / PORTRAIT_GRID_SIZE);
   const cellReach = ceil(PORTRAIT_TARGET_RADIUS / PORTRAIT_GRID_SIZE);
@@ -1039,17 +1014,14 @@ function nearestPortraitPoint(x, y, fields) {
 
   for (let offsetY = -cellReach; offsetY <= cellReach; offsetY++) {
     for (let offsetX = -cellReach; offsetX <= cellReach; offsetX++) {
-      const key = `${cellX + offsetX},${cellY + offsetY}`;
-      for (const field of fields) {
-        const candidates = field.grid.get(key) || [];
-        for (const point of candidates) {
-          const dx = point.x - x;
-          const dy = point.y - y;
-          const distanceSquared = dx * dx + dy * dy;
-          if (distanceSquared < closestDistanceSquared) {
-            closest = point;
-            closestDistanceSquared = distanceSquared;
-          }
+      const candidates = faceMapGrid.get(`${cellX + offsetX},${cellY + offsetY}`) || [];
+      for (const point of candidates) {
+        const dx = point.x - x;
+        const dy = point.y - y;
+        const distanceSquared = dx * dx + dy * dy;
+        if (distanceSquared < closestDistanceSquared) {
+          closest = point;
+          closestDistanceSquared = distanceSquared;
         }
       }
     }

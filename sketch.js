@@ -46,6 +46,7 @@ class Ball {
     this.detectFood();
     this.updateSensorPositions();
     this.respondToSensorSignals();
+    this.respondToGuidance();
     this.updateFoodMovement();
     this.updateDispersal();
 
@@ -134,6 +135,28 @@ class Ball {
     if (random(1) < 0.008) {
       this.direction += random(-100, 100);
     }
+  }
+
+  respondToGuidance() {
+    if (this.hasReachedFood || this.isDispersing || guidanceTrail.length === 0) return;
+
+    let closestPoint = null;
+    let closestDistance = Infinity;
+
+    for (const point of guidanceTrail) {
+      const pointDistance = dist(this.x, this.y, point.x, point.y);
+      if (pointDistance < closestDistance) {
+        closestDistance = pointDistance;
+        closestPoint = point;
+      }
+    }
+
+    if (!closestPoint || closestDistance > GUIDANCE_RADIUS) return;
+
+    const targetDirection = atan2(closestPoint.y - this.y, closestPoint.x - this.x);
+    const influence = map(closestDistance, 0, GUIDANCE_RADIUS, 0.075, 0.012, true);
+    this.direction += angleDifference(this.direction, targetDirection) * influence;
+    this.direction += random(-3.5, 3.5);
   }
 
   updateFoodMovement() {
@@ -697,12 +720,17 @@ let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
+let guidanceTrail = [];
+let guidanceGestureActive = false;
 
 const STARTING_BALL_COUNT = 250;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
 const PHONE_TONE_GAP = 2500;
+const GUIDANCE_RADIUS = 155;
+const GUIDANCE_LIFETIME = 2400;
+const MAX_GUIDANCE_POINTS = 70;
 
 
 
@@ -727,6 +755,7 @@ function setup() {
   const pocketHeight = canvasPocket.clientHeight || 540;
   const mainCanvas = createCanvas(pocketWidth, pocketHeight);
   mainCanvas.parent(canvasPocket);
+  setupCanvasGuidance(mainCanvas.elt);
   angleMode(DEGREES);
 
   createDrawingLayers();
@@ -740,6 +769,7 @@ function setup() {
 }
 
 function draw() {
+  updateGuidanceTrail();
   drawBackground();
   updateSensorLayer();
   updateFoodRespawn();
@@ -757,6 +787,51 @@ function windowResized() {
   if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
   keepFoodInsideCanvas();
+}
+
+function setupCanvasGuidance(canvasElement) {
+  canvasElement.style.touchAction = "none";
+
+  canvasElement.addEventListener("pointerdown", event => {
+    guidanceGestureActive = true;
+    guidanceTrail = [];
+    canvasElement.setPointerCapture(event.pointerId);
+    addGuidancePoint(event, canvasElement);
+  });
+
+  canvasElement.addEventListener("pointermove", event => {
+    if (!guidanceGestureActive) return;
+    addGuidancePoint(event, canvasElement);
+  });
+
+  const endGuidanceGesture = event => {
+    guidanceGestureActive = false;
+    if (canvasElement.hasPointerCapture(event.pointerId)) {
+      canvasElement.releasePointerCapture(event.pointerId);
+    }
+  };
+
+  canvasElement.addEventListener("pointerup", endGuidanceGesture);
+  canvasElement.addEventListener("pointercancel", endGuidanceGesture);
+}
+
+function addGuidancePoint(event, canvasElement) {
+  const bounds = canvasElement.getBoundingClientRect();
+  const canvasX = (event.clientX - bounds.left) * width / bounds.width;
+  const canvasY = (event.clientY - bounds.top) * height / bounds.height;
+
+  guidanceTrail.push({
+    x: constrain(canvasX, 0, width),
+    y: constrain(canvasY, 0, height),
+    createdAt: millis()
+  });
+
+  if (guidanceTrail.length > MAX_GUIDANCE_POINTS) guidanceTrail.shift();
+}
+
+function updateGuidanceTrail() {
+  const cutoff = millis() - GUIDANCE_LIFETIME;
+  guidanceTrail = guidanceTrail.filter(point => point.createdAt >= cutoff);
 }
 
 
@@ -788,11 +863,11 @@ function drawBall(ball) {
 
 function getBallColor(ball) {
   if (ball.hasReachedFood) {
-    return [255, 225, 140];
+    return [238, 125, 220];
   }
 
   if (ball.isDispersing) {
-    return [255, 190, 80];
+    return [174, 72, 225];
   }
 
   if (ball.wasPulledByWave) {
@@ -837,8 +912,16 @@ function createSensorLayer() {
 }
 
 function drawBackground() {
+  fadePermanentTrails();
   background(0);
   image(permanentTrailLayer, 0, 0);
+}
+
+function fadePermanentTrails() {
+  permanentTrailLayer.erase(1, 1);
+  permanentTrailLayer.noStroke();
+  permanentTrailLayer.rect(0, 0, permanentTrailLayer.width, permanentTrailLayer.height);
+  permanentTrailLayer.noErase();
 }
 
 function updateSensorLayer() {
@@ -879,11 +962,11 @@ function depositPermanentTrail(ball) {
 
 function getTrailColor(ball) {
   if (ball.hasReachedFood) {
-    return [255, 225, 140, 100];
+    return [238, 125, 220, 105];
   }
 
   if (ball.isDispersing) {
-    return [255, 190, 80, 100];
+    return [174, 72, 225, 105];
   }
 
   return [255, 255, 255, 100];
@@ -1185,7 +1268,7 @@ function drawConnection(firstBall, secondBall) {
 function drawWebLine(firstBall, secondBall, distance) {
   const opacity = map(distance, 5, 28, 90, 10);
 
-  stroke(255, 225, 160, opacity);
+  stroke(224, 118, 244, opacity);
   strokeWeight(0.6);
 
   line(

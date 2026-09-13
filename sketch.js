@@ -432,6 +432,7 @@ class Food {
     this.y = y;
     this.sequenceNumber = sequenceNumber;
     this.outcomeReported = false;
+    this.orbitSandGrains = [];
 
     this.radius = 8;
     this.discoveryRadius = 12;
@@ -777,6 +778,7 @@ class Food {
     this.isAvailable = false;
     this.isActive = false;
 
+    createSmileySandFormation(this);
     this.releaseAttachedBalls(attachedBalls);
     this.releaseLosingAntiBalls(antiAttachedBalls);
     this.createNewBalls(attachedBalls.length);
@@ -858,6 +860,7 @@ class Food {
 
 let balls = [];
 let food;
+let smileySandFormations = [];
 
 let permanentTrailLayer;
 let antiTrailLayer;
@@ -886,6 +889,7 @@ const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
 const ANTI_TRAIL_LENGTH = 110;
 const ANTI_BLACK_HOLE_SCALE = 2;
+const MAXIMUM_ORBIT_SAND_GRAINS = 850;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -951,6 +955,7 @@ function draw() {
   updateSensorLayer();
   updateFoodRespawn();
   updateFood();
+  updateAndDrawPurpleSand();
   syncHeartbeatSound();
   updatePhoneTone();
   updateBalls();
@@ -1040,6 +1045,138 @@ function drawAntiTokenTrail(ball) {
     stroke(...style.trail, 35 + progress * 180);
     strokeWeight(1.1 + progress * 1.65);
     line(previous.x, previous.y, current.x, current.y);
+  }
+}
+
+// Purple orbit sand and smiley formations
+
+function depositOrbitSand(ball) {
+  if (
+    !food?.isAvailable ||
+    food.orbitSandGrains.length >= MAXIMUM_ORBIT_SAND_GRAINS ||
+    random(1) >= 0.08
+  ) {
+    return;
+  }
+
+  food.orbitSandGrains.push({
+    x: ball.x + random(-0.8, 0.8),
+    y: ball.y + random(-0.8, 0.8),
+    size: random(1.1, 2.1),
+    shade: random(1)
+  });
+}
+
+function updateAndDrawPurpleSand() {
+  if (food?.isAvailable) drawPurpleSandGrains(food.orbitSandGrains);
+
+  for (const formation of smileySandFormations) {
+    updateSmileySandFormation(formation);
+    drawPurpleSandGrains(formation.grains);
+  }
+}
+
+function drawPurpleSandGrains(grains) {
+  noStroke();
+
+  for (const grain of grains) {
+    const highlight = grain.shade * 42;
+    fill(126 + highlight, 54 + highlight * 0.55, 190 + highlight, 205);
+    circle(grain.x, grain.y, grain.size);
+  }
+}
+
+function createSmileySandFormation(foodObject) {
+  const grains = foodObject.orbitSandGrains;
+  if (grains.length === 0) return;
+
+  const faceRadius = constrain(min(width, height) * 0.115, 38, 60);
+  const targets = createSmileyTargets(grains.length, foodObject, faceRadius);
+  const startedAt = millis();
+
+  for (let i = 0; i < grains.length; i++) {
+    const grain = grains[i];
+    const target = targets[i];
+    grain.startX = grain.x;
+    grain.startY = grain.y;
+    grain.targetX = target.x;
+    grain.targetY = target.y;
+    grain.controlX = (grain.x + target.x) / 2 + random(-32, 32);
+    grain.controlY = (grain.y + target.y) / 2 + random(-32, 32);
+    grain.delay = random(0, 700);
+    grain.duration = random(1900, 3300);
+  }
+
+  smileySandFormations.push({ grains, startedAt });
+  foodObject.orbitSandGrains = [];
+}
+
+function createSmileyTargets(count, foodObject, radius) {
+  const targets = [];
+  const outlineCount = floor(count * 0.58);
+  const eyeCount = floor(count * 0.09);
+  const mouthCount = count - outlineCount - eyeCount * 2;
+
+  for (let i = 0; i < outlineCount; i++) {
+    const angle = 360 * i / outlineCount + random(-0.8, 0.8);
+    const grainRadius = radius + random(-1.8, 1.8);
+    targets.push({
+      x: foodObject.x + cos(angle) * grainRadius,
+      y: foodObject.y + sin(angle) * grainRadius
+    });
+  }
+
+  addSmileyEyeTargets(targets, eyeCount, foodObject.x - radius * 0.34, foodObject.y - radius * 0.2);
+  addSmileyEyeTargets(targets, eyeCount, foodObject.x + radius * 0.34, foodObject.y - radius * 0.2);
+
+  for (let i = 0; i < mouthCount; i++) {
+    const angle = map(i, 0, max(1, mouthCount - 1), 22, 158);
+    targets.push({
+      x: foodObject.x + cos(angle) * radius * 0.58 + random(-1.2, 1.2),
+      y: foodObject.y + radius * 0.08 + sin(angle) * radius * 0.48 + random(-1.2, 1.2)
+    });
+  }
+
+  return shuffle(targets);
+}
+
+function addSmileyEyeTargets(targets, count, centerX, centerY) {
+  for (let i = 0; i < count; i++) {
+    const angle = random(360);
+    const radius = 5.5 * sqrt(random(1));
+    targets.push({
+      x: centerX + cos(angle) * radius,
+      y: centerY + sin(angle) * radius
+    });
+  }
+}
+
+function updateSmileySandFormation(formation) {
+  const elapsed = millis() - formation.startedAt;
+
+  for (const grain of formation.grains) {
+    const progress = constrain(
+      (elapsed - grain.delay) / grain.duration,
+      0,
+      1
+    );
+    const eased = 1 - pow(1 - progress, 3);
+    const inverse = 1 - eased;
+
+    grain.x =
+      inverse * inverse * grain.startX +
+      2 * inverse * eased * grain.controlX +
+      eased * eased * grain.targetX;
+    grain.y =
+      inverse * inverse * grain.startY +
+      2 * inverse * eased * grain.controlY +
+      eased * eased * grain.targetY;
+
+    if (progress < 1) {
+      const nudge = sin(elapsed * 0.22 + grain.targetX) * (1 - progress) * 0.7;
+      grain.x += nudge;
+      grain.y -= nudge * 0.45;
+    }
   }
 }
 
@@ -1172,7 +1309,11 @@ function fadeSensorLayer(layer) {
 }
 
 function depositBallTrail(ball) {
-  depositPermanentTrail(ball);
+  if (ball.team === "white" && ball.hasReachedFood) {
+    depositOrbitSand(ball);
+  } else {
+    depositPermanentTrail(ball);
+  }
   depositChemicalTrail(ball);
   depositWhiteBarrier(ball);
 }
@@ -1262,6 +1403,20 @@ function eraseAntiTokenTrailPoints(x, y, radius) {
 
     token.antiTrailPoints = token.antiTrailPoints.filter(point =>
       dist(point.x, point.y, x, y) > radius
+    );
+  }
+}
+
+function erasePurpleSandGrains(x, y, radius) {
+  if (food?.orbitSandGrains) {
+    food.orbitSandGrains = food.orbitSandGrains.filter(grain =>
+      dist(grain.x, grain.y, x, y) > radius
+    );
+  }
+
+  for (const formation of smileySandFormations) {
+    formation.grains = formation.grains.filter(grain =>
+      dist(grain.x, grain.y, x, y) > radius
     );
   }
 }
@@ -1370,6 +1525,7 @@ function eraseTrailsAroundFood(foodObject) {
   eraseSensorCircle(sensorLayer, foodObject, diameter);
   eraseSensorCircle(antiSensorLayer, foodObject, diameter);
   eraseAntiTokenTrailPoints(foodObject.x, foodObject.y, eraserRadius);
+  erasePurpleSandGrains(foodObject.x, foodObject.y, eraserRadius);
 }
 
 function eraseLayerCircle(layer, foodObject, diameter) {

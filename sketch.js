@@ -799,6 +799,7 @@ class Food {
     this.isBlackHole = true;
     this.isErasing = true;
     this.eraserAge = 0;
+    this.maximumEraserRadius *= ANTI_BLACK_HOLE_SCALE;
     this.cancelRemainingSearches();
 
     for (const ball of balls) {
@@ -884,6 +885,7 @@ const ANTI_TOKEN_STYLES = [
 const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
 const ANTI_TRAIL_LENGTH = 110;
+const ANTI_BLACK_HOLE_SCALE = 2;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;

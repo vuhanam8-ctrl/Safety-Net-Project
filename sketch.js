@@ -67,6 +67,12 @@ class Ball {
   }
 
   respondToActiveFood(distance) {
+    if (!food.canTeamClaim(this.team)) {
+      this.isSearchingForFood = false;
+      this.wasPulledByWave = false;
+      return;
+    }
+
     if (!food.isTeamActive(this.team) || this.isDispersing) return;
     if (this.hasReachedFood) return;
 
@@ -205,6 +211,12 @@ class Ball {
 
   checkFoodArrival() {
     if (this.distanceFromFood() >= food.reachRadius) return;
+    if (!food.canTeamClaim(this.team)) {
+      this.isSearchingForFood = false;
+      this.wasPulledByWave = false;
+      this.direction = this.directionToFood() + 180 + random(-55, 55);
+      return;
+    }
     if (food.isFull(this.team)) {
       this.isSearchingForFood = false;
       this.wasPulledByWave = false;
@@ -213,12 +225,13 @@ class Ball {
 
     if (!food.isTeamActive(this.team)) food.activate(this.team);
 
+    if (!food.recordBallArrival(this)) return;
+
     this.hasReachedFood = true;
     this.isSearchingForFood = false;
     this.wasPulledByWave = false;
 
     this.direction += random(-90, 90);
-    food.recordBallArrival(this);
   }
 
   moveInsideColony() {
@@ -427,6 +440,7 @@ class Food {
 
     this.isActive = false;
     this.activeTeams = { white: false, anti: false };
+    this.controllingTeam = null;
     this.isAvailable = true;
     this.reachedBallCount = 0;
     this.antiReachedBallCount = 0;
@@ -498,8 +512,17 @@ class Food {
     return this.activeTeams[team];
   }
 
+  canTeamClaim(team) {
+    return this.controllingTeam === null || this.controllingTeam === team;
+  }
+
   recordBallArrival(ball) {
-    if (this.isFull(ball.team)) return;
+    if (!this.canTeamClaim(ball.team) || this.isFull(ball.team)) return false;
+
+    if (this.controllingTeam === null) {
+      this.controllingTeam = ball.team;
+      this.cancelOpposingSearches(ball.team);
+    }
 
     if (ball.team === "anti") {
       this.antiReachedBallCount = min(
@@ -519,6 +542,17 @@ class Food {
       if (ball.team === "anti") this.antiFullSince = millis();
       else this.fullSince = millis();
       this.cancelRemainingSearches();
+    }
+
+    return true;
+  }
+
+  cancelOpposingSearches(controllingTeam) {
+    for (const ball of balls) {
+      if (ball.team === controllingTeam || ball.hasReachedFood) continue;
+      ball.isSearchingForFood = false;
+      ball.wasPulledByWave = false;
+      ball.direction = atan2(ball.y - this.y, ball.x - this.x) + random(-50, 50);
     }
   }
 
@@ -1086,6 +1120,18 @@ function depositWhiteBarrier(ball) {
   barrierLayer.noStroke();
   barrierLayer.fill(154, 76, 220, 150);
   barrierLayer.circle(ball.x, ball.y, 2.4);
+  eraseAntiTrailUnderBarrier(ball);
+}
+
+function eraseAntiTrailUnderBarrier(ball) {
+  antiTrailLayer.erase();
+  antiTrailLayer.noStroke();
+  antiTrailLayer.circle(ball.x, ball.y, 9);
+  antiTrailLayer.noErase();
+
+  antiSensorLayer.noStroke();
+  antiSensorLayer.fill(0);
+  antiSensorLayer.circle(ball.x, ball.y, 9);
 }
 
 function recreateDrawingLayers(oldTrails) {

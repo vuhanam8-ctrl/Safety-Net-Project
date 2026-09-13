@@ -1118,8 +1118,8 @@ function depositWhiteBarrier(ball) {
   if (ball.team !== "white" || !ball.isDispersing) return;
 
   barrierLayer.noStroke();
-  barrierLayer.fill(154, 76, 220, 150);
-  barrierLayer.circle(ball.x, ball.y, 2.4);
+  barrierLayer.fill(154, 76, 220, 115);
+  barrierLayer.circle(ball.x, ball.y, 1.1);
   eraseAntiTrailUnderBarrier(ball);
 }
 
@@ -1232,14 +1232,10 @@ function eraseTrailsAroundFood(foodObject) {
   const diameter = foodObject.getEraserRadius() * 2;
 
   eraseLayerCircle(permanentTrailLayer, foodObject, diameter);
+  eraseLayerCircle(antiTrailLayer, foodObject, diameter);
+  eraseLayerCircle(barrierLayer, foodObject, diameter);
   eraseSensorCircle(sensorLayer, foodObject, diameter);
-
-  if (foodObject.isBlackHole) {
-    eraseLayerCircle(barrierLayer, foodObject, diameter);
-  } else {
-    eraseLayerCircle(antiTrailLayer, foodObject, diameter);
-    eraseSensorCircle(antiSensorLayer, foodObject, diameter);
-  }
+  eraseSensorCircle(antiSensorLayer, foodObject, diameter);
 }
 
 function eraseLayerCircle(layer, foodObject, diameter) {

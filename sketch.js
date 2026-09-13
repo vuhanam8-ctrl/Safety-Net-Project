@@ -463,7 +463,7 @@ class Food {
     );
 
     this.requiredBallCount = 25;
-    this.requiredAntiBallCount = 18;
+    this.requiredAntiBallCount = 2;
     this.reproductionRate = 2;
     this.fullSince = null;
     this.reproductionDelay = 10000;
@@ -881,7 +881,7 @@ const ANTI_TOKEN_STYLES = [
 ];
 
 const STARTING_BALL_COUNT = 90;
-const STARTING_ANTI_BALL_COUNT = 60;
+const STARTING_ANTI_BALL_COUNT = 9;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;

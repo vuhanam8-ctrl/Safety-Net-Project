@@ -494,6 +494,14 @@ class Food {
     this.isErasing = true;
     this.eraserAge = 0;
     this.cancelRemainingSearches();
+
+    window.dispatchEvent(new CustomEvent("amigos-heart-failed", {
+      detail: {
+        x: this.x,
+        y: this.y,
+        lifetime: this.untouchedLifetime
+      }
+    }));
   }
 
   updateEraser() {

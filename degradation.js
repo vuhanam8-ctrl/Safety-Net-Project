@@ -1,6 +1,6 @@
 (function () {
   const finalMessage = "You saw the addiction. Did you see the person?";
-  const initialReadingTime = 18000;
+  const failedHeartsRequired = 2;
   const initialDegradationInterval = 6500;
   const minimumDegradationInterval = 450;
   const degradationAcceleration = 0.82;
@@ -27,6 +27,9 @@
     [".bbc-side-module:nth-of-type(4) p", "When does a victim become the problem?"],
     [".bbc-placeholder-related", "› Their choices. Their damage. Their fault."]
   ];
+
+  let failedHeartCount = 0;
+  let degradationHasStarted = false;
 
   function mutateElement(selector, replacement, progress) {
     const element = document.querySelector(selector);
@@ -102,6 +105,9 @@
   }
 
   function beginDegradation() {
+    if (degradationHasStarted) return;
+    degradationHasStarted = true;
+
     let elapsed = 0;
     let interval = initialDegradationInterval;
 
@@ -118,5 +124,11 @@
     window.setTimeout(beginFinalGlitch, takeoverDelay);
   }
 
-  window.setTimeout(beginDegradation, initialReadingTime);
+  window.addEventListener("amigos-heart-failed", function () {
+    failedHeartCount++;
+
+    if (failedHeartCount >= failedHeartsRequired) {
+      beginDegradation();
+    }
+  });
 })();

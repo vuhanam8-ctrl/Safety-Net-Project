@@ -1125,7 +1125,7 @@ function depositBallTrail(ball) {
 
 function depositPermanentTrail(ball) {
   const trailColor = getTrailColor(ball);
-  const trailSize = getBallSize(ball);
+  const trailSize = getTrailSize(ball);
 
   const layer = ball.team === "anti" ? antiTrailLayer : permanentTrailLayer;
   layer.noStroke();
@@ -1136,6 +1136,14 @@ function depositPermanentTrail(ball) {
     ball.y,
     trailSize
   );
+}
+
+function getTrailSize(ball) {
+  if (ball.team === "anti") {
+    return ball.hasReachedFood ? 3 : 2.25;
+  }
+
+  return getBallSize(ball);
 }
 
 function getTrailColor(ball) {

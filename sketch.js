@@ -609,6 +609,7 @@ class Food {
     this.isErasing = true;
     this.eraserAge = 0;
     this.cancelRemainingSearches();
+    clearAllParticleTraces();
     this.reportOutcome(false);
   }
 
@@ -796,6 +797,7 @@ class Food {
     this.isErasing = true;
     this.eraserAge = 0;
     this.cancelRemainingSearches();
+    clearAllParticleTraces();
 
     for (const ball of balls) {
       if (!ball.hasReachedFood) continue;
@@ -1062,9 +1064,19 @@ function fadeSensorLayer(layer) {
 }
 
 function depositBallTrail(ball) {
+  if (food?.isErasing) return;
+
   depositPermanentTrail(ball);
   depositChemicalTrail(ball);
   depositWhiteBarrier(ball);
+}
+
+function clearAllParticleTraces() {
+  permanentTrailLayer.clear();
+  antiTrailLayer.clear();
+  barrierLayer.clear();
+  sensorLayer.background(0);
+  antiSensorLayer.background(0);
 }
 
 function depositPermanentTrail(ball) {

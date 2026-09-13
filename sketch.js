@@ -22,6 +22,9 @@ class Ball {
     this.direction =
       direction ?? random(360);
     this.team = team;
+    this.antiVariant = team === "anti"
+      ? floor(random(ANTI_TOKEN_STYLES.length))
+      : null;
 
     this.radius = 0.5;
     this.speed = 1;
@@ -869,6 +872,13 @@ let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
+let antiTokenSprites = [];
+
+const ANTI_TOKEN_STYLES = [
+  { name: "red", trail: [225, 18, 24] },
+  { name: "green", trail: [76, 143, 67] },
+  { name: "pink", trail: [215, 90, 190] }
+];
 
 const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 60;
@@ -881,6 +891,11 @@ const PHONE_TONE_GAP = 2500;
 
 
 function preload() {
+  antiTokenSprites = ANTI_TOKEN_STYLES.map(style => loadImage(
+    `assets/images/anti-token-${style.name}.png`,
+    imageAsset => removeNearWhiteBackground(imageAsset)
+  ));
+
   heartbeatSound = loadSound(
     "assets/audio/COMM2754-2026-S2-A2w10-HeartBeat-EditedSound.wav"
   );
@@ -892,6 +907,21 @@ function preload() {
   phoneToneSound = loadSound(
     "assets/audio/COMM2754-2026-S2-A2w10-PhoneTone-EditedSound.wav"
   );
+}
+
+function removeNearWhiteBackground(imageAsset) {
+  imageAsset.loadPixels();
+
+  for (let i = 0; i < imageAsset.pixels.length; i += 4) {
+    const isNearWhite =
+      imageAsset.pixels[i] > 245 &&
+      imageAsset.pixels[i + 1] > 245 &&
+      imageAsset.pixels[i + 2] > 245;
+
+    if (isNearWhite) imageAsset.pixels[i + 3] = 0;
+  }
+
+  imageAsset.updatePixels();
 }
 
 function setup() {
@@ -967,12 +997,38 @@ function updateBalls() {
 }
 
 function drawBall(ball) {
+  if (ball.team === "anti") {
+    drawAntiToken(ball);
+    return;
+  }
+
   const ballColor = getBallColor(ball);
   const ballSize = getBallSize(ball);
 
   noStroke();
   fill(...ballColor);
   circle(ball.x, ball.y, ballSize);
+}
+
+function drawAntiToken(ball) {
+  const tokenSprite = antiTokenSprites[ball.antiVariant];
+  if (!tokenSprite) return;
+
+  const tokenSize = ball.hasReachedFood ? 13 : 9;
+  const aspectRatio = tokenSprite.width / tokenSprite.height;
+
+  push();
+  translate(ball.x, ball.y);
+  rotate(ball.direction + 90);
+  imageMode(CENTER);
+  image(
+    tokenSprite,
+    0,
+    0,
+    tokenSize * aspectRatio,
+    tokenSize
+  );
+  pop();
 }
 
 function getBallColor(ball) {
@@ -1084,9 +1140,9 @@ function depositPermanentTrail(ball) {
 
 function getTrailColor(ball) {
   if (ball.team === "anti") {
-    return ball.hasReachedFood
-      ? [210, 35, 155, 90]
-      : [105, 20, 100, 75];
+    const style = ANTI_TOKEN_STYLES[ball.antiVariant];
+    const opacity = ball.hasReachedFood ? 115 : 85;
+    return [...style.trail, opacity];
   }
 
   if (ball.hasReachedFood) {

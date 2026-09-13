@@ -29,7 +29,13 @@
         background: #fffde5;
         box-shadow: 3px 4px 0 rgba(0, 0, 0, 0.2);
         color: #111111;
+        cursor: pointer;
         font-size: 18px;
+      }
+
+      .message-notification:focus-visible {
+        outline: 3px solid #e000ff;
+        outline-offset: 3px;
       }
 
       .message-notification::before,
@@ -515,10 +521,12 @@
           <section class="search-page">
       <aside
         class="message-notification"
-        aria-label="New message notification"
+        aria-label="You want drugs too?"
+        role="button"
+        tabindex="0"
         hidden
       >
-        <strong>You got 1 new message</strong>
+        <strong>You want drugs too?</strong>
         <button class="notification-close" type="button" aria-label="Close notification">×</button>
       </aside>
 
@@ -796,14 +804,27 @@
       computerErrorSound.volume = 0.5;
       computerNotificationSound.volume = 0.5;
 
-      const maximumNotificationAppearances = 2;
-      let notificationAppearanceCount = 0;
+      let glitchAdvertisementArmed = false;
 
-      scheduleNotification();
-
-      notificationClose.addEventListener("click", function () {
+      notificationClose.addEventListener("click", function (event) {
+        event.stopPropagation();
         messageNotification.hidden = true;
-        scheduleNotification();
+
+        if (glitchAdvertisementArmed) {
+          setTimeout(showNotification, 3000);
+        }
+      });
+
+      messageNotification.addEventListener("click", requestGlitchFromAdvertisement);
+      messageNotification.addEventListener("keydown", function (event) {
+        if (event.key !== "Enter" && event.key !== " ") return;
+        event.preventDefault();
+        requestGlitchFromAdvertisement();
+      });
+
+      window.addEventListener("amigos-glitch-armed", function () {
+        glitchAdvertisementArmed = true;
+        showNotification();
       });
 
       const advertisements = [
@@ -899,23 +920,21 @@
         computerErrorSound.play().catch(function () {});
       }
 
-      function scheduleNotification() {
-        if (notificationAppearanceCount >= maximumNotificationAppearances) return;
-
-        const delay = 3000 + Math.random() * 9000;
-        setTimeout(showNotification, delay);
-      }
-
       function showNotification() {
-        notificationAppearanceCount++;
+        if (!glitchAdvertisementArmed) return;
         messageNotification.hidden = false;
         computerNotificationSound.currentTime = 0;
         computerNotificationSound.play().catch(function () {});
+      }
+
+      function requestGlitchFromAdvertisement() {
+        if (!glitchAdvertisementArmed) return;
+        window.dispatchEvent(new CustomEvent("amigos-glitch-requested"));
       }
     </script>
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
     <script src="sketch.js?v=heart-failure-trigger-10"></script>
-    <script src="degradation.js?v=heart-failure-trigger-4"></script>
+    <script src="degradation.js?v=conditional-popup-glitch-5"></script>
   </body>
 </html>

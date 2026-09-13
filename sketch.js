@@ -1177,8 +1177,8 @@ function updateAndDrawPurpleSand() {
 function drawPurpleSandGrains(grains) {
   noStroke();
 
-  // Muted purple facial planes go down first; deeper purple hair, glasses and
-  // features sit above them so the portrait keeps its tonal detail.
+  // Yellow facial planes go down first; darker values of the same yellow sit
+  // above them so the portrait keeps its tonal detail.
   drawPortraitGrainPass(grains, "light");
   drawPortraitGrainPass(grains, "shadow");
   drawPortraitGrainPass(grains, "detail");
@@ -1202,15 +1202,10 @@ function drawPortraitGrainPass(grains, pass) {
     const tone = grain.targetTone ?? 90;
     const colorProgress = grain.colorProgress ?? 0;
     const targetLightness = map(tone, 70, 235, 0, 1, true);
-    const targetRed = grain.isPortraitDetail
-      ? 138
-      : lerp(52, 126, targetLightness);
-    const targetGreen = grain.isPortraitDetail
-      ? 55
-      : lerp(12, 52, targetLightness);
-    const targetBlue = grain.isPortraitDetail
-      ? 192
-      : lerp(82, 176, targetLightness);
+    const yellowShade = lerp(0.38, 1, targetLightness);
+    const targetRed = 247 * yellowShade;
+    const targetGreen = 205 * yellowShade;
+    const targetBlue = 38 * yellowShade;
 
     fill(
       lerp(purpleRed, targetRed, colorProgress),

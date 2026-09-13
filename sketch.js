@@ -882,6 +882,7 @@ const ANTI_TOKEN_STYLES = [
 
 const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
+const ANTI_TRAIL_FADE_STRENGTH = 18;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -943,6 +944,7 @@ function setup() {
 }
 
 function draw() {
+  fadeAntiTokenTrails();
   drawBackground();
   updateSensorLayer();
   updateFoodRespawn();
@@ -952,6 +954,16 @@ function draw() {
   updateBalls();
   drawFood();
   ignoreNextDeltaTime = false;
+}
+
+function fadeAntiTokenTrails() {
+  antiTrailLayer.erase(
+    ANTI_TRAIL_FADE_STRENGTH,
+    ANTI_TRAIL_FADE_STRENGTH
+  );
+  antiTrailLayer.noStroke();
+  antiTrailLayer.rect(0, 0, width, height);
+  antiTrailLayer.noErase();
 }
 
 function windowResized() {

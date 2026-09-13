@@ -884,6 +884,7 @@ let portraitTargetPixels = [];
 let portraitLightPixels = [];
 let portraitMidtonePixels = [];
 let portraitDarkPixels = [];
+let portraitDetailPixels = [];
 let portraitAspectRatio = 0.74;
 
 const ANTI_TOKEN_STYLES = [
@@ -896,10 +897,10 @@ const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
 const ANTI_TRAIL_LENGTH = 110;
 const ANTI_BLACK_HOLE_SCALE = 2;
-const MAXIMUM_ORBIT_SAND_GRAINS = 1600;
+const MAXIMUM_ORBIT_SAND_GRAINS = 2200;
 const SAND_BRUSH_HEART_SCALE = 6;
 const SAND_BRUSH_ERASER_RADIUS = 16;
-const SAND_BRUSH_GRAINS_PER_STROKE = 20;
+const SAND_BRUSH_GRAINS_PER_STROKE = 25;
 const SAND_BRUSH_COOLDOWN = 90;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
@@ -974,6 +975,7 @@ function preparePortraitTargetPixels(imageAsset) {
   portraitLightPixels = [];
   portraitMidtonePixels = [];
   portraitDarkPixels = [];
+  portraitDetailPixels = [];
 
   for (let y = minimumY; y <= maximumY; y += 2) {
     for (let x = minimumX; x <= maximumX; x += 2) {
@@ -985,11 +987,13 @@ function preparePortraitTargetPixels(imageAsset) {
       const green = imageAsset.pixels[pixelIndex + 1];
       const blue = imageAsset.pixels[pixelIndex + 2];
       const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
+      const isDetail = isPortraitDetailPixel(imageAsset, x, y, luminance);
 
       const targetPixel = {
         x: (x - minimumX) / portraitWidth - 0.5,
         y: (y - minimumY) / portraitHeight - 0.5,
-        tone: map(luminance, 0, 255, 70, 235)
+        tone: map(luminance, 0, 255, 70, 235),
+        isDetail
       };
 
       portraitTargetPixels.push(targetPixel);
@@ -997,8 +1001,32 @@ function preparePortraitTargetPixels(imageAsset) {
       if (luminance >= 200) portraitLightPixels.push(targetPixel);
       else if (luminance <= 70) portraitDarkPixels.push(targetPixel);
       else portraitMidtonePixels.push(targetPixel);
+
+      if (isDetail) portraitDetailPixels.push(targetPixel);
     }
   }
+}
+
+function isPortraitDetailPixel(imageAsset, x, y, centerLuminance) {
+  const offsets = [[-2, 0], [2, 0], [0, -2], [0, 2]];
+
+  for (const [offsetX, offsetY] of offsets) {
+    const sampleX = constrain(x + offsetX, 0, imageAsset.width - 1);
+    const sampleY = constrain(y + offsetY, 0, imageAsset.height - 1);
+    const pixelIndex = 4 * (sampleY * imageAsset.width + sampleX);
+    const alpha = imageAsset.pixels[pixelIndex + 3];
+
+    if (alpha <= 20) return true;
+
+    const luminance =
+      imageAsset.pixels[pixelIndex] * 0.2126 +
+      imageAsset.pixels[pixelIndex + 1] * 0.7152 +
+      imageAsset.pixels[pixelIndex + 2] * 0.0722;
+
+    if (abs(luminance - centerLuminance) >= 90) return true;
+  }
+
+  return false;
 }
 
 function setup() {
@@ -1125,7 +1153,7 @@ function depositOrbitSand(ball) {
   if (
     !food?.isAvailable ||
     food.orbitSandGrains.length >= MAXIMUM_ORBIT_SAND_GRAINS ||
-    random(1) >= 0.14
+    random(1) >= 0.2
   ) {
     return;
   }
@@ -1151,15 +1179,21 @@ function drawPurpleSandGrains(grains) {
 
   // Muted purple facial planes go down first; deeper purple hair, glasses and
   // features sit above them so the portrait keeps its tonal detail.
-  drawPortraitGrainPass(grains, false);
-  drawPortraitGrainPass(grains, true);
+  drawPortraitGrainPass(grains, "light");
+  drawPortraitGrainPass(grains, "shadow");
+  drawPortraitGrainPass(grains, "detail");
 }
 
-function drawPortraitGrainPass(grains, drawDarkDetails) {
+function drawPortraitGrainPass(grains, pass) {
   for (const grain of grains) {
     if (!grain.activated) continue;
     const isDarkDetail = (grain.targetTone ?? 90) < 130;
-    if (isDarkDetail !== drawDarkDetails) continue;
+    const grainPass = grain.isPortraitDetail
+      ? "detail"
+      : isDarkDetail
+        ? "shadow"
+        : "light";
+    if (grainPass !== pass) continue;
 
     const highlight = grain.shade * 30;
     const purpleRed = 76 + highlight;
@@ -1168,9 +1202,15 @@ function drawPortraitGrainPass(grains, drawDarkDetails) {
     const tone = grain.targetTone ?? 90;
     const colorProgress = grain.colorProgress ?? 0;
     const targetLightness = map(tone, 70, 235, 0, 1, true);
-    const targetRed = lerp(52, 126, targetLightness);
-    const targetGreen = lerp(12, 52, targetLightness);
-    const targetBlue = lerp(82, 176, targetLightness);
+    const targetRed = grain.isPortraitDetail
+      ? 138
+      : lerp(52, 126, targetLightness);
+    const targetGreen = grain.isPortraitDetail
+      ? 55
+      : lerp(12, 52, targetLightness);
+    const targetBlue = grain.isPortraitDetail
+      ? 192
+      : lerp(82, 176, targetLightness);
 
     fill(
       lerp(purpleRed, targetRed, colorProgress),
@@ -1181,7 +1221,11 @@ function drawPortraitGrainPass(grains, drawDarkDetails) {
     circle(
       grain.x,
       grain.y,
-      grain.size * lerp(1, isDarkDetail ? 1.8 : 1.6, colorProgress)
+      grain.size * lerp(
+        1,
+        grain.isPortraitDetail ? 2.05 : isDarkDetail ? 1.8 : 1.6,
+        colorProgress
+      )
     );
   }
 }
@@ -1211,23 +1255,27 @@ function createPortraitSandFormation(foodObject) {
 
 function createPortraitTargets(count, foodObject) {
   const targets = [];
-  const portraitHeight = constrain(min(width, height) * 0.58, 100, 150);
+  const portraitHeight = constrain(min(width, height) * 0.72, 115, 155);
   const portraitWidth = portraitHeight * portraitAspectRatio;
-  const lightCount = floor(count * 0.48);
-  const darkCount = floor(count * 0.47);
+  const detailCount = floor(count * 0.44);
+  const lightCount = floor(count * 0.32);
+  const darkCount = floor(count * 0.19);
 
   for (let i = 0; i < count; i++) {
-    const source = i < lightCount
-      ? random(portraitLightPixels)
-      : i < lightCount + darkCount
-        ? random(portraitDarkPixels)
-        : random(portraitMidtonePixels);
+    const source = i < detailCount
+      ? random(portraitDetailPixels)
+      : i < detailCount + lightCount
+        ? random(portraitLightPixels)
+        : i < detailCount + lightCount + darkCount
+          ? random(portraitDarkPixels)
+          : random(portraitMidtonePixels);
     if (!source) break;
 
     targets.push({
-      x: foodObject.x + source.x * portraitWidth + random(-0.65, 0.65),
-      y: foodObject.y + source.y * portraitHeight + random(-0.65, 0.65),
-      tone: source.tone
+      x: foodObject.x + source.x * portraitWidth + random(-0.25, 0.25),
+      y: foodObject.y + source.y * portraitHeight + random(-0.25, 0.25),
+      tone: source.tone,
+      isDetail: source.isDetail
     });
   }
 
@@ -1349,6 +1397,7 @@ function brushPortraitSandFormation(formation, brushX, brushY) {
     grain.targetX = target.x;
     grain.targetY = target.y;
     grain.targetTone = target.tone;
+    grain.isPortraitDetail = target.isDetail;
     grain.colorProgress = 0;
     grain.controlX = (grain.x + target.x) / 2 + random(-24, 24);
     grain.controlY = (grain.y + target.y) / 2 + random(-24, 24);

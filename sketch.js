@@ -40,6 +40,11 @@ class Ball {
 
     this.isDispersing = false;
     this.dispersalTimer = 0;
+    this.storyBranchIndex = floor(random(5));
+    this.storyTargetProgress = random(0.04, 1);
+    this.storyVelocityX = 0;
+    this.storyVelocityY = 0;
+    this.storyNoiseSeed = random(10000);
   }
 
   update() {
@@ -48,6 +53,7 @@ class Ball {
     this.respondToSensorSignals();
     this.updateFoodMovement();
     this.updateDispersal();
+    updateStoryGuidance(this);
 
     this.direction =
       (this.direction + 360) % 360;
@@ -722,6 +728,34 @@ let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
+let storyChapterIndex = -1;
+let storyChapterStartTime = 0;
+let storyChapterWaiting = true;
+
+const STORY_GROWTH_DURATION = 3600;
+const STORY_BRANCHES = [
+  [
+    [[0.50, 0.92], [0.48, 0.74], [0.52, 0.55], [0.48, 0.32], [0.51, 0.10]],
+    [[0.49, 0.72], [0.37, 0.64], [0.26, 0.49], [0.16, 0.34]],
+    [[0.51, 0.67], [0.63, 0.59], [0.76, 0.43], [0.88, 0.35]],
+    [[0.50, 0.52], [0.39, 0.43], [0.31, 0.27]],
+    [[0.50, 0.45], [0.61, 0.34], [0.70, 0.18]]
+  ],
+  [
+    [[0.18, 0.86], [0.28, 0.73], [0.39, 0.62], [0.51, 0.52], [0.66, 0.43], [0.84, 0.24]],
+    [[0.33, 0.68], [0.27, 0.52], [0.31, 0.34], [0.43, 0.18]],
+    [[0.47, 0.55], [0.54, 0.69], [0.68, 0.78], [0.84, 0.76]],
+    [[0.57, 0.49], [0.66, 0.32], [0.76, 0.14]],
+    [[0.70, 0.38], [0.82, 0.47], [0.91, 0.60]]
+  ],
+  [
+    [[0.50, 0.88], [0.39, 0.73], [0.31, 0.57], [0.34, 0.39], [0.49, 0.25], [0.66, 0.20]],
+    [[0.34, 0.58], [0.20, 0.54], [0.10, 0.40]],
+    [[0.36, 0.42], [0.24, 0.29], [0.20, 0.13]],
+    [[0.48, 0.26], [0.56, 0.42], [0.70, 0.51], [0.88, 0.49]],
+    [[0.58, 0.23], [0.69, 0.12], [0.83, 0.10]]
+  ]
+];
 
 const STARTING_BALL_COUNT = 250;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
@@ -757,10 +791,15 @@ function setup() {
   createDrawingLayers();
   createStartingBalls();
   spawnRandomFood();
+  prepareStoryParticles();
   setupHeartbeatAudio();
   document.getElementById("canvas-sound-button").addEventListener(
     "click",
     toggleCanvasSound
+  );
+  document.getElementById("canvas-update-button").addEventListener(
+    "click",
+    advanceStoryChapter
   );
 }
 
@@ -790,6 +829,135 @@ function createStartingBalls() {
   for (let i = 0; i < STARTING_BALL_COUNT; i++) {
     balls.push(new Ball());
   }
+}
+
+function prepareStoryParticles() {
+  resetFoodForStoryChapter();
+  const root = getStoryRoot(STORY_BRANCHES[0]);
+  const ballsPerBranch = ceil(balls.length / STORY_BRANCHES[0].length);
+
+  balls.forEach((ball, index) => {
+    ball.storyBranchIndex = index % STORY_BRANCHES[0].length;
+    ball.storyTargetProgress = constrain(
+      floor(index / STORY_BRANCHES[0].length) / max(1, ballsPerBranch - 1),
+      0.04,
+      1
+    );
+    ball.x = root.x + random(-5, 5);
+    ball.y = root.y + random(-5, 5);
+    ball.direction = random(360);
+    ball.storyVelocityX = 0;
+    ball.storyVelocityY = 0;
+    ball.resetFoodState();
+  });
+}
+
+function advanceStoryChapter() {
+  storyChapterIndex = (storyChapterIndex + 1) % STORY_BRANCHES.length;
+  storyChapterStartTime = millis();
+  storyChapterWaiting = false;
+
+  permanentTrailLayer.clear();
+  sensorLayer.background(0);
+  resetFoodForStoryChapter();
+
+  const branches = STORY_BRANCHES[storyChapterIndex];
+  const root = getStoryRoot(branches);
+  const ballsPerBranch = ceil(balls.length / branches.length);
+
+  balls.forEach((ball, index) => {
+    ball.storyBranchIndex = index % branches.length;
+    ball.storyTargetProgress = constrain(
+      floor(index / branches.length) / max(1, ballsPerBranch - 1),
+      0.04,
+      1
+    );
+    ball.x = root.x + random(-7, 7);
+    ball.y = root.y + random(-7, 7);
+    ball.direction = random(360);
+    ball.storyVelocityX = 0;
+    ball.storyVelocityY = 0;
+    ball.resetFoodState();
+  });
+
+  const updateButton = document.getElementById("canvas-update-button");
+  updateButton.textContent = "Update " + (storyChapterIndex + 1) + "/" + STORY_BRANCHES.length;
+}
+
+function resetFoodForStoryChapter() {
+  if (!food?.isAvailable) return;
+
+  food.isActive = false;
+  food.reachedBallCount = 0;
+  food.fullSince = null;
+  food.untouchedAge = 0;
+  food.spawnTime = millis();
+  food.nextPhoneToneTime = food.spawnTime + PHONE_TONE_START_DELAY;
+  food.resetWave();
+}
+
+function updateStoryGuidance(ball) {
+  if (storyChapterWaiting) {
+    const root = getStoryRoot(STORY_BRANCHES[0]);
+    applyStorySpring(ball, root.x, root.y, 0.09, 0.76, 1.4);
+    return;
+  }
+
+  const branches = STORY_BRANCHES[storyChapterIndex];
+  const branch = branches[ball.storyBranchIndex % branches.length];
+  const elapsed = millis() - storyChapterStartTime;
+  const growthFront = constrain(elapsed / STORY_GROWTH_DURATION, 0, 1);
+  const targetProgress = min(ball.storyTargetProgress, growthFront);
+  const target = pointOnStoryBranch(branch, targetProgress);
+  const settled = growthFront >= ball.storyTargetProgress;
+  const wobbleAmount = settled ? 8 : 4;
+  const time = frameCount * 0.012;
+  const wobbleX = map(noise(ball.storyNoiseSeed, time), 0, 1, -wobbleAmount, wobbleAmount);
+  const wobbleY = map(noise(ball.storyNoiseSeed + 100, time), 0, 1, -wobbleAmount, wobbleAmount);
+
+  applyStorySpring(
+    ball,
+    target.x + wobbleX,
+    target.y + wobbleY,
+    settled ? 0.026 : 0.105,
+    settled ? 0.90 : 0.79,
+    settled ? 1.1 : 4.6
+  );
+}
+
+function applyStorySpring(ball, targetX, targetY, strength, damping, maximumSpeed) {
+  ball.storyVelocityX = (ball.storyVelocityX + (targetX - ball.x) * strength) * damping;
+  ball.storyVelocityY = (ball.storyVelocityY + (targetY - ball.y) * strength) * damping;
+
+  const speed = sqrt(sq(ball.storyVelocityX) + sq(ball.storyVelocityY));
+  if (speed > maximumSpeed) {
+    ball.storyVelocityX = ball.storyVelocityX / speed * maximumSpeed;
+    ball.storyVelocityY = ball.storyVelocityY / speed * maximumSpeed;
+  }
+
+  ball.x = constrain(ball.x + ball.storyVelocityX, 0, width - 1);
+  ball.y = constrain(ball.y + ball.storyVelocityY, 0, height - 1);
+  ball.direction += random(-2.5, 2.5);
+}
+
+function pointOnStoryBranch(branch, progress) {
+  const scaledProgress = constrain(progress, 0, 1) * (branch.length - 1);
+  const segmentIndex = min(floor(scaledProgress), branch.length - 2);
+  const segmentProgress = scaledProgress - segmentIndex;
+  const start = branch[segmentIndex];
+  const end = branch[segmentIndex + 1];
+
+  return {
+    x: lerp(start[0], end[0], segmentProgress) * width,
+    y: lerp(start[1], end[1], segmentProgress) * height
+  };
+}
+
+function getStoryRoot(branches) {
+  return {
+    x: branches[0][0][0] * width,
+    y: branches[0][0][1] * height
+  };
 }
 
 function updateBalls() {

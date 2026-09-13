@@ -883,7 +883,7 @@ const ANTI_TOKEN_STYLES = [
 
 const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
-const ANTI_TRAIL_LENGTH = 55;
+const ANTI_TRAIL_LENGTH = 110;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -1059,8 +1059,15 @@ function drawAntiToken(ball) {
   const tokenSprite = antiTokenSprites[ball.antiVariant];
   if (!tokenSprite) return;
 
-  const tokenSize = ball.hasReachedFood ? 13 : 9;
-  const aspectRatio = tokenSprite.width / tokenSprite.height;
+  const targetVisualSize = food?.radius
+    ? food.radius * 2.35
+    : 19;
+  const imageScale = targetVisualSize / max(
+    tokenSprite.width,
+    tokenSprite.height
+  );
+  const drawWidth = tokenSprite.width * imageScale;
+  const drawHeight = tokenSprite.height * imageScale;
 
   push();
   translate(ball.x, ball.y);
@@ -1070,8 +1077,8 @@ function drawAntiToken(ball) {
     tokenSprite,
     0,
     0,
-    tokenSize * aspectRatio,
-    tokenSize
+    drawWidth,
+    drawHeight
   );
   pop();
 }

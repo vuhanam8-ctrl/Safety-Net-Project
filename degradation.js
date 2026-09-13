@@ -1,7 +1,9 @@
 (function () {
   const finalMessage = "You saw the addiction. Did you see the person?";
   const initialReadingTime = 18000;
-  const degradationInterval = 6500;
+  const initialDegradationInterval = 6500;
+  const minimumDegradationInterval = 450;
+  const degradationAcceleration = 0.82;
   const finalGlitchDuration = 2200;
 
   const mutations = [
@@ -26,16 +28,17 @@
     [".bbc-placeholder-related", "› Their choices. Their damage. Their fault."]
   ];
 
-  function mutateElement(selector, replacement) {
+  function mutateElement(selector, replacement, progress) {
     const element = document.querySelector(selector);
     if (!element) return;
 
+    element.style.animationDuration = Math.round(380 - progress * 220) + "ms";
     element.classList.add("story-corrupting");
     window.setTimeout(function () {
       element.textContent = replacement;
       element.classList.remove("story-corrupting");
       element.classList.add("story-corrupted");
-    }, 380);
+    }, Math.round(380 - progress * 220));
   }
 
   function replacePageWords() {
@@ -99,13 +102,19 @@
   }
 
   function beginDegradation() {
+    let elapsed = 0;
+    let interval = initialDegradationInterval;
+
     mutations.forEach(function (mutation, index) {
       window.setTimeout(function () {
-        mutateElement(mutation[0], mutation[1]);
-      }, index * degradationInterval);
+        mutateElement(mutation[0], mutation[1], index / (mutations.length - 1));
+      }, elapsed);
+
+      elapsed += interval;
+      interval = Math.max(minimumDegradationInterval, interval * degradationAcceleration);
     });
 
-    const takeoverDelay = mutations.length * degradationInterval + 1200;
+    const takeoverDelay = elapsed + 900;
     window.setTimeout(beginFinalGlitch, takeoverDelay);
   }
 

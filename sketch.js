@@ -891,8 +891,8 @@ const STARTING_ANTI_BALL_COUNT = 9;
 const ANTI_TRAIL_LENGTH = 110;
 const ANTI_BLACK_HOLE_SCALE = 2;
 const MAXIMUM_ORBIT_SAND_GRAINS = 850;
-const SAND_BRUSH_RADIUS = 22;
-const SAND_BRUSH_ERASER_RADIUS = 8;
+const SAND_BRUSH_HEART_SCALE = 6;
+const SAND_BRUSH_ERASER_RADIUS = 16;
 const SAND_BRUSH_GRAINS_PER_STROKE = 14;
 const SAND_BRUSH_COOLDOWN = 90;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
@@ -965,6 +965,7 @@ function draw() {
   updatePhoneTone();
   updateBalls();
   drawFood();
+  drawSandBrushCursor();
   ignoreNextDeltaTime = false;
 }
 
@@ -1086,8 +1087,8 @@ function drawPurpleSandGrains(grains) {
 
   for (const grain of grains) {
     if (!grain.activated) continue;
-    const highlight = grain.shade * 42;
-    fill(126 + highlight, 54 + highlight * 0.55, 190 + highlight, 205);
+    const highlight = grain.shade * 30;
+    fill(76 + highlight, 24 + highlight * 0.45, 126 + highlight, 225);
     circle(grain.x, grain.y, grain.size);
   }
 }
@@ -1244,7 +1245,7 @@ function brushSmileySandFormation(formation, brushX, brushY) {
   const nearbyGrains = formation.grains
     .filter(grain =>
       !grain.activated &&
-      dist(grain.x, grain.y, brushX, brushY) <= SAND_BRUSH_RADIUS
+      dist(grain.x, grain.y, brushX, brushY) <= getSandBrushRadius()
     )
     .sort((first, second) =>
       dist(first.x, first.y, brushX, brushY) -
@@ -1279,6 +1280,32 @@ function brushSmileySandFormation(formation, brushX, brushY) {
     brushY,
     SAND_BRUSH_ERASER_RADIUS * 2
   );
+}
+
+function getSandBrushRadius() {
+  const heartVisualDiameter = (food?.radius ?? 8) * 2.35;
+  return heartVisualDiameter * SAND_BRUSH_HEART_SCALE / 2;
+}
+
+function drawSandBrushCursor() {
+  const hasBrushableFormation = smileySandFormations.some(formation =>
+    formation.nextTargetIndex < formation.targets.length &&
+    dist(mouseX, mouseY, formation.centerX, formation.centerY) <=
+      formation.interactionRadius
+  );
+
+  if (
+    !hasBrushableFormation ||
+    mouseX < 0 || mouseX >= width ||
+    mouseY < 0 || mouseY >= height
+  ) {
+    return;
+  }
+
+  noFill();
+  stroke(92, 37, 142, 105);
+  strokeWeight(1);
+  circle(mouseX, mouseY, getSandBrushRadius() * 2);
 }
 
 function eraseLayerArea(layer, x, y, diameter) {

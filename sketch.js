@@ -415,7 +415,7 @@ class Food {
     this.requiredBallCount = 25;
     this.reproductionRate = 2;
     this.fullSince = null;
-    this.reproductionDelay = 15000;
+    this.reproductionDelay = 10000;
 
     this.waveRadius = this.radius;
     this.waveSpeed = 1.2;

@@ -468,7 +468,7 @@ class Food {
     this.fullSince = null;
     this.reproductionDelay = 10000;
     this.antiFullSince = null;
-    this.antiCollapseDelay = 4000;
+    this.antiCollapseDelay = 10000;
 
     this.waveRadius = this.radius;
     this.waveSpeed = 1.2;

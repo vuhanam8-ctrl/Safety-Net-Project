@@ -44,6 +44,7 @@ class Ball {
 
     this.isDispersing = false;
     this.dispersalTimer = 0;
+    this.antiTrailPoints = [];
   }
 
   update() {
@@ -882,7 +883,7 @@ const ANTI_TOKEN_STYLES = [
 
 const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
-const ANTI_TRAIL_FADE_STRENGTH = 18;
+const ANTI_TRAIL_LENGTH = 30;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -944,7 +945,6 @@ function setup() {
 }
 
 function draw() {
-  fadeAntiTokenTrails();
   drawBackground();
   updateSensorLayer();
   updateFoodRespawn();
@@ -954,16 +954,6 @@ function draw() {
   updateBalls();
   drawFood();
   ignoreNextDeltaTime = false;
-}
-
-function fadeAntiTokenTrails() {
-  antiTrailLayer.erase(
-    ANTI_TRAIL_FADE_STRENGTH,
-    ANTI_TRAIL_FADE_STRENGTH
-  );
-  antiTrailLayer.noStroke();
-  antiTrailLayer.rect(0, 0, width, height);
-  antiTrailLayer.noErase();
 }
 
 function windowResized() {
@@ -1003,8 +993,51 @@ function createStartingBalls() {
 function updateBalls() {
   for (const ball of balls) {
     ball.update();
+    updateAntiTokenTrail(ball);
     depositBallTrail(ball);
+  }
+
+  drawAntiTokenTrails();
+
+  for (const ball of balls) {
     drawBall(ball);
+  }
+}
+
+function updateAntiTokenTrail(ball) {
+  if (ball.team !== "anti") return;
+
+  ball.antiTrailPoints.push({ x: ball.x, y: ball.y });
+
+  if (ball.antiTrailPoints.length > ANTI_TRAIL_LENGTH) {
+    ball.antiTrailPoints.shift();
+  }
+}
+
+function drawAntiTokenTrails() {
+  for (const ball of balls) {
+    if (ball.team !== "anti") continue;
+    drawAntiTokenTrail(ball);
+  }
+}
+
+function drawAntiTokenTrail(ball) {
+  const points = ball.antiTrailPoints;
+  const style = ANTI_TOKEN_STYLES[ball.antiVariant];
+
+  noFill();
+
+  for (let i = 1; i < points.length; i++) {
+    const previous = points[i - 1];
+    const current = points[i];
+
+    // Do not draw a line across the canvas when a token wraps at an edge.
+    if (dist(previous.x, previous.y, current.x, current.y) > 8) continue;
+
+    const progress = i / (points.length - 1);
+    stroke(...style.trail, 35 + progress * 180);
+    strokeWeight(1.1 + progress * 1.65);
+    line(previous.x, previous.y, current.x, current.y);
   }
 }
 
@@ -1136,6 +1169,8 @@ function depositBallTrail(ball) {
 }
 
 function depositPermanentTrail(ball) {
+  if (ball.team === "anti") return;
+
   const trailColor = getTrailColor(ball);
   const trailSize = getTrailSize(ball);
 
@@ -1208,6 +1243,18 @@ function eraseAntiTrailUnderBarrier(ball) {
   antiSensorLayer.noStroke();
   antiSensorLayer.fill(0);
   antiSensorLayer.circle(ball.x, ball.y, 9);
+
+  eraseAntiTokenTrailPoints(ball.x, ball.y, 4.5);
+}
+
+function eraseAntiTokenTrailPoints(x, y, radius) {
+  for (const token of balls) {
+    if (token.team !== "anti") continue;
+
+    token.antiTrailPoints = token.antiTrailPoints.filter(point =>
+      dist(point.x, point.y, x, y) > radius
+    );
+  }
 }
 
 function recreateDrawingLayers(oldTrails) {
@@ -1305,13 +1352,15 @@ function drawFoodWave() {
 }
 
 function eraseTrailsAroundFood(foodObject) {
-  const diameter = foodObject.getEraserRadius() * 2;
+  const eraserRadius = foodObject.getEraserRadius();
+  const diameter = eraserRadius * 2;
 
   eraseLayerCircle(permanentTrailLayer, foodObject, diameter);
   eraseLayerCircle(antiTrailLayer, foodObject, diameter);
   eraseLayerCircle(barrierLayer, foodObject, diameter);
   eraseSensorCircle(sensorLayer, foodObject, diameter);
   eraseSensorCircle(antiSensorLayer, foodObject, diameter);
+  eraseAntiTokenTrailPoints(foodObject.x, foodObject.y, eraserRadius);
 }
 
 function eraseLayerCircle(layer, foodObject, diameter) {

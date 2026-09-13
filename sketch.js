@@ -400,7 +400,7 @@ class Food {
     this.reachedBallCount = 0;
     this.untouchedAge = 0;
     this.untouchedLifetime = 30000;
-    this.spawnTime = getSimulationTime();
+    this.spawnTime = millis();
     this.nextPhoneToneTime =
       this.spawnTime + PHONE_TONE_START_DELAY;
 
@@ -450,7 +450,7 @@ class Food {
     if (phoneToneSound?.isPlaying()) phoneToneSound.stop();
 
     if (this.isFull()) {
-      this.fullSince = getSimulationTime();
+      this.fullSince = millis();
       this.cancelRemainingSearches();
     }
   }
@@ -481,7 +481,7 @@ class Food {
   isReadyToReproduce() {
     if (!this.isFull() || this.fullSince === null) return false;
 
-    return getSimulationTime() - this.fullSince >= this.reproductionDelay;
+    return millis() - this.fullSince >= this.reproductionDelay;
   }
 
   updateUntouchedLifetime() {
@@ -722,12 +722,8 @@ let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
-let storyboardSimulationTime = 0;
-let storyboardUpdateCount = 0;
 
 const STARTING_BALL_COUNT = 250;
-const STORYBOARD_FRAMES_PER_UPDATE = 120;
-const STORYBOARD_FRAME_DURATION = 1000 / 60;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -766,16 +762,9 @@ function setup() {
     "click",
     toggleCanvasSound
   );
-  document.getElementById("canvas-update-button").addEventListener(
-    "click",
-    advanceStoryboard
-  );
-
-  noLoop();
 }
 
 function draw() {
-  storyboardSimulationTime += STORYBOARD_FRAME_DURATION;
   drawBackground();
   updateSensorLayer();
   updateFoodRespawn();
@@ -793,14 +782,6 @@ function windowResized() {
   if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
   keepFoodInsideCanvas();
-  redraw();
-}
-
-function advanceStoryboard() {
-  storyboardUpdateCount++;
-  redraw(STORYBOARD_FRAMES_PER_UPDATE);
-  document.getElementById("canvas-update-button").textContent =
-    "Update " + storyboardUpdateCount;
 }
 
 // Ball functions
@@ -1099,11 +1080,11 @@ function syncHeartbeatSound() {
     return;
   }
 
-  if (heartbeatSound.isPlaying() || getSimulationTime() < nextHeartbeatTime) return;
+  if (heartbeatSound.isPlaying() || millis() < nextHeartbeatTime) return;
 
   heartbeatSound.play(0, 1, 0.6);
   monitorBeepSound.play(0, 1, 0.18);
-  nextHeartbeatTime = getSimulationTime() + getHeartbeatSpacing();
+  nextHeartbeatTime = millis() + getHeartbeatSpacing();
 }
 
 function getHeartbeatSpacing() {
@@ -1132,12 +1113,12 @@ function updatePhoneTone() {
     return;
   }
 
-  if (getSimulationTime() < food.nextPhoneToneTime) return;
+  if (millis() < food.nextPhoneToneTime) return;
   if (phoneToneSound.isPlaying()) return;
 
   phoneToneSound.play(0, 1, 0.3);
   food.nextPhoneToneTime =
-    getSimulationTime() + phoneToneSound.duration() * 1000 + PHONE_TONE_GAP;
+    millis() + phoneToneSound.duration() * 1000 + PHONE_TONE_GAP;
 }
 
 function toggleCanvasSound() {
@@ -1168,11 +1149,7 @@ function stopCanvasSounds() {
 }
 
 function getSimulationDeltaTime() {
-  return ignoreNextDeltaTime ? 0 : STORYBOARD_FRAME_DURATION;
-}
-
-function getSimulationTime() {
-  return storyboardSimulationTime;
+  return ignoreNextDeltaTime ? 0 : deltaTime;
 }
 
 function heartbeatPeak(phase, center, width) {

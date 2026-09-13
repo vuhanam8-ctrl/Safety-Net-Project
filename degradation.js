@@ -15,13 +15,21 @@
     [".bbc-secondary-stories article:nth-child(2) h2", "Piano icon says discipline separates survivors from failures"],
     [".bbc-secondary-stories article:nth-child(2) p", "A complicated recovery story is reduced to a lesson about willpower and personal weakness."],
     [".bbc-mini-story:nth-child(1) h3", "Drug users blamed as emergency rules tighten"],
+    [".bbc-mini-story:nth-child(1) p", "Coverage frames the emergency as disorder and blame, leaving treatment needs and policy detail below the fold."],
     [".bbc-mini-story:nth-child(2) h3", "Treatment funding called a waste on repeat cases"],
+    [".bbc-mini-story:nth-child(2) p", "Critics describe repeat care as indulgence while evidence about continuing recovery is pushed aside."],
     [".bbc-mini-story:nth-child(3) h3", "Music legend's advice becomes another celebrity spectacle"],
+    [".bbc-mini-story:nth-child(3) p", "Private support becomes gossip, with the entertainer's advice stripped of its recovery context."],
     [".bbc-mini-story:nth-child(4) h3", "Recovered star used to shame people who relapse"],
+    [".bbc-mini-story:nth-child(4) p", "A decades-long recovery is flattened into a moral about discipline and individual strength."],
     [".bbc-mini-story:nth-child(5) h3", "Young users accused of ignoring obvious risks"],
+    [".bbc-mini-story:nth-child(5) p", "Reports accuse teenagers of carelessness while access to clear harm-reduction information receives less attention."],
     [".bbc-mini-story:nth-child(6) h3", "Families told to stop making excuses for addiction"],
+    [".bbc-mini-story:nth-child(6) p", "Relatives are blamed for enabling addiction as shortages in affordable local care go unexamined."],
     [".bbc-mini-story:nth-child(7) h3", "Celebrity downfall draws crowds outside treatment centre"],
+    [".bbc-mini-story:nth-child(7) p", "The entertainer's treatment becomes a spectacle, reducing a medical crisis to photographs and scandal."],
     [".bbc-mini-story:nth-child(8) h3", "Calls for compassion dismissed as being soft on addicts"],
+    [".bbc-mini-story:nth-child(8) p", "Calls for medical care are recast as excuses, shifting attention from treatment to punishment."],
     [".bbc-side-module:nth-of-type(2) p", "Communities count the cost of people who will not change."],
     [".bbc-side-module:nth-of-type(3) p", "Why should treatment be offered more than once?"],
     [".bbc-side-module:nth-of-type(4) p", "When does a victim become the problem?"],
@@ -125,7 +133,7 @@
 
   }
 
-  window.addEventListener("amigos-heart-failed", function () {
+  window.addEventListener("amigos-heart-counted", function () {
     failedHeartCount++;
 
     if (failedHeartCount === 1) {

@@ -891,6 +891,10 @@ const STARTING_ANTI_BALL_COUNT = 9;
 const ANTI_TRAIL_LENGTH = 110;
 const ANTI_BLACK_HOLE_SCALE = 2;
 const MAXIMUM_ORBIT_SAND_GRAINS = 850;
+const SAND_BRUSH_RADIUS = 22;
+const SAND_BRUSH_ERASER_RADIUS = 8;
+const SAND_BRUSH_GRAINS_PER_STROKE = 14;
+const SAND_BRUSH_COOLDOWN = 90;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -1081,6 +1085,7 @@ function drawPurpleSandGrains(grains) {
   noStroke();
 
   for (const grain of grains) {
+    if (!grain.activated) continue;
     const highlight = grain.shade * 42;
     fill(126 + highlight, 54 + highlight * 0.55, 190 + highlight, 205);
     circle(grain.x, grain.y, grain.size);
@@ -1094,22 +1099,15 @@ function createSmileySandFormation(foodObject) {
   const faceRadius = constrain(min(width, height) * 0.115, 38, 60);
   const targets = createSmileyTargets(grains.length, foodObject, faceRadius);
 
-  for (let i = 0; i < grains.length; i++) {
-    const grain = grains[i];
-    const target = targets[i];
-    grain.startX = grain.x;
-    grain.startY = grain.y;
-    grain.targetX = target.x;
-    grain.targetY = target.y;
-    grain.controlX = (grain.x + target.x) / 2 + random(-32, 32);
-    grain.controlY = (grain.y + target.y) / 2 + random(-32, 32);
-    grain.delay = random(0, 700);
-    grain.duration = random(1900, 3300);
+  for (const grain of grains) {
+    grain.activated = false;
   }
 
   smileySandFormations.push({
     grains,
-    startedAt: null,
+    targets,
+    nextTargetIndex: 0,
+    lastBrushAt: -Infinity,
     activated: false,
     centerX: foodObject.x,
     centerY: foodObject.y,
@@ -1144,7 +1142,7 @@ function createSmileyTargets(count, foodObject, radius) {
     });
   }
 
-  return shuffle(targets);
+  return targets;
 }
 
 function addSmileyEyeTargets(targets, count, centerX, centerY) {
@@ -1159,13 +1157,16 @@ function addSmileyEyeTargets(targets, count, centerX, centerY) {
 }
 
 function updateSmileySandFormation(formation) {
-  if (!formation.activated || formation.startedAt === null) return;
-
-  const elapsed = millis() - formation.startedAt;
+  if (!formation.activated) return;
 
   for (const grain of formation.grains) {
+    if (!grain.activated) continue;
+
+    const elapsed = millis() - grain.startedAt;
+    if (elapsed < 0) continue;
+
     const progress = constrain(
-      (elapsed - grain.delay) / grain.duration,
+      elapsed / grain.duration,
       0,
       1
     );
@@ -1208,7 +1209,7 @@ function activateSmileySandUnderCursor() {
 
   const candidates = smileySandFormations
     .filter(formation =>
-      !formation.activated &&
+      formation.nextTargetIndex < formation.targets.length &&
       dist(mouseX, mouseY, formation.centerX, formation.centerY) <=
         formation.interactionRadius
     )
@@ -1218,7 +1219,7 @@ function activateSmileySandUnderCursor() {
     );
 
   if (candidates.length === 0) return;
-  activateSmileySandFormation(candidates[0]);
+  brushSmileySandFormation(candidates[0], mouseX, mouseY);
 }
 
 function cursorTouchesOrbitTrail(x, y) {
@@ -1236,15 +1237,47 @@ function cursorTouchesOrbitTrail(x, y) {
   return false;
 }
 
-function activateSmileySandFormation(formation) {
+function brushSmileySandFormation(formation, brushX, brushY) {
+  const brushTime = millis();
+  if (brushTime - formation.lastBrushAt < SAND_BRUSH_COOLDOWN) return;
+
+  const nearbyGrains = formation.grains
+    .filter(grain =>
+      !grain.activated &&
+      dist(grain.x, grain.y, brushX, brushY) <= SAND_BRUSH_RADIUS
+    )
+    .sort((first, second) =>
+      dist(first.x, first.y, brushX, brushY) -
+      dist(second.x, second.y, brushX, brushY)
+    )
+    .slice(0, SAND_BRUSH_GRAINS_PER_STROKE);
+
+  if (nearbyGrains.length === 0) return;
+
   formation.activated = true;
-  formation.startedAt = millis();
+  formation.lastBrushAt = brushTime;
+
+  for (let i = 0; i < nearbyGrains.length; i++) {
+    const grain = nearbyGrains[i];
+    const target = formation.targets[formation.nextTargetIndex++];
+    if (!target) break;
+
+    grain.activated = true;
+    grain.startX = grain.x;
+    grain.startY = grain.y;
+    grain.targetX = target.x;
+    grain.targetY = target.y;
+    grain.controlX = (grain.x + target.x) / 2 + random(-24, 24);
+    grain.controlY = (grain.y + target.y) / 2 + random(-24, 24);
+    grain.startedAt = brushTime + i * 18;
+    grain.duration = random(2700, 4400);
+  }
 
   eraseLayerArea(
     orbitTrailLayer,
-    formation.centerX,
-    formation.centerY,
-    formation.interactionRadius * 2
+    brushX,
+    brushY,
+    SAND_BRUSH_ERASER_RADIUS * 2
   );
 }
 

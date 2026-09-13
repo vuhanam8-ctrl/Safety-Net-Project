@@ -1330,40 +1330,57 @@ function mouseDragged() {
 function activatePortraitSandUnderCursor() {
   if (
     mouseX < 0 || mouseX >= width ||
-    mouseY < 0 || mouseY >= height ||
-    !cursorTouchesOrbitTrail(mouseX, mouseY)
+    mouseY < 0 || mouseY >= height
   ) {
     return;
   }
 
+  const trailPoint = findOrbitTrailPointUnderBrush(mouseX, mouseY);
+  if (!trailPoint) return;
+
   const candidates = portraitSandFormations
     .filter(formation =>
       formation.nextTargetIndex < formation.targets.length &&
-      dist(mouseX, mouseY, formation.centerX, formation.centerY) <=
+      dist(trailPoint.x, trailPoint.y, formation.centerX, formation.centerY) <=
         formation.interactionRadius
     )
     .sort((first, second) =>
-      dist(mouseX, mouseY, first.centerX, first.centerY) -
-      dist(mouseX, mouseY, second.centerX, second.centerY)
+      dist(trailPoint.x, trailPoint.y, first.centerX, first.centerY) -
+      dist(trailPoint.x, trailPoint.y, second.centerX, second.centerY)
     );
 
   if (candidates.length === 0) return;
-  brushPortraitSandFormation(candidates[0], mouseX, mouseY);
+  brushPortraitSandFormation(candidates[0], trailPoint.x, trailPoint.y);
 }
 
-function cursorTouchesOrbitTrail(x, y) {
-  const sampleRadius = 6;
+function findOrbitTrailPointUnderBrush(x, y) {
+  const sampleRadius = ceil(getSandBrushRadius());
+  let closestPoint = null;
+  let closestDistanceSquared = Infinity;
+  orbitTrailLayer.loadPixels();
 
   for (let offsetY = -sampleRadius; offsetY <= sampleRadius; offsetY += 2) {
     for (let offsetX = -sampleRadius; offsetX <= sampleRadius; offsetX += 2) {
+      const distanceSquared = offsetX * offsetX + offsetY * offsetY;
+      if (
+        distanceSquared > sampleRadius * sampleRadius ||
+        distanceSquared >= closestDistanceSquared
+      ) {
+        continue;
+      }
+
       const sampleX = constrain(floor(x + offsetX), 0, width - 1);
       const sampleY = constrain(floor(y + offsetY), 0, height - 1);
+      const pixelIndex = 4 * (sampleY * orbitTrailLayer.width + sampleX);
 
-      if (orbitTrailLayer.get(sampleX, sampleY)[3] > 8) return true;
+      if (orbitTrailLayer.pixels[pixelIndex + 3] <= 8) continue;
+
+      closestDistanceSquared = distanceSquared;
+      closestPoint = { x: sampleX, y: sampleY };
     }
   }
 
-  return false;
+  return closestPoint;
 }
 
 function brushPortraitSandFormation(formation, brushX, brushY) {

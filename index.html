@@ -531,75 +531,6 @@
       </aside>
 
       <section class="search-content">
-        <h1 class="search-heading">
-          <span class="amigos-name">AMIGOS!</span>
-          <span class="search-name">SEARCH</span>
-        </h1>
-
-        <nav class="search-tabs" aria-label="Search categories">
-          <span>Web</span>
-          <span>Images</span>
-          <span>Video</span>
-          <span>Local</span>
-          <span>More</span>
-        </nav>
-
-        <div class="search-form">
-          <div class="search-input-area">
-            <input
-              id="search-input"
-              class="search-input"
-              type="text"
-              aria-label="Search"
-              autocomplete="off"
-            >
-
-            <button id="search-suggestion" class="search-suggestion" hidden>
-              SDG 3.5.1 substance abuse treatment in Vietnam
-            </button>
-          </div>
-
-          <button id="search-button" class="search-button" type="button">
-            Web Search
-          </button>
-        </div>
-
-        <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
-
-        <section id="search-results" class="search-results" hidden>
-          <h2>
-            Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”
-          </h2>
-
-          <article class="result">
-            <a id="placeholder-result-link" href="#">
-              United Nations SDG 3.5.1 regarding substance abuse
-            </a>
-            <p>
-              A result about treatment services and support for
-              substance use disorders.
-            </p>
-          </article>
-
-          <article class="result">
-            <a href="https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno">
-              https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno
-            </a>
-          </article>
-
-          <article class="result">
-            <a href="https://editor.p5js.org/iamBao/full/DKpaucg-E">
-              https://editor.p5js.org/iamBao/full/DKpaucg-E
-            </a>
-          </article>
-
-          <article class="result">
-            <a href="https://editor.p5js.org/ziodean666/full/yAPsaBr4i">
-              https://editor.p5js.org/ziodean666/full/yAPsaBr4i
-            </a>
-          </article>
-        </section>
-
         <section id="fake-content-page" class="fake-content-page">
           <section class="bbc-news-placeholder" aria-label="News layout placeholder">
             <header class="bbc-placeholder-header">
@@ -775,19 +706,9 @@
     </main>
 
     <script>
-      const searchInput = document.getElementById("search-input");
-      const searchContent = document.querySelector(".search-content");
-      const suggestion = document.getElementById("search-suggestion");
-      const searchButton = document.getElementById("search-button");
-      const results = document.getElementById("search-results");
-      const resultLink = document.getElementById("placeholder-result-link");
-      const fakeContentPage = document.getElementById("fake-content-page");
-      const leftAdvertisementList = document.getElementById("left-advertisement-list");
-      const rightAdvertisementList = document.getElementById("right-advertisement-list");
       const shellAdvertisementList = document.getElementById("shell-advertisement-list");
       const messageNotification = document.querySelector(".message-notification");
       const notificationClose = document.querySelector(".notification-close");
-      const recommendedSearch = suggestion.textContent.trim();
       const computerClickSound = new Audio(
         "assets/audio/COMM2754-2026-S2-A2w10-ComputerClick-EditedSound.wav"
       );
@@ -806,6 +727,7 @@
 
       notificationClose.addEventListener("click", function (event) {
         event.stopPropagation();
+        playComputerClick();
         messageNotification.hidden = true;
 
         if (glitchAdvertisementArmed) {
@@ -826,6 +748,10 @@
       });
 
       window.addEventListener("amigos-final-lock-click", playComputerError);
+      document.addEventListener("click", function (event) {
+        if (isComputerErrorClick(event.target)) return;
+        playComputerClick();
+      });
 
       const advertisements = [
         {
@@ -867,49 +793,6 @@
           zone.appendChild(advertisementBox);
         });
 
-      searchInput.addEventListener("focus", function () {
-        suggestion.hidden = false;
-      });
-
-      searchInput.addEventListener("input", function () {
-        if (searchInput.value.trim() === "") {
-          suggestion.hidden = true;
-          results.hidden = true;
-          fakeContentPage.hidden = true;
-          searchContent.classList.remove("showing-secondary-content");
-        }
-      });
-
-      suggestion.addEventListener("click", function () {
-        playComputerClick();
-        searchInput.value = recommendedSearch;
-        suggestion.hidden = true;
-        fakeContentPage.hidden = true;
-        results.hidden = false;
-        searchContent.classList.add("showing-secondary-content");
-      });
-
-      searchButton.addEventListener("click", function () {
-        if (searchInput.value.trim() === "") {
-          searchInput.value = recommendedSearch;
-        }
-
-        suggestion.hidden = true;
-        fakeContentPage.hidden = true;
-        results.hidden = false;
-        searchContent.classList.add("showing-secondary-content");
-      });
-
-      resultLink.addEventListener("click", function (event) {
-        event.preventDefault();
-        playComputerClick();
-        results.hidden = true;
-        fakeContentPage.hidden = false;
-        requestAnimationFrame(function () {
-          if (typeof windowResized === "function") windowResized();
-        });
-      });
-
       function playComputerClick() {
         computerClickSound.currentTime = 0;
         computerClickSound.play().catch(function () {});
@@ -918,6 +801,15 @@
       function playComputerError() {
         computerErrorSound.currentTime = 0;
         computerErrorSound.play().catch(function () {});
+      }
+
+      function isComputerErrorClick(target) {
+        if (!(target instanceof Element)) return false;
+
+        return Boolean(
+          target.closest(".advertisement") ||
+          target.closest(".final-screen-lock")
+        );
       }
 
       function showNotification() {

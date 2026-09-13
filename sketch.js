@@ -380,9 +380,11 @@ class Ball {
 // Food class
 
 class Food {
-  constructor(x, y) {
+  constructor(x, y, sequenceNumber) {
     this.x = x;
     this.y = y;
+    this.sequenceNumber = sequenceNumber;
+    this.outcomeReported = false;
 
     this.radius = 8;
     this.discoveryRadius = 12;
@@ -494,12 +496,24 @@ class Food {
     this.isErasing = true;
     this.eraserAge = 0;
     this.cancelRemainingSearches();
+    this.reportOutcome(false);
+  }
 
-    window.dispatchEvent(new CustomEvent("amigos-heart-failed", {
+  reportOutcome(dispersedSuccessfully) {
+    if (this.outcomeReported) return;
+    this.outcomeReported = true;
+
+    const shouldAdvanceCounter =
+      !dispersedSuccessfully || this.sequenceNumber > 1;
+
+    if (!shouldAdvanceCounter) return;
+
+    window.dispatchEvent(new CustomEvent("amigos-heart-counted", {
       detail: {
+        sequenceNumber: this.sequenceNumber,
+        dispersedSuccessfully,
         x: this.x,
-        y: this.y,
-        lifetime: this.untouchedLifetime
+        y: this.y
       }
     }));
   }
@@ -635,6 +649,8 @@ class Food {
       ball => ball.hasReachedFood
     );
 
+    this.reportOutcome(true);
+
     this.isAvailable = false;
     this.isActive = false;
 
@@ -697,6 +713,7 @@ let food;
 let permanentTrailLayer;
 let sensorLayer;
 let foodRespawnTimer = 0;
+let foodSequenceCount = 0;
 let heartbeatSound;
 let monitorBeepSound;
 let phoneToneSound;
@@ -1204,10 +1221,12 @@ function drawWebLine(firstBall, secondBall, distance) {
 
 function spawnRandomFood() {
   const margin = 70;
+  foodSequenceCount++;
 
   food = new Food(
     randomCanvasPosition(width, margin),
-    randomCanvasPosition(height, margin)
+    randomCanvasPosition(height, margin),
+    foodSequenceCount
   );
 
   foodRespawnTimer = 0;

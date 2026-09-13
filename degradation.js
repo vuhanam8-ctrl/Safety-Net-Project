@@ -125,7 +125,7 @@
 
   }
 
-  window.addEventListener("amigos-heart-failed", function () {
+  window.addEventListener("amigos-heart-counted", function () {
     failedHeartCount++;
 
     if (failedHeartCount === 1) {

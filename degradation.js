@@ -78,7 +78,18 @@
 
   let failedHeartCount = 0;
   let degradationHasStarted = false;
+  let degradationHasFinished = false;
+  let glitchAdvertisementHasBeenArmed = false;
   let finalGlitchHasStarted = false;
+
+  function tryArmGlitchAdvertisement() {
+    if (glitchAdvertisementHasBeenArmed) return;
+    if (failedHeartCount < failedHeartsRequired) return;
+    if (!degradationHasFinished) return;
+
+    glitchAdvertisementHasBeenArmed = true;
+    window.dispatchEvent(new CustomEvent("amigos-glitch-armed"));
+  }
 
   function mutateElement(selector, replacement, progress) {
     const element = document.querySelector(selector);
@@ -174,6 +185,10 @@
       interval = Math.max(minimumDegradationInterval, interval * degradationAcceleration);
     });
 
+    window.setTimeout(function () {
+      degradationHasFinished = true;
+      tryArmGlitchAdvertisement();
+    }, elapsed + 400);
   }
 
   window.addEventListener("amigos-heart-counted", function () {
@@ -183,13 +198,12 @@
       beginDegradation();
     }
 
-    if (failedHeartCount === failedHeartsRequired) {
-      window.dispatchEvent(new CustomEvent("amigos-glitch-armed"));
-    }
+    tryArmGlitchAdvertisement();
   });
 
   window.addEventListener("amigos-glitch-requested", function () {
     if (failedHeartCount < failedHeartsRequired) return;
+    if (!degradationHasFinished || !glitchAdvertisementHasBeenArmed) return;
     beginFinalGlitch();
   });
 })();

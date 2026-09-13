@@ -239,6 +239,7 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
   .bbc-placeholder-links { margin-left: 20px; }
   .lead-story, .bbc-secondary-stories, .bbc-secondary-stories .bbc-placeholder-story { grid-template-columns: 1fr; }
   .bbc-story-grid, .bbc-mini-story { grid-template-columns: 1fr; }
+  .bbc-mini-story:nth-child(odd):not(:first-child)::before { width: 100%; }
 }
 
 @media (max-width: 1000px) {

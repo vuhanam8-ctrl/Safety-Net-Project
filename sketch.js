@@ -8,7 +8,7 @@
 // Ball class
 
 class Ball {
-  constructor(x, y, direction) {
+  constructor(x, y, direction, team = "white") {
     this.x = x ?? random(
       width / 2 - 20,
       width / 2 + 20
@@ -21,6 +21,7 @@ class Ball {
 
     this.direction =
       direction ?? random(360);
+    this.team = team;
 
     this.radius = 0.5;
     this.speed = 1;
@@ -58,15 +59,15 @@ class Ball {
 
     const distance = this.distanceFromFood();
 
-    if (!food.isActive && distance < food.discoveryRadius) {
-      food.activate();
+    if (!food.isTeamActive(this.team) && distance < food.discoveryRadius) {
+      food.activate(this.team);
     }
 
     this.respondToActiveFood(distance);
   }
 
   respondToActiveFood(distance) {
-    if (!food.isActive || this.isDispersing) return;
+    if (!food.isTeamActive(this.team) || this.isDispersing) return;
     if (this.hasReachedFood) return;
 
     if (distance < food.attractionRadius) {
@@ -94,11 +95,31 @@ class Ball {
   respondToSensorSignals() {
     if (this.isDispersing || this.hasReachedFood) return;
 
+    if (this.team === "anti" && this.avoidWhiteBarrier()) return;
+
     const left = this.readSensor(this.leftSensor);
     const front = this.readSensor(this.frontSensor);
     const right = this.readSensor(this.rightSensor);
 
     this.followChemicalTrail(left, front, right);
+  }
+
+  avoidWhiteBarrier() {
+    const left = this.readBarrier(this.leftSensor);
+    const front = this.readBarrier(this.frontSensor);
+    const right = this.readBarrier(this.rightSensor);
+
+    if (max(left, front, right) < 18) return false;
+
+    if (front >= left && front >= right) {
+      this.direction += left < right ? -110 : 110;
+    } else if (left > right) {
+      this.direction += 70;
+    } else {
+      this.direction -= 70;
+    }
+
+    return true;
   }
 
   followChemicalTrail(left, front, right) {
@@ -184,20 +205,20 @@ class Ball {
 
   checkFoodArrival() {
     if (this.distanceFromFood() >= food.reachRadius) return;
-    if (food.isFull()) {
+    if (food.isFull(this.team)) {
       this.isSearchingForFood = false;
       this.wasPulledByWave = false;
       return;
     }
 
-    if (!food.isActive) food.activate();
+    if (!food.isTeamActive(this.team)) food.activate(this.team);
 
     this.hasReachedFood = true;
     this.isSearchingForFood = false;
     this.wasPulledByWave = false;
 
     this.direction += random(-90, 90);
-    food.recordBallArrival();
+    food.recordBallArrival(this);
   }
 
   moveInsideColony() {
@@ -356,11 +377,20 @@ class Ball {
   }
 
   readSensor(sensor) {
+    const layer = this.team === "anti" ? antiSensorLayer : sensorLayer;
+    return this.readLayerPixel(layer, sensor, false);
+  }
+
+  readBarrier(sensor) {
+    return this.readLayerPixel(barrierLayer, sensor, true);
+  }
+
+  readLayerPixel(layer, sensor, useAlpha) {
     const x = constrain(floor(sensor.x), 0, width - 1);
     const y = constrain(floor(sensor.y), 0, height - 1);
     const pixelIndex = 4 * (y * width + x);
 
-    return sensorLayer.pixels[pixelIndex] || 0;
+    return layer.pixels[pixelIndex + (useAlpha ? 3 : 0)] || 0;
   }
 
   distanceFromFood() {
@@ -396,8 +426,10 @@ class Food {
     this.scoutSteeringStrength = 0.18;
 
     this.isActive = false;
+    this.activeTeams = { white: false, anti: false };
     this.isAvailable = true;
     this.reachedBallCount = 0;
+    this.antiReachedBallCount = 0;
     this.untouchedAge = 0;
     this.untouchedLifetime = 30000;
     this.spawnTime = millis();
@@ -405,6 +437,7 @@ class Food {
       this.spawnTime + PHONE_TONE_START_DELAY;
 
     this.isErasing = false;
+    this.isBlackHole = false;
     this.eraserAge = 0;
     this.eraserDuration = 5000;
     this.maximumEraserRadius = random(
@@ -413,9 +446,12 @@ class Food {
     );
 
     this.requiredBallCount = 25;
+    this.requiredAntiBallCount = 18;
     this.reproductionRate = 2;
     this.fullSince = null;
     this.reproductionDelay = 10000;
+    this.antiFullSince = null;
+    this.antiCollapseDelay = 4000;
 
     this.waveRadius = this.radius;
     this.waveSpeed = 1.2;
@@ -425,38 +461,71 @@ class Food {
     this.isWaveWaiting = true;
     this.waveWaitTimer = floor(random(60, 180));
 
-    this.chosenScoutCount = 0;
-    this.maximumScoutsPerWave = 4;
-    this.scoutSelectionChance = 0.06;
+    this.chosenScoutCount = { white: 0, anti: 0 };
+    this.maximumScoutsPerWave = 8;
+    this.scoutSelectionChance = 0.12;
   }
 
-  activate() {
+  activate(team = "white") {
     this.isActive = true;
+    this.activeTeams[team] = true;
     this.isWaveWaiting = true;
 
     for (const ball of balls) {
       ball.wasPulledByWave = false;
     }
+
+    this.recruitOpposingTeam(team);
   }
 
-  recordBallArrival() {
-    if (this.isFull()) return;
+  recruitOpposingTeam(activeTeam) {
+    const opposingTeam = activeTeam === "white" ? "anti" : "white";
+    const candidates = balls
+      .filter(ball => ball.team === opposingTeam && !ball.hasReachedFood)
+      .sort((first, second) =>
+        dist(first.x, first.y, this.x, this.y) -
+        dist(second.x, second.y, this.x, this.y)
+      )
+      .slice(0, 6);
 
-    this.reachedBallCount = min(
-      this.reachedBallCount + 1,
-      this.requiredBallCount
-    );
+    for (const ball of candidates) {
+      ball.isSearchingForFood = true;
+      ball.wasPulledByWave = true;
+    }
+  }
+
+  isTeamActive(team) {
+    return this.activeTeams[team];
+  }
+
+  recordBallArrival(ball) {
+    if (this.isFull(ball.team)) return;
+
+    if (ball.team === "anti") {
+      this.antiReachedBallCount = min(
+        this.antiReachedBallCount + 1,
+        this.requiredAntiBallCount
+      );
+    } else {
+      this.reachedBallCount = min(
+        this.reachedBallCount + 1,
+        this.requiredBallCount
+      );
+    }
 
     if (phoneToneSound?.isPlaying()) phoneToneSound.stop();
 
-    if (this.isFull()) {
-      this.fullSince = millis();
+    if (this.isFull(ball.team)) {
+      if (ball.team === "anti") this.antiFullSince = millis();
+      else this.fullSince = millis();
       this.cancelRemainingSearches();
     }
   }
 
-  isFull() {
-    return this.reachedBallCount >= this.requiredBallCount;
+  isFull(team = "white") {
+    return team === "anti"
+      ? this.antiReachedBallCount >= this.requiredAntiBallCount
+      : this.reachedBallCount >= this.requiredBallCount;
   }
 
   update() {
@@ -475,6 +544,11 @@ class Food {
 
     if (this.isReadyToReproduce()) {
       this.consume();
+      return;
+    }
+
+    if (this.isReadyForAntiCollapse()) {
+      this.consumeByAntiColony();
     }
   }
 
@@ -482,6 +556,11 @@ class Food {
     if (!this.isFull() || this.fullSince === null) return false;
 
     return millis() - this.fullSince >= this.reproductionDelay;
+  }
+
+  isReadyForAntiCollapse() {
+    if (!this.isFull("anti") || this.antiFullSince === null) return false;
+    return millis() - this.antiFullSince >= this.antiCollapseDelay;
   }
 
   updateUntouchedLifetime() {
@@ -540,6 +619,7 @@ class Food {
 
   finishErasing() {
     this.isErasing = false;
+    this.isBlackHole = false;
     this.isAvailable = false;
     scheduleNextFood();
   }
@@ -577,7 +657,7 @@ class Food {
     if (this.waveWaitTimer <= 0) {
       this.isWaveWaiting = false;
       this.waveRadius = this.radius;
-      this.chosenScoutCount = 0;
+      this.chosenScoutCount = { white: 0, anti: 0 };
     }
   }
 
@@ -599,15 +679,17 @@ class Food {
     }
   }
 
-  hasEnoughScouts() {
-    return (
-      this.chosenScoutCount >=
-      this.maximumScoutsPerWave
-    );
+  hasEnoughScouts(team) {
+    if (team) {
+      return this.chosenScoutCount[team] >= this.maximumScoutsPerWave;
+    }
+
+    return this.hasEnoughScouts("white") && this.hasEnoughScouts("anti");
   }
 
   canRecruit(ball) {
     if (
+      this.hasEnoughScouts(ball.team) ||
       ball.hasReachedFood ||
       ball.isSearchingForFood ||
       ball.isDispersing
@@ -641,12 +723,15 @@ class Food {
   recruitBall(ball) {
     ball.isSearchingForFood = true;
     ball.wasPulledByWave = true;
-    this.chosenScoutCount++;
+    this.chosenScoutCount[ball.team]++;
   }
 
   consume() {
     const attachedBalls = balls.filter(
-      ball => ball.hasReachedFood
+      ball => ball.hasReachedFood && ball.team === "white"
+    );
+    const antiAttachedBalls = balls.filter(
+      ball => ball.hasReachedFood && ball.team === "anti"
     );
 
     this.reportOutcome(true);
@@ -655,10 +740,34 @@ class Food {
     this.isActive = false;
 
     this.releaseAttachedBalls(attachedBalls);
+    this.releaseLosingAntiBalls(antiAttachedBalls);
     this.createNewBalls(attachedBalls.length);
     this.cancelRemainingSearches();
 
     scheduleNextFood();
+  }
+
+  releaseLosingAntiBalls(antiAttachedBalls) {
+    for (const ball of antiAttachedBalls) {
+      ball.resetFoodState();
+      ball.direction = atan2(ball.y - this.y, ball.x - this.x) + random(-65, 65);
+      ball.speed = 1.35;
+    }
+  }
+
+  consumeByAntiColony() {
+    this.reportOutcome(false);
+    this.isActive = false;
+    this.isBlackHole = true;
+    this.isErasing = true;
+    this.eraserAge = 0;
+    this.cancelRemainingSearches();
+
+    for (const ball of balls) {
+      if (!ball.hasReachedFood) continue;
+      ball.resetFoodState();
+      ball.direction = atan2(ball.y - this.y, ball.x - this.x) + random(-55, 55);
+    }
   }
 
   releaseAttachedBalls(attachedBalls) {
@@ -687,7 +796,8 @@ class Food {
     const ball = new Ball(
       this.x + cos(direction) * distance,
       this.y + sin(direction) * distance,
-      direction + random(-30, 30)
+      direction + random(-30, 30),
+      "white"
     );
 
     ball.beginDispersal(this.x, this.y);
@@ -711,7 +821,10 @@ let balls = [];
 let food;
 
 let permanentTrailLayer;
+let antiTrailLayer;
+let barrierLayer;
 let sensorLayer;
+let antiSensorLayer;
 let foodRespawnTimer = 0;
 let foodSequenceCount = 0;
 let heartbeatSound;
@@ -723,7 +836,8 @@ let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
 
-const STARTING_BALL_COUNT = 250;
+const STARTING_BALL_COUNT = 170;
+const STARTING_ANTI_BALL_COUNT = 80;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;
@@ -777,7 +891,11 @@ function draw() {
 }
 
 function windowResized() {
-  const oldTrails = permanentTrailLayer;
+  const oldTrails = {
+    white: permanentTrailLayer,
+    anti: antiTrailLayer,
+    barrier: barrierLayer
+  };
 
   if (!resizeCanvasToDisplayMode()) return;
   recreateDrawingLayers(oldTrails);
@@ -788,7 +906,11 @@ function windowResized() {
 
 function createStartingBalls() {
   for (let i = 0; i < STARTING_BALL_COUNT; i++) {
-    balls.push(new Ball());
+    balls.push(new Ball(undefined, undefined, undefined, "white"));
+  }
+
+  for (let i = 0; i < STARTING_ANTI_BALL_COUNT; i++) {
+    balls.push(new Ball(undefined, undefined, undefined, "anti"));
   }
 }
 
@@ -810,6 +932,12 @@ function drawBall(ball) {
 }
 
 function getBallColor(ball) {
+  if (ball.team === "anti") {
+    if (ball.hasReachedFood) return [250, 35, 150];
+    if (ball.wasPulledByWave) return [210, 70, 205];
+    return [150, 35, 130];
+  }
+
   if (ball.hasReachedFood) {
     return [166, 105, 214];
   }
@@ -838,7 +966,10 @@ function getBallSize(ball) {
 
 function createDrawingLayers() {
   permanentTrailLayer = createPermanentTrailLayer();
+  antiTrailLayer = createPermanentTrailLayer();
+  barrierLayer = createPermanentTrailLayer();
   sensorLayer = createSensorLayer();
+  antiSensorLayer = createSensorLayer();
 }
 
 function createPermanentTrailLayer() {
@@ -862,38 +993,45 @@ function createSensorLayer() {
 function drawBackground() {
   background(0);
   image(permanentTrailLayer, 0, 0);
+  image(antiTrailLayer, 0, 0);
+  image(barrierLayer, 0, 0);
 }
 
 function updateSensorLayer() {
-  fadeSensorLayer();
+  fadeSensorLayer(sensorLayer);
+  fadeSensorLayer(antiSensorLayer);
   sensorLayer.loadPixels();
+  antiSensorLayer.loadPixels();
+  barrierLayer.loadPixels();
 }
 
-function fadeSensorLayer() {
-  sensorLayer.noStroke();
-  sensorLayer.fill(0, 7);
+function fadeSensorLayer(layer) {
+  layer.noStroke();
+  layer.fill(0, 7);
 
-  sensorLayer.rect(
+  layer.rect(
     0,
     0,
-    sensorLayer.width,
-    sensorLayer.height
+    layer.width,
+    layer.height
   );
 }
 
 function depositBallTrail(ball) {
   depositPermanentTrail(ball);
   depositChemicalTrail(ball);
+  depositWhiteBarrier(ball);
 }
 
 function depositPermanentTrail(ball) {
   const trailColor = getTrailColor(ball);
   const trailSize = getBallSize(ball);
 
-  permanentTrailLayer.noStroke();
-  permanentTrailLayer.fill(...trailColor);
+  const layer = ball.team === "anti" ? antiTrailLayer : permanentTrailLayer;
+  layer.noStroke();
+  layer.fill(...trailColor);
 
-  permanentTrailLayer.circle(
+  layer.circle(
     ball.x,
     ball.y,
     trailSize
@@ -901,6 +1039,12 @@ function depositPermanentTrail(ball) {
 }
 
 function getTrailColor(ball) {
+  if (ball.team === "anti") {
+    return ball.hasReachedFood
+      ? [210, 35, 155, 90]
+      : [105, 20, 100, 75];
+  }
+
   if (ball.hasReachedFood) {
     return [166, 105, 214, 100];
   }
@@ -913,16 +1057,25 @@ function getTrailColor(ball) {
 }
 
 function depositChemicalTrail(ball) {
-  sensorLayer.noStroke();
+  const layer = ball.team === "anti" ? antiSensorLayer : sensorLayer;
+  layer.noStroke();
 
-  drawChemicalCircle(ball, 22, 8);
-  drawChemicalCircle(ball, 14, 15);
-  drawChemicalCircle(ball, 7, 28);
+  drawChemicalCircle(layer, ball, 22, 8);
+  drawChemicalCircle(layer, ball, 14, 15);
+  drawChemicalCircle(layer, ball, 7, 28);
 }
 
-function drawChemicalCircle(ball, size, opacity) {
-  sensorLayer.fill(255, opacity);
-  sensorLayer.circle(ball.x, ball.y, size);
+function drawChemicalCircle(layer, ball, size, opacity) {
+  layer.fill(255, opacity);
+  layer.circle(ball.x, ball.y, size);
+}
+
+function depositWhiteBarrier(ball) {
+  if (ball.team !== "white" || !ball.isDispersing) return;
+
+  barrierLayer.noStroke();
+  barrierLayer.fill(154, 76, 220, 150);
+  barrierLayer.circle(ball.x, ball.y, 2.4);
 }
 
 function recreateDrawingLayers(oldTrails) {
@@ -930,12 +1083,19 @@ function recreateDrawingLayers(oldTrails) {
     createPermanentTrailLayer();
 
   permanentTrailLayer.image(
-    oldTrails,
+    oldTrails.white,
     0,
     0
   );
 
+  antiTrailLayer = createPermanentTrailLayer();
+  antiTrailLayer.image(oldTrails.anti, 0, 0);
+
+  barrierLayer = createPermanentTrailLayer();
+  barrierLayer.image(oldTrails.barrier, 0, 0);
+
   sensorLayer = createSensorLayer();
+  antiSensorLayer = createSensorLayer();
 }
 
 
@@ -1015,19 +1175,47 @@ function drawFoodWave() {
 function eraseTrailsAroundFood(foodObject) {
   const diameter = foodObject.getEraserRadius() * 2;
 
-  permanentTrailLayer.erase();
-  permanentTrailLayer.noStroke();
-  permanentTrailLayer.circle(foodObject.x, foodObject.y, diameter);
-  permanentTrailLayer.noErase();
+  eraseLayerCircle(permanentTrailLayer, foodObject, diameter);
+  eraseSensorCircle(sensorLayer, foodObject, diameter);
 
-  sensorLayer.noStroke();
-  sensorLayer.fill(0);
-  sensorLayer.circle(foodObject.x, foodObject.y, diameter);
+  if (foodObject.isBlackHole) {
+    eraseLayerCircle(barrierLayer, foodObject, diameter);
+  } else {
+    eraseLayerCircle(antiTrailLayer, foodObject, diameter);
+    eraseSensorCircle(antiSensorLayer, foodObject, diameter);
+  }
+}
+
+function eraseLayerCircle(layer, foodObject, diameter) {
+  layer.erase();
+  layer.noStroke();
+  layer.circle(foodObject.x, foodObject.y, diameter);
+  layer.noErase();
+}
+
+function eraseSensorCircle(layer, foodObject, diameter) {
+  layer.noStroke();
+  layer.fill(0);
+  layer.circle(foodObject.x, foodObject.y, diameter);
 }
 
 function drawFoodEraser() {
   const radius = food.getEraserRadius();
   const pulse = 2 + getFoodHeartbeat() * 4;
+
+  if (food.isBlackHole) {
+    noStroke();
+    fill(0, 235);
+    circle(food.x, food.y, (radius + pulse) * 2);
+    noFill();
+    stroke(220, 30, 150, 210);
+    strokeWeight(2.5);
+    circle(food.x, food.y, (radius + pulse + 5) * 2);
+    stroke(110, 30, 160, 145);
+    strokeWeight(1);
+    circle(food.x, food.y, (radius + pulse + 12) * 2);
+    return;
+  }
 
   fill(0);
   stroke(120, 20, 35, 180);
@@ -1106,7 +1294,8 @@ function updatePhoneTone() {
   const canRing =
     food?.isAvailable &&
     !food.isErasing &&
-    food.reachedBallCount === 0;
+    food.reachedBallCount === 0 &&
+    food.antiReachedBallCount === 0;
 
   if (!canRing) {
     if (phoneToneSound.isPlaying()) phoneToneSound.stop();
@@ -1162,34 +1351,43 @@ function heartbeatPeak(phase, center, width) {
 }
 
 function drawFoodWeb() {
-  const colonyBalls = balls.filter(
-    ball => ball.hasReachedFood
+  const whiteColonyBalls = balls.filter(
+    ball => ball.hasReachedFood && ball.team === "white"
+  );
+  const antiColonyBalls = balls.filter(
+    ball => ball.hasReachedFood && ball.team === "anti"
   );
 
+  drawTeamFoodWeb(whiteColonyBalls, false);
+  drawTeamFoodWeb(antiColonyBalls, true);
+}
+
+function drawTeamFoodWeb(colonyBalls, isAntiTeam) {
   if (colonyBalls.length < 5) return;
 
   for (let i = 0; i < colonyBalls.length; i++) {
     connectBallToNeighbors(
       colonyBalls,
-      i
+      i,
+      isAntiTeam
     );
   }
 }
 
-function connectBallToNeighbors(colonyBalls, index) {
+function connectBallToNeighbors(colonyBalls, index, isAntiTeam) {
   const ball = colonyBalls[index];
   let connectionCount = 0;
 
   for (let i = index + 1; i < colonyBalls.length; i++) {
     if (connectionCount >= 3) break;
 
-    if (drawConnection(ball, colonyBalls[i])) {
+    if (drawConnection(ball, colonyBalls[i], isAntiTeam)) {
       connectionCount++;
     }
   }
 }
 
-function drawConnection(firstBall, secondBall) {
+function drawConnection(firstBall, secondBall, isAntiTeam) {
   const distance = dist(
     firstBall.x,
     firstBall.y,
@@ -1201,14 +1399,16 @@ function drawConnection(firstBall, secondBall) {
     return false;
   }
 
-  drawWebLine(firstBall, secondBall, distance);
+  drawWebLine(firstBall, secondBall, distance, isAntiTeam);
   return true;
 }
 
-function drawWebLine(firstBall, secondBall, distance) {
+function drawWebLine(firstBall, secondBall, distance, isAntiTeam) {
   const opacity = map(distance, 5, 28, 90, 10);
 
-  stroke(148, 88, 202, opacity);
+  stroke(...(isAntiTeam
+    ? [235, 38, 150, opacity]
+    : [148, 88, 202, opacity]));
   strokeWeight(0.6);
 
   line(

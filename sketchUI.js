@@ -47,7 +47,7 @@ const scrollingAdSketch = (p) => {
   };
 };
 
-new p5(scrollingAdSketch);
+const scrollingAdInstance = new p5(scrollingAdSketch);
 
 const backgroundSketch = (p) => {
   const colors = [
@@ -197,4 +197,9 @@ class BannerFlower {
   }
 }
 
-new p5(backgroundSketch);
+const backgroundInstance = new p5(backgroundSketch);
+
+window.freezeAmigosAmbient = function () {
+  scrollingAdInstance.noLoop();
+  backgroundInstance.noLoop();
+};

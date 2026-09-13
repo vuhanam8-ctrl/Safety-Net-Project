@@ -53,7 +53,7 @@
         const node = walker.currentNode;
         const parent = node.parentElement;
         if (!node.nodeValue.trim()) continue;
-        if (parent?.closest(".shell-quote small, script, style")) continue;
+        if (parent?.closest(".shell-quote small, .amigos-brand, .bbc-placeholder-brand, .topbar-inner > strong, script, style")) continue;
         textNodes.push(node);
       }
 
@@ -85,6 +85,7 @@
 
   function finishTakeover() {
     if (typeof window.noLoop === "function") window.noLoop();
+    if (typeof window.freezeAmigosAmbient === "function") window.freezeAmigosAmbient();
     replacePageWords();
     document.body.classList.remove("page-glitching");
     document.body.classList.add("final-text-takeover");

@@ -207,6 +207,7 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .final-message-symbol { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: #5520ae; color: #fff; font: bold 30px Georgia,serif; }
 .final-message-body strong { color: #24105e; font-size: 18px; }
 .final-text-takeover { filter: contrast(1.04); }
+.final-text-takeover .banner { animation-play-state: paused; }
 .news-canvas-pocket { width: 100%; aspect-ratio: 4 / 3; margin: 0; border: 0; }
 .bbc-secondary-stories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; border-bottom: 1px solid #aaa; }
 .bbc-secondary-stories .bbc-placeholder-story { grid-template-columns: minmax(105px,.75fr) minmax(0,1fr); }

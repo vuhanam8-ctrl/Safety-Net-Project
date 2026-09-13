@@ -82,6 +82,25 @@ body {
 .amigos-layout { display: grid; grid-template-columns: minmax(160px,.6fr) minmax(0,1.8fr) minmax(160px,.6fr); gap: 6px; align-items: start; }
 .amigos-left-column, .amigos-centre-column, .amigos-right-column { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .amigos-centre-column { padding: 0 6px; }
+
+.amigos-layout,
+.amigos-footer,
+.bbc-news-placeholder,
+.bbc-news-placeholder h1,
+.bbc-news-placeholder h2,
+.bbc-news-placeholder h3,
+.bbc-news-placeholder p,
+.bbc-news-placeholder strong,
+.bbc-news-placeholder a,
+.bbc-news-placeholder button,
+.shell-ad,
+.shell-widget,
+.shell-comments,
+.shell-quote,
+.shell-advertisement-list {
+  font-family: "Arial Narrow", "Liberation Sans Narrow", Arial, sans-serif;
+  font-stretch: condensed;
+}
 .amigos-box { width: 100%; padding: 10px; border: 1px solid #c9c8c2; background: linear-gradient(110deg,#fff,#e9e7df); overflow-wrap: break-word; }
 .shell-ad { min-height: 150px; text-align: center; }
 .shell-ad small { color: #888; letter-spacing: 1px; }

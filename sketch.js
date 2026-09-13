@@ -906,11 +906,21 @@ function windowResized() {
 
 function createStartingBalls() {
   for (let i = 0; i < STARTING_BALL_COUNT; i++) {
-    balls.push(new Ball(undefined, undefined, undefined, "white"));
+    balls.push(new Ball(
+      random(width * 0.2, width * 0.3),
+      random(height * 0.43, height * 0.57),
+      random(360),
+      "white"
+    ));
   }
 
   for (let i = 0; i < STARTING_ANTI_BALL_COUNT; i++) {
-    balls.push(new Ball(undefined, undefined, undefined, "anti"));
+    balls.push(new Ball(
+      random(width * 0.7, width * 0.8),
+      random(height * 0.43, height * 0.57),
+      random(360),
+      "anti"
+    ));
   }
 }
 

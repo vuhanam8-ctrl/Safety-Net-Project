@@ -870,8 +870,8 @@ let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
 
-const STARTING_BALL_COUNT = 170;
-const STARTING_ANTI_BALL_COUNT = 80;
+const STARTING_BALL_COUNT = 90;
+const STARTING_ANTI_BALL_COUNT = 60;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
 const PHONE_TONE_START_DELAY = 5000;

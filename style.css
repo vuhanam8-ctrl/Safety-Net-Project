@@ -42,7 +42,7 @@ body {
 
 #bg-canvas-container canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
 
-.topbar { height: 52px; background: var(--amigos-gradient); color: white; }
+.topbar { height: 68px; background: var(--amigos-gradient); color: white; }
 .topbar-inner { width: calc(100% - 32px); height: 100%; margin: auto; display: flex; align-items: center; gap: 22px; }
 .topbar strong { font-family: Georgia, serif; font-size: 18px; }
 .topbar nav { display: flex; height: 100%; }

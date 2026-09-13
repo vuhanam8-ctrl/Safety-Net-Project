@@ -778,7 +778,7 @@ class Food {
     this.isAvailable = false;
     this.isActive = false;
 
-    createSmileySandFormation(this);
+    createPortraitSandFormation(this);
     this.releaseAttachedBalls(attachedBalls);
     this.releaseLosingAntiBalls(antiAttachedBalls);
     this.createNewBalls(attachedBalls.length);
@@ -860,7 +860,7 @@ class Food {
 
 let balls = [];
 let food;
-let smileySandFormations = [];
+let portraitSandFormations = [];
 
 let permanentTrailLayer;
 let orbitTrailLayer;
@@ -879,6 +879,12 @@ let nextHeartbeatTime = 0;
 let canvasSoundEnabled = false;
 let ignoreNextDeltaTime = false;
 let antiTokenSprites = [];
+let sandPortraitImage;
+let portraitTargetPixels = [];
+let portraitLightPixels = [];
+let portraitMidtonePixels = [];
+let portraitDarkPixels = [];
+let portraitAspectRatio = 0.74;
 
 const ANTI_TOKEN_STYLES = [
   { name: "red", trail: [225, 18, 24] },
@@ -890,10 +896,10 @@ const STARTING_BALL_COUNT = 90;
 const STARTING_ANTI_BALL_COUNT = 9;
 const ANTI_TRAIL_LENGTH = 110;
 const ANTI_BLACK_HOLE_SCALE = 2;
-const MAXIMUM_ORBIT_SAND_GRAINS = 850;
+const MAXIMUM_ORBIT_SAND_GRAINS = 1600;
 const SAND_BRUSH_HEART_SCALE = 6;
 const SAND_BRUSH_ERASER_RADIUS = 16;
-const SAND_BRUSH_GRAINS_PER_STROKE = 14;
+const SAND_BRUSH_GRAINS_PER_STROKE = 20;
 const SAND_BRUSH_COOLDOWN = 90;
 const MINIMUM_FOOD_RESPAWN_DELAY = 180;
 const MAXIMUM_FOOD_RESPAWN_DELAY = 480;
@@ -908,6 +914,11 @@ function preload() {
     `assets/images/anti-token-${style.name}.png`,
     imageAsset => removeNearWhiteBackground(imageAsset)
   ));
+
+  sandPortraitImage = loadImage(
+    "assets/images/sand-portrait-source.png",
+    imageAsset => preparePortraitTargetPixels(imageAsset)
+  );
 
   heartbeatSound = loadSound(
     "assets/audio/COMM2754-2026-S2-A2w10-HeartBeat-EditedSound.wav"
@@ -935,6 +946,59 @@ function removeNearWhiteBackground(imageAsset) {
   }
 
   imageAsset.updatePixels();
+}
+
+function preparePortraitTargetPixels(imageAsset) {
+  imageAsset.loadPixels();
+
+  let minimumX = imageAsset.width;
+  let minimumY = imageAsset.height;
+  let maximumX = 0;
+  let maximumY = 0;
+
+  for (let y = 0; y < imageAsset.height; y++) {
+    for (let x = 0; x < imageAsset.width; x++) {
+      const pixelIndex = 4 * (y * imageAsset.width + x);
+      if (imageAsset.pixels[pixelIndex + 3] <= 20) continue;
+      minimumX = min(minimumX, x);
+      minimumY = min(minimumY, y);
+      maximumX = max(maximumX, x);
+      maximumY = max(maximumY, y);
+    }
+  }
+
+  const portraitWidth = max(1, maximumX - minimumX);
+  const portraitHeight = max(1, maximumY - minimumY);
+  portraitAspectRatio = portraitWidth / portraitHeight;
+  portraitTargetPixels = [];
+  portraitLightPixels = [];
+  portraitMidtonePixels = [];
+  portraitDarkPixels = [];
+
+  for (let y = minimumY; y <= maximumY; y += 2) {
+    for (let x = minimumX; x <= maximumX; x += 2) {
+      const pixelIndex = 4 * (y * imageAsset.width + x);
+      const alpha = imageAsset.pixels[pixelIndex + 3];
+      if (alpha <= 20) continue;
+
+      const red = imageAsset.pixels[pixelIndex];
+      const green = imageAsset.pixels[pixelIndex + 1];
+      const blue = imageAsset.pixels[pixelIndex + 2];
+      const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722;
+
+      const targetPixel = {
+        x: (x - minimumX) / portraitWidth - 0.5,
+        y: (y - minimumY) / portraitHeight - 0.5,
+        tone: map(luminance, 0, 255, 70, 235)
+      };
+
+      portraitTargetPixels.push(targetPixel);
+
+      if (luminance >= 200) portraitLightPixels.push(targetPixel);
+      else if (luminance <= 70) portraitDarkPixels.push(targetPixel);
+      else portraitMidtonePixels.push(targetPixel);
+    }
+  }
 }
 
 function setup() {
@@ -1055,13 +1119,13 @@ function drawAntiTokenTrail(ball) {
   }
 }
 
-// Purple orbit sand and smiley formations
+// Purple orbit sand and brushed portrait formations
 
 function depositOrbitSand(ball) {
   if (
     !food?.isAvailable ||
     food.orbitSandGrains.length >= MAXIMUM_ORBIT_SAND_GRAINS ||
-    random(1) >= 0.08
+    random(1) >= 0.14
   ) {
     return;
   }
@@ -1075,9 +1139,9 @@ function depositOrbitSand(ball) {
 }
 
 function updateAndDrawPurpleSand() {
-  for (const formation of smileySandFormations) {
+  for (const formation of portraitSandFormations) {
     if (!formation.activated) continue;
-    updateSmileySandFormation(formation);
+    updatePortraitSandFormation(formation);
     drawPurpleSandGrains(formation.grains);
   }
 }
@@ -1085,26 +1149,50 @@ function updateAndDrawPurpleSand() {
 function drawPurpleSandGrains(grains) {
   noStroke();
 
+  // Light facial planes go down first; darker hair, glasses and features sit
+  // above them so the portrait keeps detail instead of becoming a silhouette.
+  drawPortraitGrainPass(grains, false);
+  drawPortraitGrainPass(grains, true);
+}
+
+function drawPortraitGrainPass(grains, drawDarkDetails) {
   for (const grain of grains) {
     if (!grain.activated) continue;
+    const isDarkDetail = (grain.targetTone ?? 90) < 130;
+    if (isDarkDetail !== drawDarkDetails) continue;
+
     const highlight = grain.shade * 30;
-    fill(76 + highlight, 24 + highlight * 0.45, 126 + highlight, 225);
-    circle(grain.x, grain.y, grain.size);
+    const purpleRed = 76 + highlight;
+    const purpleGreen = 24 + highlight * 0.45;
+    const purpleBlue = 126 + highlight;
+    const tone = grain.targetTone ?? 90;
+    const colorProgress = grain.colorProgress ?? 0;
+
+    fill(
+      lerp(purpleRed, tone, colorProgress),
+      lerp(purpleGreen, tone, colorProgress),
+      lerp(purpleBlue, tone, colorProgress),
+      225
+    );
+    circle(
+      grain.x,
+      grain.y,
+      grain.size * lerp(1, isDarkDetail ? 1.8 : 1.6, colorProgress)
+    );
   }
 }
 
-function createSmileySandFormation(foodObject) {
+function createPortraitSandFormation(foodObject) {
   const grains = foodObject.orbitSandGrains;
   if (grains.length === 0) return;
 
-  const faceRadius = constrain(min(width, height) * 0.115, 38, 60);
-  const targets = createSmileyTargets(grains.length, foodObject, faceRadius);
+  const targets = createPortraitTargets(grains.length, foodObject);
 
   for (const grain of grains) {
     grain.activated = false;
   }
 
-  smileySandFormations.push({
+  portraitSandFormations.push({
     grains,
     targets,
     nextTargetIndex: 0,
@@ -1117,47 +1205,34 @@ function createSmileySandFormation(foodObject) {
   foodObject.orbitSandGrains = [];
 }
 
-function createSmileyTargets(count, foodObject, radius) {
+function createPortraitTargets(count, foodObject) {
   const targets = [];
-  const outlineCount = floor(count * 0.58);
-  const eyeCount = floor(count * 0.09);
-  const mouthCount = count - outlineCount - eyeCount * 2;
+  const portraitHeight = constrain(min(width, height) * 0.58, 100, 150);
+  const portraitWidth = portraitHeight * portraitAspectRatio;
+  const lightCount = floor(count * 0.48);
+  const darkCount = floor(count * 0.47);
 
-  for (let i = 0; i < outlineCount; i++) {
-    const angle = 360 * i / outlineCount + random(-0.8, 0.8);
-    const grainRadius = radius + random(-1.8, 1.8);
-    targets.push({
-      x: foodObject.x + cos(angle) * grainRadius,
-      y: foodObject.y + sin(angle) * grainRadius
-    });
-  }
-
-  addSmileyEyeTargets(targets, eyeCount, foodObject.x - radius * 0.34, foodObject.y - radius * 0.2);
-  addSmileyEyeTargets(targets, eyeCount, foodObject.x + radius * 0.34, foodObject.y - radius * 0.2);
-
-  for (let i = 0; i < mouthCount; i++) {
-    const angle = map(i, 0, max(1, mouthCount - 1), 22, 158);
-    targets.push({
-      x: foodObject.x + cos(angle) * radius * 0.58 + random(-1.2, 1.2),
-      y: foodObject.y + radius * 0.08 + sin(angle) * radius * 0.48 + random(-1.2, 1.2)
-    });
-  }
-
-  return targets;
-}
-
-function addSmileyEyeTargets(targets, count, centerX, centerY) {
   for (let i = 0; i < count; i++) {
-    const angle = random(360);
-    const radius = 5.5 * sqrt(random(1));
+    const source = i < lightCount
+      ? random(portraitLightPixels)
+      : i < lightCount + darkCount
+        ? random(portraitDarkPixels)
+        : random(portraitMidtonePixels);
+    if (!source) break;
+
     targets.push({
-      x: centerX + cos(angle) * radius,
-      y: centerY + sin(angle) * radius
+      x: foodObject.x + source.x * portraitWidth + random(-0.65, 0.65),
+      y: foodObject.y + source.y * portraitHeight + random(-0.65, 0.65),
+      tone: source.tone
     });
   }
+
+  return targets.sort((first, second) =>
+    first.y - second.y || first.x - second.x
+  );
 }
 
-function updateSmileySandFormation(formation) {
+function updatePortraitSandFormation(formation) {
   if (!formation.activated) return;
 
   for (const grain of formation.grains) {
@@ -1173,6 +1248,7 @@ function updateSmileySandFormation(formation) {
     );
     const eased = 1 - pow(1 - progress, 3);
     const inverse = 1 - eased;
+    grain.colorProgress = eased;
 
     grain.x =
       inverse * inverse * grain.startX +
@@ -1192,14 +1268,14 @@ function updateSmileySandFormation(formation) {
 }
 
 function mouseMoved() {
-  activateSmileySandUnderCursor();
+  activatePortraitSandUnderCursor();
 }
 
 function mouseDragged() {
-  activateSmileySandUnderCursor();
+  activatePortraitSandUnderCursor();
 }
 
-function activateSmileySandUnderCursor() {
+function activatePortraitSandUnderCursor() {
   if (
     mouseX < 0 || mouseX >= width ||
     mouseY < 0 || mouseY >= height ||
@@ -1208,7 +1284,7 @@ function activateSmileySandUnderCursor() {
     return;
   }
 
-  const candidates = smileySandFormations
+  const candidates = portraitSandFormations
     .filter(formation =>
       formation.nextTargetIndex < formation.targets.length &&
       dist(mouseX, mouseY, formation.centerX, formation.centerY) <=
@@ -1220,7 +1296,7 @@ function activateSmileySandUnderCursor() {
     );
 
   if (candidates.length === 0) return;
-  brushSmileySandFormation(candidates[0], mouseX, mouseY);
+  brushPortraitSandFormation(candidates[0], mouseX, mouseY);
 }
 
 function cursorTouchesOrbitTrail(x, y) {
@@ -1238,7 +1314,7 @@ function cursorTouchesOrbitTrail(x, y) {
   return false;
 }
 
-function brushSmileySandFormation(formation, brushX, brushY) {
+function brushPortraitSandFormation(formation, brushX, brushY) {
   const brushTime = millis();
   if (brushTime - formation.lastBrushAt < SAND_BRUSH_COOLDOWN) return;
 
@@ -1268,6 +1344,8 @@ function brushSmileySandFormation(formation, brushX, brushY) {
     grain.startY = grain.y;
     grain.targetX = target.x;
     grain.targetY = target.y;
+    grain.targetTone = target.tone;
+    grain.colorProgress = 0;
     grain.controlX = (grain.x + target.x) / 2 + random(-24, 24);
     grain.controlY = (grain.y + target.y) / 2 + random(-24, 24);
     grain.startedAt = brushTime + i * 18;
@@ -1288,7 +1366,7 @@ function getSandBrushRadius() {
 }
 
 function drawSandBrushCursor() {
-  const hasBrushableFormation = smileySandFormations.some(formation =>
+  const hasBrushableFormation = portraitSandFormations.some(formation =>
     formation.nextTargetIndex < formation.targets.length &&
     dist(mouseX, mouseY, formation.centerX, formation.centerY) <=
       formation.interactionRadius
@@ -1553,7 +1631,7 @@ function erasePurpleSandGrains(x, y, radius) {
     );
   }
 
-  for (const formation of smileySandFormations) {
+  for (const formation of portraitSandFormations) {
     formation.grains = formation.grains.filter(grain =>
       dist(grain.x, grain.y, x, y) > radius
     );

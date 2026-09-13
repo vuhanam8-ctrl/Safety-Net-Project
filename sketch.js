@@ -863,6 +863,7 @@ let food;
 let smileySandFormations = [];
 
 let permanentTrailLayer;
+let orbitTrailLayer;
 let antiTrailLayer;
 let barrierLayer;
 let sensorLayer;
@@ -966,6 +967,7 @@ function draw() {
 function windowResized() {
   const oldTrails = {
     white: permanentTrailLayer,
+    orbit: orbitTrailLayer,
     anti: antiTrailLayer,
     barrier: barrierLayer
   };
@@ -1068,9 +1070,8 @@ function depositOrbitSand(ball) {
 }
 
 function updateAndDrawPurpleSand() {
-  if (food?.isAvailable) drawPurpleSandGrains(food.orbitSandGrains);
-
   for (const formation of smileySandFormations) {
+    if (!formation.activated) continue;
     updateSmileySandFormation(formation);
     drawPurpleSandGrains(formation.grains);
   }
@@ -1092,7 +1093,6 @@ function createSmileySandFormation(foodObject) {
 
   const faceRadius = constrain(min(width, height) * 0.115, 38, 60);
   const targets = createSmileyTargets(grains.length, foodObject, faceRadius);
-  const startedAt = millis();
 
   for (let i = 0; i < grains.length; i++) {
     const grain = grains[i];
@@ -1107,7 +1107,14 @@ function createSmileySandFormation(foodObject) {
     grain.duration = random(1900, 3300);
   }
 
-  smileySandFormations.push({ grains, startedAt });
+  smileySandFormations.push({
+    grains,
+    startedAt: null,
+    activated: false,
+    centerX: foodObject.x,
+    centerY: foodObject.y,
+    interactionRadius: foodObject.colonyRadius * 1.2
+  });
   foodObject.orbitSandGrains = [];
 }
 
@@ -1152,6 +1159,8 @@ function addSmileyEyeTargets(targets, count, centerX, centerY) {
 }
 
 function updateSmileySandFormation(formation) {
+  if (!formation.activated || formation.startedAt === null) return;
+
   const elapsed = millis() - formation.startedAt;
 
   for (const grain of formation.grains) {
@@ -1178,6 +1187,73 @@ function updateSmileySandFormation(formation) {
       grain.y -= nudge * 0.45;
     }
   }
+}
+
+function mouseMoved() {
+  activateSmileySandUnderCursor();
+}
+
+function mouseDragged() {
+  activateSmileySandUnderCursor();
+}
+
+function activateSmileySandUnderCursor() {
+  if (
+    mouseX < 0 || mouseX >= width ||
+    mouseY < 0 || mouseY >= height ||
+    !cursorTouchesOrbitTrail(mouseX, mouseY)
+  ) {
+    return;
+  }
+
+  const candidates = smileySandFormations
+    .filter(formation =>
+      !formation.activated &&
+      dist(mouseX, mouseY, formation.centerX, formation.centerY) <=
+        formation.interactionRadius
+    )
+    .sort((first, second) =>
+      dist(mouseX, mouseY, first.centerX, first.centerY) -
+      dist(mouseX, mouseY, second.centerX, second.centerY)
+    );
+
+  if (candidates.length === 0) return;
+  activateSmileySandFormation(candidates[0]);
+}
+
+function cursorTouchesOrbitTrail(x, y) {
+  const sampleRadius = 6;
+
+  for (let offsetY = -sampleRadius; offsetY <= sampleRadius; offsetY += 2) {
+    for (let offsetX = -sampleRadius; offsetX <= sampleRadius; offsetX += 2) {
+      const sampleX = constrain(floor(x + offsetX), 0, width - 1);
+      const sampleY = constrain(floor(y + offsetY), 0, height - 1);
+
+      if (orbitTrailLayer.get(sampleX, sampleY)[3] > 8) return true;
+    }
+  }
+
+  return false;
+}
+
+function activateSmileySandFormation(formation) {
+  formation.activated = true;
+  formation.startedAt = millis();
+
+  eraseLayerArea(
+    orbitTrailLayer,
+    formation.centerX,
+    formation.centerY,
+    formation.interactionRadius * 2
+  );
+}
+
+function eraseLayerArea(layer, x, y, diameter) {
+  layer.erase();
+  layer.noStroke();
+  layer.fill(255);
+  layer.circle(x, y, diameter);
+  layer.noErase();
 }
 
 function drawBall(ball) {
@@ -1257,6 +1333,7 @@ function getBallSize(ball) {
 
 function createDrawingLayers() {
   permanentTrailLayer = createPermanentTrailLayer();
+  orbitTrailLayer = createPermanentTrailLayer();
   antiTrailLayer = createPermanentTrailLayer();
   barrierLayer = createPermanentTrailLayer();
   sensorLayer = createSensorLayer();
@@ -1284,6 +1361,7 @@ function createSensorLayer() {
 function drawBackground() {
   background(0);
   image(permanentTrailLayer, 0, 0);
+  image(orbitTrailLayer, 0, 0);
   image(antiTrailLayer, 0, 0);
   image(barrierLayer, 0, 0);
 }
@@ -1311,9 +1389,8 @@ function fadeSensorLayer(layer) {
 function depositBallTrail(ball) {
   if (ball.team === "white" && ball.hasReachedFood) {
     depositOrbitSand(ball);
-  } else {
-    depositPermanentTrail(ball);
   }
+  depositPermanentTrail(ball);
   depositChemicalTrail(ball);
   depositWhiteBarrier(ball);
 }
@@ -1324,7 +1401,9 @@ function depositPermanentTrail(ball) {
   const trailColor = getTrailColor(ball);
   const trailSize = getTrailSize(ball);
 
-  const layer = ball.team === "anti" ? antiTrailLayer : permanentTrailLayer;
+  const layer = ball.hasReachedFood
+    ? orbitTrailLayer
+    : permanentTrailLayer;
   layer.noStroke();
   layer.fill(...trailColor);
 
@@ -1431,6 +1510,9 @@ function recreateDrawingLayers(oldTrails) {
     0
   );
 
+  orbitTrailLayer = createPermanentTrailLayer();
+  orbitTrailLayer.image(oldTrails.orbit, 0, 0);
+
   antiTrailLayer = createPermanentTrailLayer();
   antiTrailLayer.image(oldTrails.anti, 0, 0);
 
@@ -1520,6 +1602,7 @@ function eraseTrailsAroundFood(foodObject) {
   const diameter = eraserRadius * 2;
 
   eraseLayerCircle(permanentTrailLayer, foodObject, diameter);
+  eraseLayerCircle(orbitTrailLayer, foodObject, diameter);
   eraseLayerCircle(antiTrailLayer, foodObject, diameter);
   eraseLayerCircle(barrierLayer, foodObject, diameter);
   eraseSensorCircle(sensorLayer, foodObject, diameter);

@@ -660,6 +660,7 @@
       noButtonErrorSound.volume = 0.22;
       computerNotificationSound.volume = 0.5;
       computerGlitchSound.volume = 0.4;
+      computerGlitchSound.loop = true;
       ambientPianoSound.volume = 0.4;
 
       let glitchAdvertisementArmed = false;
@@ -693,6 +694,10 @@
         ambientPianoSound.currentTime = 0;
         computerGlitchSound.currentTime = 0;
         computerGlitchSound.play().catch(function () {});
+      });
+      window.addEventListener("amigos-final-glitch-finished", function () {
+        computerGlitchSound.pause();
+        computerGlitchSound.currentTime = 0;
       });
 
       const advertisements = [
@@ -809,6 +814,6 @@
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
     <script src="sketch.js?v=black-hole-flatline-39"></script>
-    <script src="degradation.js?v=final-glitch-audio-11"></script>
+    <script src="degradation.js?v=synchronized-glitch-audio-12"></script>
   </body>
 </html>

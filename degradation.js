@@ -159,6 +159,7 @@
     document.body.classList.add("final-text-takeover");
     document.body.style.overflow = "hidden";
     showFinalMessageWindow();
+    window.dispatchEvent(new CustomEvent("amigos-final-glitch-finished"));
   }
 
   function beginFinalGlitch() {

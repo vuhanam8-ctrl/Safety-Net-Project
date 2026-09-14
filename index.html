@@ -660,7 +660,7 @@
 
       window.addEventListener("amigos-glitch-armed", function () {
         glitchAdvertisementArmed = true;
-        showGlitchQuestion();
+        showGlitchQuestion(true);
       });
 
       window.addEventListener("amigos-final-lock-click", playComputerError);
@@ -720,7 +720,7 @@
         noButtonErrorSound.play().catch(function () {});
       }
 
-      function showGlitchQuestion() {
+      function showGlitchQuestion(playAppearanceSound) {
         if (!glitchAdvertisementArmed) return;
 
         const questionWindow = document.createElement("section");
@@ -751,12 +751,14 @@
           }
 
           playQuietComputerError();
-          showGlitchQuestion();
+          showGlitchQuestion(false);
         });
 
         document.body.appendChild(questionWindow);
-        computerNotificationSound.currentTime = 0;
-        computerNotificationSound.play().catch(function () {});
+        if (playAppearanceSound) {
+          computerNotificationSound.currentTime = 0;
+          computerNotificationSound.play().catch(function () {});
+        }
       }
 
       function requestGlitchFromAdvertisement() {

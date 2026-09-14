@@ -225,6 +225,11 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .final-message-body { display: flex; min-height: 125px; align-items: center; gap: 18px; padding: 24px; }
 .final-message-symbol { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: #5520ae; color: #fff; font: bold 30px Georgia,serif; }
 .final-message-body strong { color: #24105e; font-size: 18px; }
+.glitch-question-window { z-index: 3000; transform: translate(calc(-50% + var(--question-offset-x, 0px)),calc(-50% + var(--question-offset-y, 0px))); }
+.glitch-question-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 0 24px 20px; }
+.glitch-question-actions button { min-width: 78px; padding: 5px 16px; border: 2px outset #ddd; background: #eee; color: #111; cursor: pointer; font: bold 14px Tahoma,Arial,sans-serif; }
+.glitch-question-actions button:active { border-style: inset; }
+@media (max-width: 640px) { .glitch-question-window { transform: translate(-50%,-50%); } }
 .final-text-takeover { filter: contrast(1.04); }
 .final-text-takeover .banner { animation-play-state: paused; }
 .final-text-takeover .topbar,

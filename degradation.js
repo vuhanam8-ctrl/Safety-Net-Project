@@ -107,8 +107,7 @@
   function replacePageWords() {
     const roots = [
       document.querySelector(".topbar"),
-      document.querySelector(".amigos-page"),
-      document.querySelector(".message-notification")
+      document.querySelector(".amigos-page")
     ].filter(Boolean);
 
     for (const root of roots) {

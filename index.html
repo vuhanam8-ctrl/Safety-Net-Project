@@ -643,12 +643,16 @@
       const computerErrorSound = new Audio(
         "assets/audio/COMM2754-2026-S2-A2w10-ComputerError-EditedSound.wav"
       );
+      const noButtonErrorSound = new Audio(
+        "assets/audio/COMM2754-2026-S2-A2w10-ComputerError-EditedSound.wav"
+      );
       const computerNotificationSound = new Audio(
         "assets/audio/COMM2754-2026-S2-A2w10-ComputerNotification-EditedSound.wav"
       );
 
       computerClickSound.volume = 0.5;
       computerErrorSound.volume = 0.5;
+      noButtonErrorSound.volume = 0.22;
       computerNotificationSound.volume = 0.5;
 
       let glitchAdvertisementArmed = false;
@@ -711,6 +715,11 @@
         computerErrorSound.play().catch(function () {});
       }
 
+      function playQuietComputerError() {
+        noButtonErrorSound.currentTime = 0;
+        noButtonErrorSound.play().catch(function () {});
+      }
+
       function showGlitchQuestion() {
         if (!glitchAdvertisementArmed) return;
 
@@ -731,9 +740,9 @@
         questionWindow.addEventListener("click", function (event) {
           const answerButton = event.target.closest("[data-answer]");
           if (!answerButton) return;
-          playComputerClick();
 
           if (answerButton.dataset.answer === "yes") {
+            playComputerClick();
             document.querySelectorAll(".glitch-question-window").forEach(function (windowElement) {
               windowElement.remove();
             });
@@ -741,6 +750,7 @@
             return;
           }
 
+          playQuietComputerError();
           showGlitchQuestion();
         });
 

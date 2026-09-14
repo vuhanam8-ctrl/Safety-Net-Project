@@ -912,12 +912,12 @@ const PHONE_TONE_GAP = 2500;
 
 function preload() {
   antiTokenSprites = ANTI_TOKEN_STYLES.map(style => loadImage(
-    `assets/images/anti-token-${style.name}.png`,
+    `assets/images/COMM2754-2026-S2-A3w12-ANTITOKEN${style.name.toUpperCase()}-FinishedSet.png`,
     imageAsset => removeNearWhiteBackground(imageAsset)
   ));
 
   sandPortraitImage = loadImage(
-    "assets/images/sand-portrait-source.png",
+    "assets/images/COMM2754-2026-S2-A3w12-SANDPORTRAITSOURCE-FinishedSet.png",
     imageAsset => preparePortraitTargetPixels(imageAsset)
   );
 

@@ -164,6 +164,7 @@
   function beginFinalGlitch() {
     if (finalGlitchHasStarted) return;
     finalGlitchHasStarted = true;
+    window.dispatchEvent(new CustomEvent("amigos-final-glitch-started"));
     document.body.classList.add("page-glitching");
     window.setTimeout(finishTakeover, finalGlitchDuration);
   }

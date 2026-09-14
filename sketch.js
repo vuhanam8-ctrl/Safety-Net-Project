@@ -873,6 +873,7 @@ let foodSequenceCount = 0;
 let heartbeatSound;
 let monitorBeepSound;
 let phoneToneSound;
+let flatlineSound;
 let heartbeatAmplitude;
 let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
@@ -931,6 +932,10 @@ function preload() {
 
   phoneToneSound = loadSound(
     "assets/audio/COMM2754-2026-S2-A2w10-PhoneTone-EditedSound.wav"
+  );
+
+  flatlineSound = loadSound(
+    "assets/audio/COMM2754-2026-S2-A3w12-HeartFlatline-EditedSound.wav"
   );
 }
 
@@ -1053,6 +1058,7 @@ function draw() {
   updateFoodRespawn();
   updateFood();
   updateAndDrawPurpleSand();
+  syncFlatlineSound();
   syncHeartbeatSound();
   updatePhoneTone();
   updateBalls();
@@ -1879,7 +1885,26 @@ function startHeartbeatAudio() {
   heartbeatSound.setVolume(0.6);
   monitorBeepSound.setVolume(0.18);
   phoneToneSound.setVolume(0.3);
+  flatlineSound.setVolume(0.4);
   syncHeartbeatSound();
+}
+
+function syncFlatlineSound() {
+  if (!flatlineSound?.isLoaded()) return;
+
+  const shouldPlay =
+    canvasSoundEnabled &&
+    heartbeatAudioEnabled &&
+    food?.isAvailable &&
+    food.isBlackHole &&
+    food.isErasing;
+
+  if (shouldPlay) {
+    if (!flatlineSound.isPlaying()) flatlineSound.loop(0, 1, 0.4);
+    return;
+  }
+
+  if (flatlineSound.isPlaying()) flatlineSound.stop();
 }
 
 function syncHeartbeatSound() {
@@ -1963,6 +1988,7 @@ function stopCanvasSounds() {
   if (heartbeatSound?.isPlaying()) heartbeatSound.stop();
   if (monitorBeepSound?.isPlaying()) monitorBeepSound.stop();
   if (phoneToneSound?.isPlaying()) phoneToneSound.stop();
+  if (flatlineSound?.isPlaying()) flatlineSound.stop();
 }
 
 function getSimulationDeltaTime() {

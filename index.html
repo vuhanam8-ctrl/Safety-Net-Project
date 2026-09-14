@@ -648,14 +648,24 @@
       const computerNotificationSound = new Audio(
         "assets/audio/COMM2754-2026-S2-A2w10-ComputerNotification-EditedSound.wav"
       );
+      const computerGlitchSound = new Audio(
+        "assets/audio/COMM2754-2026-S2-A3w12-ComputerGlitch-EditedSound.wav"
+      );
+      const ambientPianoSound = new Audio(
+        "assets/audio/COMM2754-2026-S2-A3w12-ComputerAmbientPiano-EditedSound.wav"
+      );
 
       computerClickSound.volume = 0.5;
       computerErrorSound.volume = 0.5;
       noButtonErrorSound.volume = 0.22;
       computerNotificationSound.volume = 0.5;
+      computerGlitchSound.volume = 0.4;
+      ambientPianoSound.volume = 0.4;
+      ambientPianoSound.loop = true;
 
       let glitchAdvertisementArmed = false;
       let glitchQuestionCount = 0;
+      let ambientPianoStoppedForGlitch = false;
 
       window.addEventListener("amigos-glitch-armed", function () {
         glitchAdvertisementArmed = true;
@@ -663,6 +673,13 @@
       });
 
       window.addEventListener("amigos-final-lock-click", playComputerError);
+      window.addEventListener("amigos-final-glitch-started", function () {
+        ambientPianoStoppedForGlitch = true;
+        ambientPianoSound.pause();
+        ambientPianoSound.currentTime = 0;
+        computerGlitchSound.currentTime = 0;
+        computerGlitchSound.play().catch(function () {});
+      });
 
       const advertisements = [
         {
@@ -764,10 +781,19 @@
         if (!glitchAdvertisementArmed) return;
         window.dispatchEvent(new CustomEvent("amigos-glitch-requested"));
       }
+
+      function startAmbientPiano() {
+        if (ambientPianoStoppedForGlitch) return;
+        ambientPianoSound.play().catch(function () {});
+      }
+
+      startAmbientPiano();
+      document.addEventListener("pointerdown", startAmbientPiano, { once: true });
+      document.addEventListener("keydown", startAmbientPiano, { once: true });
     </script>
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
-    <script src="sketch.js?v=pascal-case-image-assets-38"></script>
-    <script src="degradation.js?v=question-dialog-10"></script>
+    <script src="sketch.js?v=black-hole-flatline-39"></script>
+    <script src="degradation.js?v=final-glitch-audio-11"></script>
   </body>
 </html>

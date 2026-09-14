@@ -661,11 +661,21 @@
       computerNotificationSound.volume = 0.5;
       computerGlitchSound.volume = 0.4;
       ambientPianoSound.volume = 0.4;
-      ambientPianoSound.loop = true;
 
       let glitchAdvertisementArmed = false;
       let glitchQuestionCount = 0;
       let ambientPianoStoppedForGlitch = false;
+      let ambientPianoRestartTimer = null;
+      const ambientPianoLoopGap = 2500;
+
+      ambientPianoSound.addEventListener("ended", function () {
+        if (ambientPianoStoppedForGlitch) return;
+        ambientPianoRestartTimer = window.setTimeout(function () {
+          ambientPianoRestartTimer = null;
+          ambientPianoSound.currentTime = 0;
+          startAmbientPiano();
+        }, ambientPianoLoopGap);
+      });
 
       window.addEventListener("amigos-glitch-armed", function () {
         glitchAdvertisementArmed = true;
@@ -675,6 +685,10 @@
       window.addEventListener("amigos-final-lock-click", playComputerError);
       window.addEventListener("amigos-final-glitch-started", function () {
         ambientPianoStoppedForGlitch = true;
+        if (ambientPianoRestartTimer !== null) {
+          window.clearTimeout(ambientPianoRestartTimer);
+          ambientPianoRestartTimer = null;
+        }
         ambientPianoSound.pause();
         ambientPianoSound.currentTime = 0;
         computerGlitchSound.currentTime = 0;
@@ -784,6 +798,7 @@
 
       function startAmbientPiano() {
         if (ambientPianoStoppedForGlitch) return;
+        if (!ambientPianoSound.paused) return;
         ambientPianoSound.play().catch(function () {});
       }
 

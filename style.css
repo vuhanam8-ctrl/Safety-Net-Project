@@ -227,7 +227,8 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .final-yes-actions .missing-no-space { display: block; width: 78px; height: 1px; }
 @media (max-width: 640px) { .glitch-question-window { transform: translate(-50%,-50%); } }
 .final-text-takeover { filter: contrast(1.04); }
-.final-text-takeover .banner { animation-play-state: paused; }
+.final-text-takeover .banner,
+.final-text-takeover .shell-advertisement-list .advertisement { animation-play-state: paused; }
 .final-text-takeover .topbar,
 .final-text-takeover .topbar-inner { overflow: hidden; }
 .project-info-modal { position: fixed; inset: 0; z-index: 10020; display: grid; place-items: center; padding: 14px; background: rgba(16,10,24,.82); }

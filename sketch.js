@@ -1933,7 +1933,10 @@ function syncHeartbeatSound() {
 
   heartbeatSound.play(0, 1, 0.6);
   monitorBeepSound.play(0, 1, 0.18);
-  nextHeartbeatTime = millis() + getHeartbeatSpacing();
+  const heartbeatPlaybackDuration =
+    Math.max(heartbeatSound.duration(), monitorBeepSound.duration()) * 1000;
+  nextHeartbeatTime =
+    millis() + heartbeatPlaybackDuration + getHeartbeatSpacing();
 }
 
 function getHeartbeatSpacing() {

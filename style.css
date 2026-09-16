@@ -95,7 +95,6 @@ body {
 .bbc-news-placeholder button,
 .shell-ad,
 .shell-widget,
-.shell-comments,
 .shell-quote,
 .shell-advertisement-list {
   font-family: "Arial Narrow", "Liberation Sans Narrow", Arial, sans-serif;
@@ -107,9 +106,6 @@ body {
 .shell-ad button { width: 100%; padding: 6px; border: 0; background: #67449e; color: white; font-weight: bold; }
 .fake-window { height: 85px; margin-bottom: 8px; border: 2px solid #e7c35a; background: white; }
 .fake-window span { display: block; height: 10px; margin: 8px; background: #f3e1a4; }
-.shell-comments { min-height: 230px; }
-.shell-comments h2 { margin: 0; font-size: 20px; }
-.shell-comments p { font-size: 12px; font-weight: bold; line-height: 1.2; }
 .shell-widget { min-height: 150px; font-size: 11px; }
 .shell-widget h4 { margin-top: 14px; font-size: 12px; line-height: 1.3; }
 .shell-news-nav { display: flex; flex-direction: column; width: 100%; text-align: right; }
@@ -133,7 +129,7 @@ body {
 .shell-games div { display:flex; gap:5px; margin-bottom:10px; }
 .shell-games i { width:47px; height:47px; flex-shrink:0; display:grid; place-items:center; border:1px solid #9bb7c2; background:#eef5f6; font-size:11px; font-style:normal; font-weight:bold; }
 .shell-advertisement-list { display: flex; flex-direction: column; gap: 6px; }
-.shell-advertisement-list .advertisement { width: 100%; margin: 0; padding: 0; border: 0; background: transparent; overflow: hidden; cursor: pointer; }
+.shell-advertisement-list .advertisement { width: 100%; margin: 0; padding: 0; border: 2px solid transparent; border-image: linear-gradient(135deg,#ff304f,#ffcf30,#35e86f,#31baff,#8d4dff,#ff4fc8) 1; background: transparent; box-sizing: border-box; overflow: hidden; cursor: pointer; }
 .shell-advertisement-list .advertisement img { display: block; width: 100%; height: auto; border: 0; }
 .amigos-footer { margin-top: 6px; padding: 14px 42px; border: 2px solid #f8f9f1; background: var(--amigos-gradient); color: white; font-weight: bold; text-align: center; text-shadow: 1px 1px var(--amigos-purple); }
 .amigos-footer p { margin: 3px 0; }

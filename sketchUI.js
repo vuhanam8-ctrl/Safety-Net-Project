@@ -51,10 +51,10 @@ const scrollingAdInstance = new p5(scrollingAdSketch);
 
 const backgroundSketch = (p) => {
   const colors = [
-    [105, 0, 125],
-    [25, 0, 85],
-    [50, 0, 105],
-    [135, 0, 170]
+    [55, 0, 192],
+    [157, 0, 255],
+    [255, 0, 255],
+    [255, 0, 128]
   ];
   const lowResolutionWidth = 400;
   const orbs = [

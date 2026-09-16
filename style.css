@@ -42,7 +42,7 @@ body {
 
 #bg-canvas-container canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
 
-.topbar { height: 6vh; max-height: 40px; background: var(--amigos-gradient); color: white; }
+.topbar { height: 82px; background: var(--amigos-gradient); color: white; }
 .topbar-inner { width: calc(100% - 32px); height: 100%; margin: auto; display: flex; align-items: center; gap: 22px; }
 .topbar strong { font-family: Georgia, serif; font-size: 18px; }
 .topbar nav { display: flex; height: 100%; }
@@ -79,7 +79,7 @@ body {
 }
 .banner canvas { display: block; width: 100% !important; height: 100% !important; }
 
-.amigos-layout { display: grid; grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px); gap: 6px; align-items: start; background-color: #af9bcf; border: 6px solid #af9bcf; box-sizing: border-box; }
+.amigos-layout { display: grid; grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px); gap: 6px; align-items: start; }
 .amigos-left-column, .amigos-centre-column, .amigos-right-column { min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .amigos-centre-column { padding: 0 6px; }
 
@@ -289,7 +289,7 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
   .amigos-page { width: calc(100% - 16px); }
   .amigos-layout { grid-template-columns: 1fr; }
   .amigos-centre-column { grid-row: 1; padding: 0; }
-  .amigos-left-column, .amigos-right-column { display: grid; grid-template-columns: 1fr; gap: 5px; border: 3px solid #af9bcf; box-sizing: border-box; }
+  .amigos-left-column, .amigos-right-column { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
 }
 
 .project-header {

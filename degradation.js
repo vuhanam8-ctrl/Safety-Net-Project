@@ -5,6 +5,8 @@
   const minimumDegradationInterval = 450;
   const degradationAcceleration = 0.82;
   const finalGlitchDuration = 2200;
+  const glitchPopupInterval = 105;
+  const glitchPopupLimit = 18;
 
   const mutations = [
     [".bbc-placeholder-latest", "LATEST: Public patience wears thin as substance-use cases return"],
@@ -81,6 +83,8 @@
   let degradationHasFinished = false;
   let glitchAdvertisementHasBeenArmed = false;
   let finalGlitchHasStarted = false;
+  let glitchPopupTimer = null;
+  let glitchPopupCount = 0;
 
   function tryArmGlitchAdvertisement() {
     if (glitchAdvertisementHasBeenArmed) return;
@@ -152,6 +156,10 @@
   }
 
   function finishTakeover() {
+    if (glitchPopupTimer !== null) {
+      window.clearInterval(glitchPopupTimer);
+      glitchPopupTimer = null;
+    }
     if (typeof window.noLoop === "function") window.noLoop();
     if (typeof window.freezeAmigosAmbient === "function") window.freezeAmigosAmbient();
     replacePageWords();
@@ -162,11 +170,47 @@
     window.dispatchEvent(new CustomEvent("amigos-final-glitch-finished"));
   }
 
+  function addGlitchPopup() {
+    if (glitchPopupCount >= glitchPopupLimit) return;
+
+    const popup = document.createElement("section");
+    const width = Math.min(360, Math.max(240, window.innerWidth * 0.3));
+    const maxLeft = Math.max(8, window.innerWidth - width - 8);
+    const maxTop = Math.max(8, window.innerHeight - 142);
+    const left = 8 + Math.random() * Math.max(0, maxLeft - 8);
+    const top = 8 + Math.random() * Math.max(0, maxTop - 8);
+
+    popup.className = "glitch-scatter-popup";
+    popup.setAttribute("aria-hidden", "true");
+    popup.style.width = width + "px";
+    popup.style.left = left + "px";
+    popup.style.top = top + "px";
+    popup.style.setProperty("--popup-tilt", (Math.random() * 3 - 1.5).toFixed(2) + "deg");
+    popup.innerHTML =
+      '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
+      '<div class="glitch-scatter-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';
+
+    document.body.appendChild(popup);
+    glitchPopupCount++;
+  }
+
+  function beginPopupScatter() {
+    addGlitchPopup();
+    glitchPopupTimer = window.setInterval(function () {
+      addGlitchPopup();
+      if (glitchPopupCount >= glitchPopupLimit) {
+        window.clearInterval(glitchPopupTimer);
+        glitchPopupTimer = null;
+      }
+    }, glitchPopupInterval);
+  }
+
   function beginFinalGlitch() {
     if (finalGlitchHasStarted) return;
     finalGlitchHasStarted = true;
     window.dispatchEvent(new CustomEvent("amigos-final-glitch-started"));
     document.body.classList.add("page-glitching");
+    beginPopupScatter();
     window.setTimeout(finishTakeover, finalGlitchDuration);
   }
 

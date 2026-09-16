@@ -923,15 +923,15 @@ function preload() {
   );
 
   heartbeatSound = loadSound(
-    "assets/audio/COMM2754-2026-S2-A2w10-HeartBeat-EditedSound.wav"
+    "assets/audio/COMM2754-2026-S2-A2w08-HeartBeat-EditedSound.wav"
   );
 
   monitorBeepSound = loadSound(
-    "assets/audio/COMM2754-2026-S2-A2w10-HeartMonitor-EditedSound.wav"
+    "assets/audio/COMM2754-2026-S2-A2w08-HeartMonitor-EditedSound.wav"
   );
 
   phoneToneSound = loadSound(
-    "assets/audio/COMM2754-2026-S2-A2w10-PhoneTone-EditedSound.wav"
+    "assets/audio/COMM2754-2026-S2-A2w08-PhoneTone-EditedSound.wav"
   );
 
   flatlineSound = loadSound(

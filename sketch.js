@@ -871,7 +871,6 @@ let antiSensorLayer;
 let foodRespawnTimer = 0;
 let foodSequenceCount = 0;
 let heartbeatSound;
-let monitorBeepSound;
 let phoneToneSound;
 let flatlineSound;
 let flatlinePlayedForCurrentBlackHole = false;
@@ -924,11 +923,7 @@ function preload() {
   );
 
   heartbeatSound = loadSound(
-    "assets/audio/COMM2754-2026-S2-A2w08-HeartBeat-EditedSound.wav"
-  );
-
-  monitorBeepSound = loadSound(
-    "assets/audio/COMM2754-2026-S2-A2w08-HeartMonitor-EditedSound.wav"
+    "assets/audio/COMM2754-2026-S2-A3w12-HeartbeatMonitorSync-EditedSound.wav"
   );
 
   phoneToneSound = loadSound(
@@ -1884,7 +1879,6 @@ function startHeartbeatAudio() {
   heartbeatAudioEnabled = true;
   userStartAudio();
   heartbeatSound.setVolume(0.6);
-  monitorBeepSound.setVolume(0.18);
   phoneToneSound.setVolume(0.3);
   flatlineSound.setVolume(0.4);
   syncHeartbeatSound();
@@ -1918,25 +1912,19 @@ function syncFlatlineSound() {
 function syncHeartbeatSound() {
   if (!canvasSoundEnabled) return;
   if (!heartbeatAudioEnabled) return;
-  if (!heartbeatSound.isLoaded() || !monitorBeepSound.isLoaded()) return;
+  if (!heartbeatSound.isLoaded()) return;
 
   const shouldPlay = food?.isAvailable && !food.isErasing;
 
   if (!shouldPlay) {
     if (heartbeatSound.isPlaying()) heartbeatSound.stop();
-    if (monitorBeepSound.isPlaying()) monitorBeepSound.stop();
     nextHeartbeatTime = 0;
     return;
   }
 
-  if (
-    heartbeatSound.isPlaying() ||
-    monitorBeepSound.isPlaying() ||
-    millis() < nextHeartbeatTime
-  ) return;
+  if (heartbeatSound.isPlaying() || millis() < nextHeartbeatTime) return;
 
   heartbeatSound.play(0, 1, 0.6);
-  monitorBeepSound.play(0, 1, 0.18);
   nextHeartbeatTime = millis() + getHeartbeatSpacing();
 }
 
@@ -1998,7 +1986,6 @@ function resizeCanvasToDisplayMode() {
 
 function stopCanvasSounds() {
   if (heartbeatSound?.isPlaying()) heartbeatSound.stop();
-  if (monitorBeepSound?.isPlaying()) monitorBeepSound.stop();
   if (phoneToneSound?.isPlaying()) phoneToneSound.stop();
   if (flatlineSound?.isPlaying()) flatlineSound.stop();
 }

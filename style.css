@@ -243,7 +243,9 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .project-info-content p { margin: 0 0 16px; color: #ddd; }
 .project-support-box { margin-top: 24px; padding: 15px; border-left: 4px solid #7a33df; background: #1b1b1b; }
 .project-support-box h3 { color: #fff; text-transform: uppercase; }
-.project-support-box a { display: block; margin: 7px 0; color: #d7c2ff; font-weight: bold; }
+.project-support-box ul { margin: 8px 0 0; padding-left: 38px; color: #ddd; }
+.project-support-box li { margin: 6px 0; padding-left: 3px; }
+.project-about-us { margin-top: 24px !important; padding-top: 16px; border-top: 1px solid #555; }
 @media (max-width: 640px) { .project-info-content { padding: 16px; } .project-info-content h2 { font-size: 23px; } }
 .news-canvas-pocket { width: 100%; aspect-ratio: 4 / 3; margin: 0; border: 0; }
 .bbc-secondary-stories { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 16px; border-bottom: 1px solid #aaa; }

@@ -2006,6 +2006,14 @@ function stopCanvasSounds() {
   if (flatlineSound?.isPlaying()) flatlineSound.stop();
 }
 
+window.addEventListener("amigos-stop-non-glitch-audio", function () {
+  canvasSoundEnabled = false;
+  heartbeatAudioEnabled = false;
+  stopCanvasSounds();
+  const soundButton = document.getElementById("canvas-sound-button");
+  if (soundButton) soundButton.textContent = "Sound: Off";
+});
+
 function getSimulationDeltaTime() {
   return ignoreNextDeltaTime ? 0 : deltaTime;
 }

@@ -24,7 +24,7 @@
     [".bbc-mini-story:nth-child(1)", "Health agencies review response to emerging synthetic substances", "Specialists seek quicker warnings and coordinated medical guidance as risks change.", "Officials blame users as synthetic substances spread", "Institutional gaps receive less attention as coverage centres personal responsibility."],
     [".bbc-mini-story:nth-child(2)", "Community clinics warn waiting lists are growing", "Treatment providers say sustained funding is needed to keep voluntary services accessible.", "Repeat patients blamed for treatment backlog", "Long waits are presented as the fault of people returning for care rather than a shortage of services."],
     [".bbc-mini-story:nth-child(3)", "Recovery mentor kept weekly contact with Detroit performer", "The music legend offered private guidance grounded in his own experience of rehabilitation.", "Private calls between stars fuel fresh gossip", "Recovery support becomes celebrity intrigue while its value to the entertainer is pushed aside."],
-    [".bbc-mini-story:nth-child(4)", "“The Rocket Man” marks another year of sobriety", "The performer recalls that accepting help began a lasting change in his health and relationships.", "“The Rocket Man” held up as proof relapse is a choice", "One person's recovery is used to condemn others whose circumstances and treatment needs differ."],
+    [".bbc-mini-story:nth-child(4)", "Music legend marks another year of sobriety", "The performer recalls that accepting help began a lasting change in his health and relationships.", "Recovered star held up as proof relapse is a choice", "One person's recovery is used to condemn others whose circumstances and treatment needs differ."],
     [".bbc-mini-story:nth-child(5)", "Schools expand lessons on overdose warning signs", "Educators want young people to recognise contamination risks and know when to seek emergency care.", "Teenagers faulted for failing to recognise fentanyl", "Reports stress youthful carelessness while overlooking inconsistent access to harm-reduction information."],
     [".bbc-mini-story:nth-child(6)", "Parents seek guidance after loved ones return from treatment", "Families ask for affordable local services that can support recovery beyond a clinic stay.", "Families accused of prolonging dependency", "Relatives become the target as gaps in continuing community care vanish from the story."],
     [".bbc-mini-story:nth-child(7)", "Press gathers as entertainer leaves private clinic", "Supporters ask photographers to respect his health and privacy during early recovery.", "Camera crews hunt first image after rapper's collapse", "The entertainer's treatment is reduced to a race for scandal and a profitable photograph."],
@@ -48,7 +48,7 @@
 
   function getDefaultCorruptedHeading(selector) {
     const defaults = {
-      ".bbc-secondary-stories article:nth-child(1)": "“The Slim Shady” crisis blamed on reckless lifestyle",
+      ".bbc-secondary-stories article:nth-child(1)": "Controversial MC's crisis blamed on reckless lifestyle",
       ".bbc-secondary-stories article:nth-child(2)": "Piano icon says discipline separates survivors from failures",
       ".bbc-mini-story:nth-child(1)": "Drug users blamed as emergency rules tighten",
       ".bbc-mini-story:nth-child(2)": "Treatment funding called a waste on repeat cases",

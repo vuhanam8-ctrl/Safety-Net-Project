@@ -129,7 +129,7 @@ body {
 .shell-games div { display:flex; gap:5px; margin-bottom:10px; }
 .shell-games i { width:47px; height:47px; flex-shrink:0; display:grid; place-items:center; border:1px solid #9bb7c2; background:#eef5f6; font-size:11px; font-style:normal; font-weight:bold; }
 .shell-advertisement-list { display: flex; flex-direction: column; gap: 6px; }
-.shell-advertisement-list .advertisement { width: 100%; margin: 0; padding: 0; border: 2px solid transparent; border-image: linear-gradient(135deg,#ff304f,#ffcf30,#35e86f,#31baff,#8d4dff,#ff4fc8) 1; background: transparent; box-sizing: border-box; overflow: hidden; cursor: pointer; }
+.shell-advertisement-list .advertisement { width: 100%; margin: 0; padding: 0; border: 4px solid transparent; border-image: linear-gradient(135deg,#ff304f,#ffcf30,#35e86f,#31baff,#8d4dff,#ff4fc8) 1; background: transparent; box-sizing: border-box; overflow: hidden; cursor: pointer; }
 .shell-advertisement-list .advertisement img { display: block; width: 100%; height: auto; border: 0; }
 .amigos-footer { margin-top: 6px; padding: 14px 42px; border: 2px solid #f8f9f1; background: var(--amigos-gradient); color: white; font-weight: bold; text-align: center; text-shadow: 1px 1px var(--amigos-purple); }
 .amigos-footer p { margin: 3px 0; }

@@ -6,7 +6,7 @@
 
     <title>Safety Net News | Amigos 4.0</title>
 
-    <link rel="stylesheet" type="text/css" href="style.css?v=rainbow-ad-borders-31">
+    <link rel="stylesheet" type="text/css" href="style.css?v=thick-rainbow-ad-borders-32">
 
     <style>
       .search-page {
@@ -516,7 +516,7 @@
 
                 <div class="bbc-secondary-stories">
                   <article class="bbc-placeholder-story">
-                    <div><h2>“The Slim Shady” seeks help after near-fatal overdose</h2><p>The entertainer has begun a recovery programme following a December hospital emergency involving prescription drugs.</p></div>
+                    <div><h2>Controversial MC seeks help after near-fatal overdose</h2><p>The entertainer has begun a recovery programme following a December hospital emergency involving prescription drugs.</p></div>
                   </article>
                   <article class="bbc-placeholder-story">
                     <div><h2>The piano icon opens up about his drug issues</h2><p>The celebrated performer entered rehabilitation in July 1990 and has since spoken about the importance of asking for help.</p></div>
@@ -800,6 +800,23 @@
         noButtonErrorSound.play().catch(function () {});
       }
 
+      function stopNonGlitchAudioImmediately() {
+        ambientPianoStoppedForGlitch = true;
+        if (ambientPianoRestartTimer !== null) {
+          window.clearTimeout(ambientPianoRestartTimer);
+          ambientPianoRestartTimer = null;
+        }
+        if (ambientPianoFadeTimer !== null) {
+          window.clearInterval(ambientPianoFadeTimer);
+          ambientPianoFadeTimer = null;
+        }
+        [ambientPianoSound, computerClickSound, computerErrorSound, noButtonErrorSound, computerNotificationSound].forEach(function (sound) {
+          sound.pause();
+          sound.currentTime = 0;
+        });
+        window.dispatchEvent(new CustomEvent("amigos-stop-non-glitch-audio"));
+      }
+
       function showGlitchQuestion(playAppearanceSound) {
         if (!glitchAdvertisementArmed) return;
 
@@ -822,7 +839,7 @@
           if (!answerButton) return;
 
           if (answerButton.dataset.answer === "yes") {
-            playComputerClick();
+            stopNonGlitchAudioImmediately();
             document.querySelectorAll(".glitch-question-window").forEach(function (windowElement) {
               windowElement.remove();
             });
@@ -882,7 +899,7 @@
     </script>
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
-    <script src="sketch.js?v=separate-synchronized-heartbeat-44"></script>
-    <script src="degradation.js?v=final-yes-board-19"></script>
+    <script src="sketch.js?v=glitch-audio-cutoff-45"></script>
+    <script src="degradation.js?v=generic-celebrity-copy-20"></script>
   </body>
 </html>

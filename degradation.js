@@ -160,6 +160,9 @@
       window.clearInterval(glitchPopupTimer);
       glitchPopupTimer = null;
     }
+    document.querySelectorAll(".glitch-scatter-popup").forEach(function (popup) {
+      popup.remove();
+    });
     if (typeof window.noLoop === "function") window.noLoop();
     if (typeof window.freezeAmigosAmbient === "function") window.freezeAmigosAmbient();
     replacePageWords();
@@ -185,7 +188,6 @@
     popup.style.width = width + "px";
     popup.style.left = left + "px";
     popup.style.top = top + "px";
-    popup.style.setProperty("--popup-tilt", (Math.random() * 3 - 1.5).toFixed(2) + "deg");
     popup.innerHTML =
       '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
       '<div class="glitch-scatter-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';

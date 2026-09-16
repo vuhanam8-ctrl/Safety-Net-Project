@@ -469,6 +469,8 @@ class Food {
     this.reproductionRate = 2;
     this.fullSince = null;
     this.reproductionDelay = 10000;
+    this.partialOrbitSince = null;
+    this.partialOrbitDisperseDelay = 13000;
     this.antiFullSince = null;
     this.antiCollapseDelay = 10000;
 
@@ -539,6 +541,9 @@ class Food {
         this.reachedBallCount + 1,
         this.requiredBallCount
       );
+      if (this.partialOrbitSince === null) {
+        this.partialOrbitSince = millis();
+      }
     }
 
     if (phoneToneSound?.isPlaying()) phoneToneSound.stop();
@@ -586,6 +591,11 @@ class Food {
       return;
     }
 
+    if (this.isReadyForPartialDisperse()) {
+      this.consume();
+      return;
+    }
+
     if (this.isReadyForAntiCollapse()) {
       this.consumeByAntiColony();
     }
@@ -595,6 +605,14 @@ class Food {
     if (!this.isFull() || this.fullSince === null) return false;
 
     return millis() - this.fullSince >= this.reproductionDelay;
+  }
+
+  isReadyForPartialDisperse() {
+    if (this.controllingTeam !== "white") return false;
+    if (this.reachedBallCount <= 0 || this.isFull()) return false;
+    if (this.partialOrbitSince === null) return false;
+
+    return millis() - this.partialOrbitSince >= this.partialOrbitDisperseDelay;
   }
 
   isReadyForAntiCollapse() {

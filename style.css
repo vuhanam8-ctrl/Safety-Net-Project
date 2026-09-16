@@ -201,6 +201,12 @@ body {
 }
 
 body.page-glitching { cursor: wait; }
+body.page-glitching::before,
+body.page-glitching::after { content: ""; position: fixed; inset: 0; z-index: 9995; pointer-events: none; }
+body.page-glitching::before { background: repeating-linear-gradient(0deg,transparent 0 4px,rgba(92,0,180,.16) 5px 6px); animation: screen-tear 160ms steps(2,end) infinite; }
+body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: multiply; animation: screen-flash 110ms steps(2,end) infinite; }
+@keyframes screen-tear { 0% { clip-path: inset(0 0 72% 0); transform: translateX(-7px); } 35% { clip-path: inset(31% 0 42% 0); transform: translateX(9px); } 70% { clip-path: inset(68% 0 8% 0); transform: translateX(-4px); } 100% { clip-path: inset(8% 0 66% 0); transform: translateX(6px); } }
+@keyframes screen-flash { 0%,45% { opacity: .1; } 46%,70% { opacity: .75; } 71%,100% { opacity: .2; } }
 .glitch-scatter-popup { position: fixed; z-index: 9996; border: 3px solid #26008f; background: #f2f0e7; color: #111; box-shadow: 7px 8px 0 rgba(0,0,0,.3); transform: rotate(var(--popup-tilt, 0deg)); pointer-events: none; font: 13px Tahoma,Arial,sans-serif; animation: scatter-popup-in 90ms steps(2,end) both; }
 .glitch-scatter-popup .final-message-title { min-height: 26px; padding: 3px 5px 3px 8px; }
 .glitch-scatter-popup .final-message-title b { width: 18px; height: 18px; font-size: 14px; }
@@ -218,6 +224,7 @@ body.page-glitching { cursor: wait; }
 .final-message-symbol { display: grid; flex: 0 0 42px; width: 42px; height: 42px; place-items: center; border-radius: 50%; background: #5520ae; color: #fff; font: bold 30px Georgia,serif; }
 .final-message-body strong { color: #24105e; font-size: 18px; }
 .glitch-question-window { z-index: 3000; transform: translate(calc(-50% + var(--question-offset-x, 0px)),calc(-50% + var(--question-offset-y, 0px))); }
+.glitch-question-window .final-message-body { padding-top: 30px; }
 .glitch-question-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 0 24px 20px; }
 .glitch-question-actions button { min-width: 78px; padding: 5px 16px; border: 2px outset #ddd; background: #eee; color: #111; cursor: pointer; font: bold 14px Tahoma,Arial,sans-serif; }
 .glitch-question-actions button:active { border-style: inset; }

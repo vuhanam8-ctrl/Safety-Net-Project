@@ -5,8 +5,8 @@
   const minimumDegradationInterval = 450;
   const degradationAcceleration = 0.82;
   const finalGlitchDuration = 2200;
-  const glitchPopupInterval = 105;
-  const glitchPopupLimit = 18;
+  const glitchPopupInterval = 55;
+  const glitchPopupLimit = 32;
 
   const mutations = [
     [".bbc-placeholder-latest", "LATEST: Public patience wears thin as substance-use cases return"],

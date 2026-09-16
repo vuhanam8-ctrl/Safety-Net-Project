@@ -874,6 +874,7 @@ let heartbeatSound;
 let monitorBeepSound;
 let phoneToneSound;
 let flatlineSound;
+let flatlinePlayedForCurrentBlackHole = false;
 let heartbeatAmplitude;
 let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
@@ -1892,19 +1893,26 @@ function startHeartbeatAudio() {
 function syncFlatlineSound() {
   if (!flatlineSound?.isLoaded()) return;
 
-  const shouldPlay =
-    canvasSoundEnabled &&
-    heartbeatAudioEnabled &&
+  const blackHoleIsActive =
     food?.isAvailable &&
     food.isBlackHole &&
     food.isErasing;
 
-  if (shouldPlay) {
-    if (!flatlineSound.isPlaying()) flatlineSound.loop(0, 1, 0.4);
+  if (!blackHoleIsActive) {
+    flatlinePlayedForCurrentBlackHole = false;
+    if (flatlineSound.isPlaying()) flatlineSound.stop();
     return;
   }
 
-  if (flatlineSound.isPlaying()) flatlineSound.stop();
+  if (!canvasSoundEnabled || !heartbeatAudioEnabled) {
+    if (flatlineSound.isPlaying()) flatlineSound.stop();
+    return;
+  }
+
+  if (!flatlinePlayedForCurrentBlackHole) {
+    flatlinePlayedForCurrentBlackHole = true;
+    flatlineSound.play(0, 1, 0.4);
+  }
 }
 
 function syncHeartbeatSound() {

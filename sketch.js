@@ -1929,14 +1929,15 @@ function syncHeartbeatSound() {
     return;
   }
 
-  if (heartbeatSound.isPlaying() || millis() < nextHeartbeatTime) return;
+  if (
+    heartbeatSound.isPlaying() ||
+    monitorBeepSound.isPlaying() ||
+    millis() < nextHeartbeatTime
+  ) return;
 
   heartbeatSound.play(0, 1, 0.6);
   monitorBeepSound.play(0, 1, 0.18);
-  const heartbeatPlaybackDuration =
-    Math.max(heartbeatSound.duration(), monitorBeepSound.duration()) * 1000;
-  nextHeartbeatTime =
-    millis() + heartbeatPlaybackDuration + getHeartbeatSpacing();
+  nextHeartbeatTime = millis() + getHeartbeatSpacing();
 }
 
 function getHeartbeatSpacing() {

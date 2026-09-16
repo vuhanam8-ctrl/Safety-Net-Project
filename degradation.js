@@ -150,7 +150,12 @@
     messageWindow.setAttribute("aria-label", finalMessage);
     messageWindow.innerHTML =
       '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
-      '<div class="final-message-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';
+      '<div class="final-message-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>' +
+      '<div class="glitch-question-actions final-yes-actions"><button type="button" data-final-answer="yes">Yes</button><span class="missing-no-space" aria-hidden="true"></span></div>';
+
+    messageWindow.querySelector("[data-final-answer='yes']").addEventListener("click", function () {
+      window.dispatchEvent(new CustomEvent("amigos-final-yes"));
+    });
 
     document.body.append(screenLock, messageWindow);
   }

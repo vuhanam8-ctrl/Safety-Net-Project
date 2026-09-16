@@ -733,6 +733,11 @@
       });
 
       window.addEventListener("amigos-final-lock-click", playComputerError);
+      window.addEventListener("amigos-final-yes", function () {
+        playComputerClick();
+        projectInfoModal.hidden = false;
+        projectInfoClose.focus();
+      });
       window.addEventListener("amigos-degradation-started", fadeOutAmbientPiano);
       window.addEventListener("amigos-final-glitch-started", function () {
         fadeOutAmbientPiano();
@@ -882,6 +887,6 @@
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
     <script src="sketch.js?v=black-hole-flatline-39"></script>
-    <script src="degradation.js?v=restored-question-frame-18"></script>
+    <script src="degradation.js?v=final-yes-board-19"></script>
   </body>
 </html>

@@ -412,7 +412,7 @@
       <div class="topbar-inner">
         <strong>Amigos 4.0</strong>
         <nav>
-          <div class="navBtn active"><a href="#">News</a></div>
+          <div class="navBtn active"><a href="#">Search</a></div>
           <div class="navBtn"><a href="#">Blog</a></div>
           <div class="navBtn"><a href="#">Games</a></div>
           <div class="navBtn"><a href="#">Messenger</a></div>
@@ -423,7 +423,7 @@
 
     <main class="amigos-page">
       <header class="amigos-header">
-        <div class="amigos-brand">AMIGOS!<span>Blog</span></div>
+        <div class="amigos-brand">AMIGOS!<span>News</span></div>
         <nav class="amigos-main-nav">
           <a>Home</a><a>My Page</a><a>My Blog</a><a>My Friends</a><a>Mailbox</a><a>Settings</a>
         </nav>
@@ -667,7 +667,9 @@
       let glitchQuestionCount = 0;
       let ambientPianoStoppedForGlitch = false;
       let ambientPianoRestartTimer = null;
+      let ambientPianoFadeTimer = null;
       const ambientPianoLoopGap = 2500;
+      const ambientPianoVolume = 0.4;
 
       ambientPianoSound.addEventListener("ended", function () {
         if (ambientPianoStoppedForGlitch) return;
@@ -684,14 +686,9 @@
       });
 
       window.addEventListener("amigos-final-lock-click", playComputerError);
+      window.addEventListener("amigos-degradation-started", fadeOutAmbientPiano);
       window.addEventListener("amigos-final-glitch-started", function () {
-        ambientPianoStoppedForGlitch = true;
-        if (ambientPianoRestartTimer !== null) {
-          window.clearTimeout(ambientPianoRestartTimer);
-          ambientPianoRestartTimer = null;
-        }
-        ambientPianoSound.pause();
-        ambientPianoSound.currentTime = 0;
+        fadeOutAmbientPiano();
         computerGlitchSound.currentTime = 0;
         computerGlitchSound.play().catch(function () {});
       });
@@ -803,7 +800,31 @@
       function startAmbientPiano() {
         if (ambientPianoStoppedForGlitch) return;
         if (!ambientPianoSound.paused) return;
+        ambientPianoSound.volume = ambientPianoVolume;
         ambientPianoSound.play().catch(function () {});
+      }
+
+      function fadeOutAmbientPiano() {
+        ambientPianoStoppedForGlitch = true;
+        if (ambientPianoRestartTimer !== null) {
+          window.clearTimeout(ambientPianoRestartTimer);
+          ambientPianoRestartTimer = null;
+        }
+        if (ambientPianoFadeTimer !== null || ambientPianoSound.paused) return;
+
+        const startingVolume = ambientPianoSound.volume;
+        const fadeStartedAt = performance.now();
+        const fadeDuration = 2400;
+        ambientPianoFadeTimer = window.setInterval(function () {
+          const progress = Math.min(1, (performance.now() - fadeStartedAt) / fadeDuration);
+          ambientPianoSound.volume = startingVolume * (1 - progress);
+          if (progress < 1) return;
+
+          window.clearInterval(ambientPianoFadeTimer);
+          ambientPianoFadeTimer = null;
+          ambientPianoSound.pause();
+          ambientPianoSound.currentTime = 0;
+        }, 50);
       }
 
       startAmbientPiano();
@@ -813,6 +834,6 @@
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
     <script src="sketch.js?v=black-hole-flatline-39"></script>
-    <script src="degradation.js?v=straight-popup-flood-15"></script>
+    <script src="degradation.js?v=ambient-switch-fade-16"></script>
   </body>
 </html>

@@ -219,6 +219,7 @@
   function beginDegradation() {
     if (degradationHasStarted) return;
     degradationHasStarted = true;
+    window.dispatchEvent(new CustomEvent("amigos-degradation-started"));
 
     let elapsed = 0;
     let interval = initialDegradationInterval;

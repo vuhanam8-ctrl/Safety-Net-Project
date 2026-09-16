@@ -6,7 +6,7 @@
 
     <title>Safety Net News | Amigos 4.0</title>
 
-    <link rel="stylesheet" type="text/css" href="style.css?v=responsive-layout-27">
+    <link rel="stylesheet" type="text/css" href="style.css?v=project-info-board-28">
 
     <style>
       .search-page {
@@ -417,8 +417,31 @@
           <div class="navBtn"><a href="#">Games</a></div>
           <div class="navBtn"><a href="#">Messenger</a></div>
         </nav>
-        <button type="button">What's New?</button>
+        <button id="whats-new-button" type="button">What's New?</button>
       </div>
+    </div>
+
+    <div id="project-info-modal" class="project-info-modal" hidden>
+      <section class="project-info-board" role="dialog" aria-modal="true" aria-labelledby="project-info-title">
+        <header class="project-info-header">
+          <strong id="project-info-title">SAFETY NET: SDG 3.5</strong>
+          <button id="project-info-close" type="button" aria-label="Close project information">X</button>
+        </header>
+        <div class="project-info-content">
+          <h2>“You saw the addiction.<br>Did you see the person?”</h2>
+          <h3>Call to Action</h3>
+          <p>Aligned with United Nations Sustainable Development Goal 3.5, this project raises awareness of substance use disorders and promotes voluntary treatment through creative communication. In Vietnam, only 90,869 of 220,904 registered people who use drugs are engaged in structured rehabilitation (Ministry of Public Security 2024, cited in Nguyen et al. 2025). While 43% are placed in compulsory rehabilitation centres, 85.6% relapse within 12 months (Nguyen et al. 2025). In Viet Nam, drug addiction treatment has traditionally relied heavily on compulsory institutional care. In 2019, 76.8% of people receiving institutional treatment were treated compulsorily, compared with 19.2% voluntarily. Meanwhile, around 800 community-based treatment and support sites operated across 23 cities and provinces, although relapse and unemployment remained significant challenges (Le et al. 2024).</p>
+          <p>Featuring a celebrated music figure who overcame addiction while advocating for rehabilitation, Elton John said: “I finally summoned up the courage to say three words that would change my life: ‘I need help.’” His voluntary entry into rehabilitation in 1990, supported by loved ones, later became part of his advocacy for recovery. Influenced by his resilience, our call to action aims to erase stigma surrounding people affected by substance abuse and encourage audiences to see the person beyond their suffering.</p>
+          <section class="project-support-box">
+            <h3>Medical Services &amp; Support</h3>
+            <p>If you or someone around you needs immediate help, support is available.</p>
+            <a href="tel:115">115 — Medical emergency in Vietnam</a>
+            <a href="tel:+84963061414">0963 061 414 — Tomorrow Hotline</a>
+            <a href="https://na.org/meetingsearch/" target="_blank" rel="noopener noreferrer">Narcotics Anonymous — worldwide meetings</a>
+            <a href="https://www.aa.org/" target="_blank" rel="noopener noreferrer">Alcoholics Anonymous — worldwide support</a>
+          </section>
+        </div>
+      </section>
     </div>
 
     <main class="amigos-page">
@@ -636,6 +659,9 @@
 
     <script>
       const shellAdvertisementList = document.getElementById("shell-advertisement-list");
+      const whatsNewButton = document.getElementById("whats-new-button");
+      const projectInfoModal = document.getElementById("project-info-modal");
+      const projectInfoClose = document.getElementById("project-info-close");
       const computerClickSound = new Audio(
         "assets/audio/COMM2754-2026-S2-A2w08-ComputerClick-EditedSound.wav"
       );
@@ -670,6 +696,23 @@
       let ambientPianoFadeTimer = null;
       const ambientPianoLoopGap = 2500;
       const ambientPianoVolume = 0.4;
+
+      function closeProjectInfo() {
+        projectInfoModal.hidden = true;
+        whatsNewButton.focus();
+      }
+
+      whatsNewButton.addEventListener("click", function () {
+        projectInfoModal.hidden = false;
+        projectInfoClose.focus();
+      });
+      projectInfoClose.addEventListener("click", closeProjectInfo);
+      projectInfoModal.addEventListener("click", function (event) {
+        if (event.target === projectInfoModal) closeProjectInfo();
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !projectInfoModal.hidden) closeProjectInfo();
+      });
 
       ambientPianoSound.addEventListener("ended", function () {
         if (ambientPianoStoppedForGlitch) return;

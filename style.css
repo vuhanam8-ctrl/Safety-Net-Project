@@ -236,7 +236,7 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .project-info-modal[hidden] { display: none; }
 .project-info-board { width: min(600px, calc(100vw - 28px)); border: 4px solid #5520ae; background: #111; color: #eee; box-shadow: 9px 10px 0 rgba(0,0,0,.55); font: 15px/1.55 Arial,sans-serif; }
 .project-info-header { display: flex; min-height: 42px; align-items: center; justify-content: space-between; gap: 12px; padding: 6px 10px; background: linear-gradient(180deg,#6e25dc,#3700c0); color: #fff; font-weight: bold; }
-.project-info-header button { width: 24px; height: 24px; padding: 0; border: 2px outset #fff; background: #f4f0d8; color: #111; cursor: pointer; font-weight: bold; }
+.project-info-header button { display: grid; width: 23px; height: 23px; flex: 0 0 23px; place-items: center; padding: 0; border: 1px solid #fff; background: #5f27c9; color: #fff; cursor: pointer; font: bold 18px/1 Tahoma,Arial,sans-serif; }
 .project-info-content { max-height: min(78vh,760px); overflow-y: auto; padding: 22px; scrollbar-color: #999 #eee; }
 .project-info-content h2 { margin: 0 0 20px; color: #fff; font: bold 30px/1.35 Georgia,serif; text-align: center; text-transform: uppercase; }
 .project-info-content h3 { margin: 0 0 14px; padding-bottom: 6px; border-bottom: 1px solid #555; color: #eee; font-size: 17px; }

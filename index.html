@@ -425,7 +425,7 @@
       <section class="project-info-board" role="dialog" aria-modal="true" aria-labelledby="project-info-title">
         <header class="project-info-header">
           <strong id="project-info-title">SAFETY NET: SDG 3.5</strong>
-          <button id="project-info-close" type="button" aria-label="Close project information">X</button>
+          <button id="project-info-close" type="button" aria-label="Close project information">×</button>
         </header>
         <div class="project-info-content">
           <h2>“You saw the addiction.<br>Did you see the person?”</h2>
@@ -810,6 +810,7 @@
         questionWindow.style.setProperty("--question-offset-x", (offsetIndex * 18 - 54) + "px");
         questionWindow.style.setProperty("--question-offset-y", (offsetIndex * 13 - 39) + "px");
         questionWindow.innerHTML =
+          '<div class="final-message-title"><span>You saw the addiction. Did you see the person?</span><b aria-hidden="true">×</b></div>' +
           '<div class="final-message-body"><span class="final-message-symbol">!</span><strong>You saw the addiction. Did you see the person?</strong></div>' +
           '<div class="glitch-question-actions"><button type="button" data-answer="yes">Yes</button><button type="button" data-answer="no">No</button></div>';
 
@@ -879,6 +880,6 @@
 
     <script src="sketchUI.js?v=freeze-ambient-4"></script>
     <script src="sketch.js?v=black-hole-flatline-39"></script>
-    <script src="degradation.js?v=instant-popup-flood-17"></script>
+    <script src="degradation.js?v=restored-question-frame-18"></script>
   </body>
 </html>

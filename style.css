@@ -245,6 +245,7 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .project-support-box h3 { color: #fff; text-transform: uppercase; }
 .project-support-box ul { margin: 8px 0 0; padding-left: 38px; color: #ddd; }
 .project-support-box li { margin: 6px 0; padding-left: 3px; }
+.project-support-box a { color: #d7c2ff; }
 .project-about-us { margin-top: 24px !important; padding-top: 16px; border-top: 1px solid #555; }
 @media (max-width: 640px) { .project-info-content { padding: 16px; } .project-info-content h2 { font-size: 23px; } }
 .news-canvas-pocket { width: 100%; aspect-ratio: 4 / 3; margin: 0; border: 0; }

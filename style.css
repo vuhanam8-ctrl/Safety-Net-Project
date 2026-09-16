@@ -129,7 +129,7 @@ body {
 .shell-games div { display:flex; gap:5px; margin-bottom:10px; }
 .shell-games i { width:47px; height:47px; flex-shrink:0; display:grid; place-items:center; border:1px solid #9bb7c2; background:#eef5f6; font-size:11px; font-style:normal; font-weight:bold; }
 .shell-advertisement-list { display: flex; flex-direction: column; gap: 6px; }
-.shell-advertisement-list .advertisement { width: 100%; margin: 0; padding: 7px; border: 0; background: linear-gradient(90deg,#ff1744,#ff9100,#ffe600,#20e36b,#00b8ff,#7545ff,#f229d2,#ff1744); background-size: 300% 100%; box-sizing: border-box; overflow: hidden; cursor: pointer; animation: rainbow-ad-flow 1.35s linear infinite; }
+.shell-advertisement-list .advertisement { width: 100%; margin: 0; padding: 7px; border: 0; background: linear-gradient(90deg,#ff1744,#ff9100,#ffe600,#20e36b,#00b8ff,#7545ff,#f229d2,#ff1744); background-size: 300% 100%; box-sizing: border-box; overflow: hidden; cursor: pointer; animation: rainbow-ad-flow 2.5s linear infinite; }
 .shell-advertisement-list .advertisement img { position: relative; z-index: 1; display: block; width: 100%; height: auto; border: 0; }
 @keyframes rainbow-ad-flow { from { background-position: 0% 50%; } to { background-position: 300% 50%; } }
 .amigos-footer { margin-top: 6px; padding: 14px 42px; border: 2px solid #f8f9f1; background: var(--amigos-gradient); color: white; font-weight: bold; text-align: center; text-shadow: 1px 1px var(--amigos-purple); }

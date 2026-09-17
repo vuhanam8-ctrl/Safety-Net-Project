@@ -748,19 +748,19 @@
 
       const advertisements = [
         {
-          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement1-FinishedSet.png",
+          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement1-FinishedSet.png?v=optimized-1",
           description: "Advertisement 1"
         },
         {
-          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement2-FinishedSet.png",
+          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement2-FinishedSet.png?v=optimized-1",
           description: "Advertisement 2"
         },
         {
-          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement3-FinishedSet.png",
+          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement3-FinishedSet.png?v=optimized-1",
           description: "Advertisement 3"
         },
         {
-          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement4-FinishedSet.png",
+          source: "assets/images/COMM2754-2026-S2-A3w12-Advertisement4-FinishedSet.png?v=optimized-1",
           description: "Advertisement 4"
         }
       ];
@@ -778,6 +778,8 @@
           advertisementBox.className = "advertisement";
           advertisementImage.src = advertisement.source;
           advertisementImage.alt = advertisement.description;
+          advertisementImage.loading = "lazy";
+          advertisementImage.decoding = "async";
           advertisementBox.appendChild(advertisementImage);
           advertisementBox.addEventListener("click", playComputerError);
 
@@ -899,8 +901,8 @@
       document.addEventListener("keydown", startAmbientPiano, { once: true });
     </script>
 
-    <script src="sketchUI.js?v=muted-background-palette-5"></script>
-    <script src="sketch.js?v=sound-default-on-47"></script>
+    <script src="sketchUI.js?v=hidden-tab-pause-6"></script>
+    <script src="sketch.js?v=memory-optimized-48"></script>
     <script src="degradation.js?v=faster-text-switch-25"></script>
   </body>
 </html>

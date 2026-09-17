@@ -899,8 +899,6 @@ let nextHeartbeatTime = 0;
 let canvasSoundEnabled = true;
 let ignoreNextDeltaTime = false;
 let antiTokenSprites = [];
-let sandPortraitImage;
-let portraitTargetPixels = [];
 let portraitLightPixels = [];
 let portraitMidtonePixels = [];
 let portraitDarkPixels = [];
@@ -936,9 +934,12 @@ function preload() {
     imageAsset => removeNearWhiteBackground(imageAsset)
   ));
 
-  sandPortraitImage = loadImage(
+  loadImage(
     "assets/images/COMM2754-2026-S2-A3w12-SandPortraitSource-FinishedSet.png",
-    imageAsset => preparePortraitTargetPixels(imageAsset)
+    imageAsset => {
+      preparePortraitTargetPixels(imageAsset);
+      imageAsset.resize(1, 1);
+    }
   );
 
   heartbeatSound = loadSound(
@@ -995,7 +996,6 @@ function preparePortraitTargetPixels(imageAsset) {
   const portraitWidth = max(1, maximumX - minimumX);
   const portraitHeight = max(1, maximumY - minimumY);
   portraitAspectRatio = portraitWidth / portraitHeight;
-  portraitTargetPixels = [];
   portraitLightPixels = [];
   portraitMidtonePixels = [];
   portraitDarkPixels = [];
@@ -1019,8 +1019,6 @@ function preparePortraitTargetPixels(imageAsset) {
         tone: map(luminance, 0, 255, 70, 235),
         isDetail
       };
-
-      portraitTargetPixels.push(targetPixel);
 
       if (luminance >= 200) portraitLightPixels.push(targetPixel);
       else if (luminance <= 70) portraitDarkPixels.push(targetPixel);
@@ -1057,6 +1055,7 @@ function setup() {
   const canvasPocket = document.getElementById("canvas-pocket");
   const pocketWidth = canvasPocket.clientWidth || 960;
   const pocketHeight = canvasPocket.clientHeight || 540;
+  pixelDensity(1);
   const mainCanvas = createCanvas(pocketWidth, pocketHeight);
   mainCanvas.parent(canvasPocket);
   angleMode(DEGREES);
@@ -1071,6 +1070,19 @@ function setup() {
   );
   document.addEventListener("pointerdown", unlockDefaultCanvasSound, { passive: true });
   document.addEventListener("keydown", unlockDefaultCanvasSound);
+  document.addEventListener("visibilitychange", handleSimulationVisibility);
+}
+
+function handleSimulationVisibility() {
+  if (document.hidden) {
+    noLoop();
+    stopCanvasSounds();
+    return;
+  }
+
+  if (document.body.classList.contains("final-text-takeover")) return;
+  ignoreNextDeltaTime = true;
+  loop();
 }
 
 function draw() {
@@ -1728,6 +1740,10 @@ function erasePurpleSandGrains(x, y, radius) {
       dist(grain.x, grain.y, x, y) > radius
     );
   }
+
+  portraitSandFormations = portraitSandFormations.filter(
+    formation => formation.grains.length > 0
+  );
 }
 
 function recreateDrawingLayers(oldTrails) {

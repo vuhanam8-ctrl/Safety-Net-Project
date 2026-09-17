@@ -7,6 +7,7 @@ const scrollingAdSketch = (p) => {
 
   p.setup = () => {
     const container = document.querySelector(".banner");
+    p.pixelDensity(1);
     const canvas = p.createCanvas(container.clientWidth, container.clientHeight);
     canvas.parent(container);
     p.textFont("Georgia");
@@ -199,7 +200,22 @@ class BannerFlower {
 
 const backgroundInstance = new p5(backgroundSketch);
 
+let ambientPermanentlyFrozen = false;
+
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    scrollingAdInstance.noLoop();
+    backgroundInstance.noLoop();
+    return;
+  }
+
+  if (ambientPermanentlyFrozen) return;
+  scrollingAdInstance.loop();
+  backgroundInstance.loop();
+});
+
 window.freezeAmigosAmbient = function () {
+  ambientPermanentlyFrozen = true;
   scrollingAdInstance.noLoop();
   backgroundInstance.noLoop();
 };

@@ -896,7 +896,7 @@ let flatlinePlayedForCurrentBlackHole = false;
 let heartbeatAmplitude;
 let heartbeatAudioEnabled = false;
 let nextHeartbeatTime = 0;
-let canvasSoundEnabled = false;
+let canvasSoundEnabled = true;
 let ignoreNextDeltaTime = false;
 let antiTokenSprites = [];
 let sandPortraitImage;
@@ -1069,6 +1069,8 @@ function setup() {
     "click",
     toggleCanvasSound
   );
+  document.addEventListener("pointerdown", unlockDefaultCanvasSound, { passive: true });
+  document.addEventListener("keydown", unlockDefaultCanvasSound);
 }
 
 function draw() {
@@ -1908,6 +1910,11 @@ function startHeartbeatAudio() {
   phoneToneSound.setVolume(0.3);
   flatlineSound.setVolume(0.4);
   syncHeartbeatSound();
+}
+
+function unlockDefaultCanvasSound() {
+  if (!canvasSoundEnabled || heartbeatAudioEnabled) return;
+  startHeartbeatAudio();
 }
 
 function syncFlatlineSound() {

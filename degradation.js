@@ -1,9 +1,9 @@
 (function () {
   const finalMessage = "You saw the addiction. Did you see the person?";
   const failedHeartsRequired = 2;
-  const initialDegradationInterval = 6500;
-  const minimumDegradationInterval = 450;
-  const degradationAcceleration = 0.82;
+  const initialDegradationInterval = 4000;
+  const minimumDegradationInterval = 300;
+  const degradationAcceleration = 0.78;
   const finalGlitchDuration = 2200;
   const glitchPopupInterval = 28;
   const glitchPopupLimit = 56;

@@ -172,6 +172,7 @@
     if (typeof window.freezeAmigosAmbient === "function") window.freezeAmigosAmbient();
     replacePageWords();
     document.body.classList.remove("page-glitching");
+    document.documentElement.classList.add("final-text-takeover-root");
     document.body.classList.add("final-text-takeover");
     document.body.style.overflow = "hidden";
     showFinalMessageWindow();

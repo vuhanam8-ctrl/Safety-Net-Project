@@ -108,13 +108,15 @@
       element.textContent = replacement;
       element.classList.remove("story-corrupting");
       element.classList.add("story-corrupted");
+      element.dataset.originalStoryText = originalText;
+      element.dataset.corruptedStoryText = replacement;
 
       if (isHeadline) {
         element.dataset.originalHeadline = originalText;
         element.dataset.corruptedHeadline = replacement;
         element.classList.add("story-corrupted-headline");
         element.setAttribute("tabindex", "0");
-        element.setAttribute("aria-label", "Hover or focus to reveal the original headline");
+        element.setAttribute("aria-label", "Hover or focus to reveal the original headline and story");
       }
     }, Math.round(380 - progress * 220));
   }
@@ -124,12 +126,30 @@
     if (document.body.classList.contains("final-text-takeover")) return;
     element.textContent = element.dataset.originalHeadline;
     element.classList.add("story-headline-revealed");
+
+    const storyCopy = getRelatedStoryCopy(element);
+    if (storyCopy?.dataset.originalStoryText) {
+      storyCopy.textContent = storyCopy.dataset.originalStoryText;
+      storyCopy.classList.add("story-copy-revealed");
+    }
   }
 
   function restoreCorruptedHeadline(element) {
     if (!element?.dataset.corruptedHeadline) return;
     element.textContent = element.dataset.corruptedHeadline;
     element.classList.remove("story-headline-revealed");
+
+    const storyCopy = getRelatedStoryCopy(element);
+    if (storyCopy?.dataset.corruptedStoryText) {
+      storyCopy.textContent = storyCopy.dataset.corruptedStoryText;
+      storyCopy.classList.remove("story-copy-revealed");
+    }
+  }
+
+  function getRelatedStoryCopy(headline) {
+    if (!headline.matches("h1, h2, h3, h4, h5, h6")) return null;
+    const story = headline.closest("article, .lead-story-copy, .bbc-side-module");
+    return story?.querySelector("p.story-corrupted") || null;
   }
 
   document.addEventListener("pointerover", function (event) {

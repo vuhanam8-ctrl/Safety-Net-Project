@@ -195,6 +195,7 @@ body {
   filter: contrast(1.2);
   animation: headline-memory-distortion 340ms steps(2,end) infinite;
 }
+.story-copy-revealed { color: #27105f; text-shadow: .5px 0 rgba(122,0,205,.45); }
 
 @keyframes headline-memory-distortion {
   0%,100% { text-shadow: -2px 0 rgba(255,214,0,.8), 2px 0 rgba(122,0,205,.85), 0 1px rgba(255,255,255,.8); }

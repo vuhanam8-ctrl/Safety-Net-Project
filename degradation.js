@@ -99,14 +99,56 @@
     const element = document.querySelector(selector);
     if (!element) return;
 
+    const isHeadline = element.matches("h1, h2, h3, h4, h5, h6, .bbc-placeholder-latest");
+    const originalText = element.textContent;
+
     element.style.animationDuration = Math.round(380 - progress * 220) + "ms";
     element.classList.add("story-corrupting");
     window.setTimeout(function () {
       element.textContent = replacement;
       element.classList.remove("story-corrupting");
       element.classList.add("story-corrupted");
+
+      if (isHeadline) {
+        element.dataset.originalHeadline = originalText;
+        element.dataset.corruptedHeadline = replacement;
+        element.classList.add("story-corrupted-headline");
+        element.setAttribute("tabindex", "0");
+        element.setAttribute("aria-label", "Hover or focus to reveal the original headline");
+      }
     }, Math.round(380 - progress * 220));
   }
+
+  function revealOriginalHeadline(element) {
+    if (!element?.dataset.originalHeadline) return;
+    if (document.body.classList.contains("final-text-takeover")) return;
+    element.textContent = element.dataset.originalHeadline;
+    element.classList.add("story-headline-revealed");
+  }
+
+  function restoreCorruptedHeadline(element) {
+    if (!element?.dataset.corruptedHeadline) return;
+    element.textContent = element.dataset.corruptedHeadline;
+    element.classList.remove("story-headline-revealed");
+  }
+
+  document.addEventListener("pointerover", function (event) {
+    revealOriginalHeadline(event.target.closest?.(".story-corrupted-headline"));
+  });
+
+  document.addEventListener("pointerout", function (event) {
+    const headline = event.target.closest?.(".story-corrupted-headline");
+    if (!headline || headline.contains(event.relatedTarget)) return;
+    restoreCorruptedHeadline(headline);
+  });
+
+  document.addEventListener("focusin", function (event) {
+    revealOriginalHeadline(event.target.closest?.(".story-corrupted-headline"));
+  });
+
+  document.addEventListener("focusout", function (event) {
+    restoreCorruptedHeadline(event.target.closest?.(".story-corrupted-headline"));
+  });
 
   function replacePageWords() {
     const roots = [

@@ -188,6 +188,19 @@ body {
 .lead-help-box a { color: #182b80; font-weight: bold; text-decoration: underline; }
 .story-corrupting { animation: story-corruption 380ms steps(2, end); }
 .story-corrupted { text-shadow: .35px 0 #8b00db; }
+.story-corrupted-headline { cursor: crosshair; transition: color 90ms linear, text-shadow 90ms linear, filter 90ms linear; }
+.story-corrupted-headline.story-headline-revealed {
+  color: #27105f;
+  text-shadow: -2px 0 rgba(255,214,0,.8), 2px 0 rgba(122,0,205,.85), 0 1px rgba(255,255,255,.8);
+  filter: contrast(1.2);
+  animation: headline-memory-distortion 340ms steps(2,end) infinite;
+}
+
+@keyframes headline-memory-distortion {
+  0%,100% { text-shadow: -2px 0 rgba(255,214,0,.8), 2px 0 rgba(122,0,205,.85), 0 1px rgba(255,255,255,.8); }
+  35% { text-shadow: 2px 0 rgba(255,214,0,.65), -1px 0 rgba(122,0,205,.95), 1px 0 rgba(255,255,255,.7); }
+  70% { text-shadow: -1px 0 rgba(255,214,0,.9), 3px 0 rgba(122,0,205,.7), -1px 0 rgba(255,255,255,.75); }
+}
 
 @keyframes story-corruption {
   0% { opacity: 1; transform: translateX(0); filter: none; }
@@ -234,6 +247,7 @@ body.page-glitching::after { background: rgba(112,0,210,.08); mix-blend-mode: mu
 .final-text-takeover .topbar,
 .final-text-takeover .topbar-inner { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
+  .story-corrupted-headline.story-headline-revealed { animation: none; }
   body.page-glitching { animation: none; filter: grayscale(.7); }
   body.page-glitching::before,
   body.page-glitching::after { animation: none; }

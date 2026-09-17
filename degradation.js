@@ -115,7 +115,6 @@
         element.dataset.originalHeadline = originalText;
         element.dataset.corruptedHeadline = replacement;
         element.classList.add("story-corrupted-headline");
-        element.setAttribute("title", "Hover to reveal the original headline and story");
       }
     }, Math.round(380 - progress * 220));
   }

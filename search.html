@@ -82,13 +82,12 @@
       .small-links { margin-top: 35px; color: blue; text-align: center; text-decoration: underline; }
       .search-results { max-width: 760px; margin: 50px 0 0; font-family: "Times New Roman", serif; }
       .search-results h2 { margin-bottom: 25px; font: normal 18px Arial, sans-serif; }
-      .result { max-width: 720px; margin-bottom: 30px; font-family: Arial, sans-serif; }
-      .result-source { margin-bottom: 7px; }
-      .result-site { display: block; margin-bottom: 2px; color: #202124; font-size: 14px; }
-      .result-url { display: block; overflow: hidden; color: #4d5156; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
-      .result-link { color: #1a0dab; font: normal 21px Arial, sans-serif; text-decoration: none; }
-      .result-link:hover { text-decoration: underline; }
-      .result-description { margin: 5px 0 0; color: #4d5156; font: normal 14px/1.55 Arial, sans-serif; }
+      .directory-results { margin: 0; padding-left: 18px; font: 15px/1.85 "Times New Roman", serif; }
+      .directory-results li { padding-left: 2px; }
+      .directory-results a { color: #0000ee; text-decoration: underline; }
+      .directory-category { font-weight: bold; }
+      .directory-extra { font-size: 12px; font-weight: bold; }
+      .directory-topic { font-style: italic; }
       .search-footer {
         position: fixed;
         right: 0;
@@ -128,26 +127,12 @@
         <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
         <section id="search-results" class="search-results" hidden>
           <h2>Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”</h2>
-          <article class="result">
-            <div class="result-source"><span class="result-site">Safety Net News</span><span class="result-url">vuhanam8-ctrl.github.io › Safety-Net-Project › news</span></div>
-            <a class="result-link" href="index.html">Addiction recovery, treatment and support — Safety Net News</a>
-            <p class="result-description">Reporting that sees the person beyond the addiction. Explore recovery stories, voluntary treatment information and support services available in Vietnam.</p>
-          </article>
-          <article class="result">
-            <div class="result-source"><span class="result-site">Amigos 4.0 Recovery Journal</span><span class="result-url">thuydan0812.github.io › Amigos4.0 › stories</span></div>
-            <a class="result-link" href="https://thuydan0812.github.io/Amigos4.0/">Real stories of recovery, care and asking for help</a>
-            <p class="result-description">Personal reflections and community perspectives on substance use, stigma and the people working toward recovery with support from those around them.</p>
-          </article>
-          <article class="result">
-            <div class="result-source"><span class="result-site">Recovery Pathways</span><span class="result-url">editor.p5js.org › iamBao › recovery-pathways</span></div>
-            <a class="result-link" href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Recovery Pathways — an interactive support experience</a>
-            <p class="result-description">Explore choices, risks and routes toward care through an interactive experience designed to encourage empathy instead of blame.</p>
-          </article>
-          <article class="result">
-            <div class="result-source"><span class="result-site">Amigos Support Messenger</span><span class="result-url">ziohere.github.io › Pareidolia-HangTran-a3 › support</span></div>
-            <a class="result-link" href="https://ziohere.github.io/Pareidolia-HangTran-a3/">You are not alone — connect, listen and be heard</a>
-            <p class="result-description">A messaging experience about recognising the person behind addiction and the importance of reaching out without judgement.</p>
-          </article>
+          <ul class="directory-results">
+            <li><a class="directory-category" href="index.html">News</a> <a class="directory-extra" href="index.html">[Extra!]</a> · <a class="directory-topic" href="index.html">Recovery Reports</a>, <a class="directory-topic" href="index.html">Treatment</a>, <a class="directory-topic" href="index.html">Support Services</a>, <a class="directory-topic" href="index.html">Vietnam</a> ...</li>
+            <li><a class="directory-category" href="https://thuydan0812.github.io/Amigos4.0/">Blog</a> <a class="directory-extra" href="https://thuydan0812.github.io/Amigos4.0/">[Extra!]</a> · <a class="directory-topic" href="https://thuydan0812.github.io/Amigos4.0/">Personal Stories</a>, <a class="directory-topic" href="https://thuydan0812.github.io/Amigos4.0/">Community Voices</a>, <a class="directory-topic" href="https://thuydan0812.github.io/Amigos4.0/">Reflection</a> ...</li>
+            <li><a class="directory-category" href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games</a> <a class="directory-extra" href="https://editor.p5js.org/iamBao/full/nwv94ywIX">[Extra!]</a> · <a class="directory-topic" href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Interactive Recovery</a>, <a class="directory-topic" href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Choices</a>, <a class="directory-topic" href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Awareness</a> ...</li>
+            <li><a class="directory-category" href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Messenger</a> <a class="directory-extra" href="https://ziohere.github.io/Pareidolia-HangTran-a3/">[Extra!]</a> · <a class="directory-topic" href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Peer Support</a>, <a class="directory-topic" href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Listen</a>, <a class="directory-topic" href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Connect</a> ...</li>
+          </ul>
         </section>
       </section>
     </main>

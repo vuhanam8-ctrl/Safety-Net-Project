@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amigos Search</title>
+    <style>
+      * { box-sizing: border-box; }
+      html, body { min-height: 100%; }
+      body { margin: 0; background: #fff; color: #000; font-family: Arial, sans-serif; }
+      .search-page { min-height: 100vh; background: #fff; }
+      .search-content {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        width: 90%;
+        max-width: 900px;
+        min-height: 100vh;
+        margin: 0 auto;
+        transform: scale(1.18);
+        transform-origin: center;
+      }
+      .search-content.showing-results {
+        display: block;
+        min-height: calc(100vh - 52px);
+        padding-top: 90px;
+        transform: none;
+      }
+      .search-heading { margin: 0 0 25px; line-height: 1; }
+      .amigos-name {
+        color: #6b2ca0;
+        font-family: Georgia, "Times New Roman", serif;
+        font-size: clamp(65px, 10vw, 125px);
+        font-weight: bold;
+        letter-spacing: -7px;
+      }
+      .search-name {
+        margin-left: 15px;
+        color: #555;
+        font-size: clamp(30px, 5vw, 62px);
+        letter-spacing: 3px;
+      }
+      .search-tabs { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 10px; font-size: 16px; }
+      .search-tabs span { color: blue; text-decoration: underline; }
+      .search-tabs span:first-child { color: #000; font-weight: bold; text-decoration: none; }
+      .search-form { display: grid; grid-template-columns: minmax(0, 1fr) 150px; }
+      .search-input-area { position: relative; }
+      .search-input {
+        width: 100%;
+        height: 38px;
+        padding: 5px 8px;
+        border: 2px inset #ccc;
+        background: #fff;
+        color: #000;
+        font: 16px Arial, sans-serif;
+      }
+      .search-suggestion {
+        position: absolute;
+        top: 38px;
+        left: 0;
+        z-index: 2;
+        width: 100%;
+        padding: 9px;
+        border: 1px solid #777;
+        background: #fff;
+        color: blue;
+        cursor: pointer;
+        font-size: 15px;
+        text-align: left;
+        text-decoration: underline;
+      }
+      .search-button {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 38px;
+        border: 2px outset #ccc;
+        background: #f0c34d;
+        font: bold 18px "Times New Roman", serif;
+      }
+      .search-button:hover { background: #000; color: #fff; cursor: pointer; }
+      .small-links { margin-top: 35px; color: blue; text-align: center; text-decoration: underline; }
+      .search-results { max-width: 760px; margin: 50px 0 0; font-family: "Times New Roman", serif; }
+      .search-results h2 { margin-bottom: 25px; font: normal 18px Arial, sans-serif; }
+      .result { margin-bottom: 22px; }
+      .result a { color: blue; font-size: 19px; }
+      .result p { margin: 4px 0 0; font-size: 15px; line-height: 1.35; }
+      .search-footer {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        padding: 16px;
+        border-top: 1px solid #ddd;
+        background: #f5f5f5;
+        color: #555;
+        font-size: 13px;
+        text-align: center;
+      }
+      [hidden] { display: none !important; }
+      @media (max-width: 760px) {
+        .search-content { width: 86%; transform: none; }
+        .search-form { grid-template-columns: 1fr; gap: 8px; }
+        .search-button { width: 150px; }
+        .amigos-name { letter-spacing: -4px; }
+        .search-name { display: block; margin: 8px 0 0; }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="search-page">
+      <section id="search-content" class="search-content">
+        <h1 class="search-heading"><span class="amigos-name">AMIGOS!</span><span class="search-name">SEARCH</span></h1>
+        <nav class="search-tabs" aria-label="Search categories">
+          <span>Web</span><span>Images</span><span>Video</span><span>Local</span><span>More</span>
+        </nav>
+        <div class="search-form">
+          <div class="search-input-area">
+            <input id="search-input" class="search-input" type="text" aria-label="Search" autocomplete="off">
+            <button id="search-suggestion" class="search-suggestion" type="button" hidden>SDG 3.5.1 substance abuse treatment in Vietnam</button>
+          </div>
+          <button id="search-button" class="search-button" type="button">Web Search</button>
+        </div>
+        <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
+        <section id="search-results" class="search-results" hidden>
+          <h2>Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”</h2>
+          <article class="result">
+            <a href="index.html">United Nations SDG 3.5.1 regarding substance abuse</a>
+            <p>A result about treatment services and support for substance use disorders.</p>
+          </article>
+          <article class="result"><a href="https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno">https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno</a></article>
+          <article class="result"><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">https://editor.p5js.org/iamBao/full/nwv94ywIX</a></article>
+          <article class="result"><a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">https://ziohere.github.io/Pareidolia-HangTran-a3/</a></article>
+        </section>
+      </section>
+    </main>
+    <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
+    <script>
+      const input = document.getElementById("search-input");
+      const suggestion = document.getElementById("search-suggestion");
+      const button = document.getElementById("search-button");
+      const results = document.getElementById("search-results");
+      const content = document.getElementById("search-content");
+      const recommendedSearch = suggestion.textContent.trim();
+      const clickSound = new Audio("assets/audio/COMM2754-2026-S2-A2w08-ComputerClick-EditedSound.wav");
+      clickSound.volume = 0.4;
+
+      input.addEventListener("focus", () => { suggestion.hidden = false; });
+      input.addEventListener("input", () => {
+        if (input.value.trim() !== "") return;
+        suggestion.hidden = true;
+        results.hidden = true;
+        content.classList.remove("showing-results");
+      });
+      suggestion.addEventListener("click", () => {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(() => {});
+        input.value = recommendedSearch;
+        showResults();
+      });
+      button.addEventListener("click", () => {
+        clickSound.currentTime = 0;
+        clickSound.play().catch(() => {});
+        if (input.value.trim() === "") input.value = recommendedSearch;
+        showResults();
+      });
+      input.addEventListener("keydown", event => {
+        if (event.key !== "Enter") return;
+        event.preventDefault();
+        button.click();
+      });
+      function showResults() {
+        suggestion.hidden = true;
+        results.hidden = false;
+        content.classList.add("showing-results");
+      }
+    </script>
+  </body>
+</html>

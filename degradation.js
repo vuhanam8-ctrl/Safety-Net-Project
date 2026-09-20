@@ -7,6 +7,14 @@
   const finalGlitchDuration = 2200;
   const glitchPopupInterval = 28;
   const glitchPopupLimit = 56;
+  const invasionColors = ["#F7CD26", "#53A643", "#33FF58"];
+  const invasionTextStages = [
+    "YOU ARE THE 1,000,000TH VISITOR?",
+    "CLICK HERE TO CLAIM YOUR FREE GIFT?",
+    "CLICK HERE TO CLAIM YOUR ADDICTION?",
+    "YOU SAW THE PRIZE. DID YOU SEE THE PERSON?",
+    "YOU SAW THE ADDICTION. DID YOU SEE THE PERSON?"
+  ];
 
   const mutations = [
     [".bbc-placeholder-latest", "LATEST: Public patience wears thin as substance-use cases return"],
@@ -242,20 +250,33 @@
     if (glitchPopupCount >= glitchPopupLimit) return;
 
     const popup = document.createElement("section");
-    const width = Math.min(360, Math.max(240, window.innerWidth * 0.3));
+    const width = Math.min(250, Math.max(210, window.innerWidth - 16));
     const maxLeft = Math.max(8, window.innerWidth - width - 8);
-    const maxTop = Math.max(8, window.innerHeight - 142);
+    const maxTop = Math.max(8, window.innerHeight - 190);
     const left = 8 + Math.random() * Math.max(0, maxLeft - 8);
     const top = 8 + Math.random() * Math.max(0, maxTop - 8);
+    const stageSize = Math.ceil(glitchPopupLimit / invasionTextStages.length);
+    const textIndex = Math.min(
+      Math.floor(glitchPopupCount / stageSize),
+      invasionTextStages.length - 1
+    );
+    const firstColorIndex = Math.floor(Math.random() * invasionColors.length);
+    let secondColorIndex = Math.floor(Math.random() * invasionColors.length);
+    while (secondColorIndex === firstColorIndex) {
+      secondColorIndex = Math.floor(Math.random() * invasionColors.length);
+    }
 
     popup.className = "glitch-scatter-popup";
     popup.setAttribute("aria-hidden", "true");
     popup.style.width = width + "px";
     popup.style.left = left + "px";
     popup.style.top = top + "px";
+    popup.style.background =
+      "linear-gradient(180deg, " + invasionColors[firstColorIndex] + ", " +
+      invasionColors[secondColorIndex] + ")";
     popup.innerHTML =
-      '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
-      '<div class="glitch-scatter-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';
+      '<span class="glitch-invasion-close">X</span>' +
+      '<div class="glitch-scatter-body"><strong>' + invasionTextStages[textIndex] + '</strong></div>';
 
     document.body.appendChild(popup);
     glitchPopupCount++;

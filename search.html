@@ -22,7 +22,11 @@
       }
       .search-content.showing-results {
         display: block;
+        width: calc(100% - clamp(50px, 12vw, 180px));
+        max-width: 1100px;
         min-height: calc(100vh - 52px);
+        margin-right: auto;
+        margin-left: clamp(25px, 6vw, 85px);
         padding-top: 90px;
         transform: none;
       }
@@ -81,12 +85,12 @@
       .search-button:hover { background: #000; color: #fff; cursor: pointer; }
       .small-links { margin-top: 35px; color: blue; text-align: center; text-decoration: underline; }
       .search-results { max-width: 760px; margin: 50px 0 0; font-family: "Times New Roman", serif; }
-      .search-results h2 { margin-bottom: 25px; font: normal 18px Arial, sans-serif; }
-      .directory-results { margin: 0; padding-left: 18px; font: 15px/1.85 "Times New Roman", serif; }
+      .search-results h2 { margin-bottom: 28px; font: normal 20px Arial, sans-serif; }
+      .directory-results { margin: 0; padding-left: 22px; font: 19px/2 "Times New Roman", serif; }
       .directory-results li { padding-left: 2px; }
       .directory-results a { color: #0000ee; text-decoration: underline; }
       .directory-category { font-weight: bold; }
-      .directory-extra { font-size: 12px; font-weight: bold; }
+      .directory-extra { font-size: 15px; font-weight: bold; }
       .directory-topic { font-style: italic; }
       .search-footer {
         position: fixed;

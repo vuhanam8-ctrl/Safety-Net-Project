@@ -6,7 +6,7 @@
 
     <title>Safety Net News | Amigos 4.0</title>
 
-    <link rel="stylesheet" type="text/css" href="style.css?v=standalone-search-45">
+    <link rel="stylesheet" type="text/css" href="style.css?v=restored-search-44">
 
     <style>
       .search-page {
@@ -405,58 +405,7 @@
     <script src="libraries/p5.sound.min.js"></script>
   </head>
 
-  <body class="search-entry-active">
-    <section id="standalone-search-page" class="search-page standalone-search-page">
-      <section id="standalone-search-content" class="search-content">
-        <h1 class="search-heading">
-          <span class="amigos-name">AMIGOS!</span>
-          <span class="search-name">SEARCH</span>
-        </h1>
-
-        <nav class="search-tabs" aria-label="Search categories">
-          <span>Web</span>
-          <span>Images</span>
-          <span>Video</span>
-          <span>Local</span>
-          <span>More</span>
-        </nav>
-
-        <div class="search-form">
-          <div class="search-input-area">
-            <input id="search-input" class="search-input" type="text" aria-label="Search" autocomplete="off">
-            <button id="search-suggestion" class="search-suggestion" type="button" hidden>
-              SDG 3.5.1 substance abuse treatment in Vietnam
-            </button>
-          </div>
-          <button id="search-button" class="search-button" type="button">Web Search</button>
-        </div>
-
-        <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
-
-        <section id="search-results" class="search-results" hidden>
-          <h2>Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”</h2>
-          <article class="result">
-            <a id="placeholder-result-link" href="#news">United Nations SDG 3.5.1 regarding substance abuse</a>
-            <p>A result about treatment services and support for substance use disorders.</p>
-          </article>
-          <article class="result">
-            <a href="https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno">https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno</a>
-          </article>
-          <article class="result">
-            <a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">https://editor.p5js.org/iamBao/full/nwv94ywIX</a>
-          </article>
-          <article class="result">
-            <a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">https://ziohere.github.io/Pareidolia-HangTran-a3/</a>
-          </article>
-        </section>
-
-        <footer class="search-footer">
-          Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp;
-          Privacy Policy &nbsp;|&nbsp; Terms of Service
-        </footer>
-      </section>
-    </section>
-
+  <body>
     <div id="bg-canvas-container" aria-hidden="true"></div>
 
     <div class="topbar">
@@ -534,7 +483,76 @@
 
         <section class="amigos-centre-column">
           <section class="search-page">
-      <section class="search-content news-search-content">
+      <section class="search-content">
+        <h1 class="search-heading">
+          <span class="amigos-name">AMIGOS!</span>
+          <span class="search-name">SEARCH</span>
+        </h1>
+
+        <nav class="search-tabs" aria-label="Search categories">
+          <span>Web</span>
+          <span>Images</span>
+          <span>Video</span>
+          <span>Local</span>
+          <span>More</span>
+        </nav>
+
+        <div class="search-form">
+          <div class="search-input-area">
+            <input
+              id="search-input"
+              class="search-input"
+              type="text"
+              aria-label="Search"
+              autocomplete="off"
+            >
+
+            <button id="search-suggestion" class="search-suggestion" type="button" hidden>
+              SDG 3.5.1 substance abuse treatment in Vietnam
+            </button>
+          </div>
+
+          <button id="search-button" class="search-button" type="button">
+            Web Search
+          </button>
+        </div>
+
+        <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
+
+        <section id="search-results" class="search-results" hidden>
+          <h2>
+            Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”
+          </h2>
+
+          <article class="result">
+            <a id="placeholder-result-link" href="#news">
+              United Nations SDG 3.5.1 regarding substance abuse
+            </a>
+            <p>
+              A result about treatment services and support for
+              substance use disorders.
+            </p>
+          </article>
+
+          <article class="result">
+            <a href="https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno">
+              https://editor.p5js.org/lnthuydan0812/full/5vSXk8Mno
+            </a>
+          </article>
+
+          <article class="result">
+            <a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">
+              https://editor.p5js.org/iamBao/full/nwv94ywIX
+            </a>
+          </article>
+
+          <article class="result">
+            <a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">
+              https://ziohere.github.io/Pareidolia-HangTran-a3/
+            </a>
+          </article>
+        </section>
+
         <section id="fake-content-page" class="fake-content-page" hidden>
           <section class="bbc-news-placeholder" aria-label="News layout placeholder">
             <header class="bbc-placeholder-header">
@@ -711,8 +729,7 @@
 
     <script>
       const searchInput = document.getElementById("search-input");
-      const searchContent = document.getElementById("standalone-search-content");
-      const standaloneSearchPage = document.getElementById("standalone-search-page");
+      const searchContent = document.querySelector(".search-content");
       const suggestion = document.getElementById("search-suggestion");
       const searchButton = document.getElementById("search-button");
       const results = document.getElementById("search-results");
@@ -889,8 +906,6 @@
         playComputerClick();
         results.hidden = true;
         fakeContentPage.hidden = false;
-        standaloneSearchPage.hidden = true;
-        document.body.classList.remove("search-entry-active");
         requestAnimationFrame(function () {
           if (typeof windowResized === "function") windowResized();
         });

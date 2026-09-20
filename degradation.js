@@ -250,14 +250,20 @@
     if (glitchPopupCount >= glitchPopupLimit) return;
 
     const popup = document.createElement("section");
-    const width = Math.min(250, Math.max(210, window.innerWidth - 16));
+    const isInvasionPopup = glitchPopupCount % 2 === 1;
+    const width = isInvasionPopup
+      ? Math.min(250, Math.max(210, window.innerWidth - 16))
+      : Math.min(360, Math.max(240, window.innerWidth * 0.3));
     const maxLeft = Math.max(8, window.innerWidth - width - 8);
-    const maxTop = Math.max(8, window.innerHeight - 190);
+    const popupHeight = isInvasionPopup ? 190 : 142;
+    const maxTop = Math.max(8, window.innerHeight - popupHeight);
     const left = 8 + Math.random() * Math.max(0, maxLeft - 8);
     const top = 8 + Math.random() * Math.max(0, maxTop - 8);
-    const stageSize = Math.ceil(glitchPopupLimit / invasionTextStages.length);
+    const invasionPopupLimit = Math.floor(glitchPopupLimit / 2);
+    const invasionPopupIndex = Math.floor(glitchPopupCount / 2);
+    const stageSize = Math.ceil(invasionPopupLimit / invasionTextStages.length);
     const textIndex = Math.min(
-      Math.floor(glitchPopupCount / stageSize),
+      Math.floor(invasionPopupIndex / stageSize),
       invasionTextStages.length - 1
     );
     const firstColorIndex = Math.floor(Math.random() * invasionColors.length);
@@ -266,17 +272,24 @@
       secondColorIndex = Math.floor(Math.random() * invasionColors.length);
     }
 
-    popup.className = "glitch-scatter-popup";
+    popup.className = "glitch-scatter-popup " +
+      (isInvasionPopup ? "glitch-invasion-popup" : "glitch-original-popup");
     popup.setAttribute("aria-hidden", "true");
     popup.style.width = width + "px";
     popup.style.left = left + "px";
     popup.style.top = top + "px";
-    popup.style.background =
-      "linear-gradient(180deg, " + invasionColors[firstColorIndex] + ", " +
-      invasionColors[secondColorIndex] + ")";
-    popup.innerHTML =
-      '<span class="glitch-invasion-close">X</span>' +
-      '<div class="glitch-scatter-body"><strong>' + invasionTextStages[textIndex] + '</strong></div>';
+    if (isInvasionPopup) {
+      popup.style.background =
+        "linear-gradient(180deg, " + invasionColors[firstColorIndex] + ", " +
+        invasionColors[secondColorIndex] + ")";
+      popup.innerHTML =
+        '<span class="glitch-invasion-close">X</span>' +
+        '<div class="glitch-scatter-body"><strong>' + invasionTextStages[textIndex] + '</strong></div>';
+    } else {
+      popup.innerHTML =
+        '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
+        '<div class="glitch-original-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';
+    }
 
     document.body.appendChild(popup);
     glitchPopupCount++;

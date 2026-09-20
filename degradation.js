@@ -7,6 +7,8 @@
   const finalGlitchDuration = 2200;
   const glitchPopupInterval = 28;
   const glitchPopupLimit = 56;
+  const invasionPopupInterval = 2500;
+  const invasionPopupLimit = 15;
   const invasionColors = ["#F7CD26", "#53A643", "#33FF58"];
   const invasionTextStages = [
     "YOU ARE THE 1,000,000TH VISITOR?",
@@ -93,6 +95,9 @@
   let finalGlitchHasStarted = false;
   let glitchPopupTimer = null;
   let glitchPopupCount = 0;
+  let invasionPopupTimer = null;
+  let currentInvasionPopups = 0;
+  let totalInvasionPopupsClosed = 0;
 
   function tryArmGlitchAdvertisement() {
     if (glitchAdvertisementHasBeenArmed) return;
@@ -232,9 +237,11 @@
       window.clearInterval(glitchPopupTimer);
       glitchPopupTimer = null;
     }
+    stopGradualInvasion();
     document.querySelectorAll(".glitch-scatter-popup").forEach(function (popup) {
       popup.remove();
     });
+    currentInvasionPopups = 0;
     if (typeof window.noLoop === "function") window.noLoop();
     if (typeof window.freezeAmigosAmbient === "function") window.freezeAmigosAmbient();
     replacePageWords();
@@ -250,20 +257,34 @@
     if (glitchPopupCount >= glitchPopupLimit) return;
 
     const popup = document.createElement("section");
-    const isInvasionPopup = glitchPopupCount % 2 === 1;
-    const width = isInvasionPopup
-      ? Math.min(250, Math.max(210, window.innerWidth - 16))
-      : Math.min(360, Math.max(240, window.innerWidth * 0.3));
+    const width = Math.min(360, Math.max(240, window.innerWidth * 0.3));
     const maxLeft = Math.max(8, window.innerWidth - width - 8);
-    const popupHeight = isInvasionPopup ? 190 : 142;
-    const maxTop = Math.max(8, window.innerHeight - popupHeight);
+    const maxTop = Math.max(8, window.innerHeight - 142);
     const left = 8 + Math.random() * Math.max(0, maxLeft - 8);
     const top = 8 + Math.random() * Math.max(0, maxTop - 8);
-    const invasionPopupLimit = Math.floor(glitchPopupLimit / 2);
-    const invasionPopupIndex = Math.floor(glitchPopupCount / 2);
-    const stageSize = Math.ceil(invasionPopupLimit / invasionTextStages.length);
+
+    popup.className = "glitch-scatter-popup glitch-original-popup";
+    popup.setAttribute("aria-hidden", "true");
+    popup.style.width = width + "px";
+    popup.style.left = left + "px";
+    popup.style.top = top + "px";
+    popup.innerHTML =
+      '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
+      '<div class="glitch-original-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';
+
+    document.body.appendChild(popup);
+    glitchPopupCount++;
+  }
+
+  function addGradualInvasionPopup() {
+    if (currentInvasionPopups >= invasionPopupLimit) return;
+
+    const popup = document.createElement("section");
+    const width = Math.min(250, Math.max(210, window.innerWidth - 16));
+    const maxLeft = Math.max(8, window.innerWidth - width - 8);
+    const maxTop = Math.max(8, window.innerHeight - 190);
     const textIndex = Math.min(
-      Math.floor(invasionPopupIndex / stageSize),
+      Math.floor(totalInvasionPopupsClosed / 2),
       invasionTextStages.length - 1
     );
     const firstColorIndex = Math.floor(Math.random() * invasionColors.length);
@@ -272,27 +293,37 @@
       secondColorIndex = Math.floor(Math.random() * invasionColors.length);
     }
 
-    popup.className = "glitch-scatter-popup " +
-      (isInvasionPopup ? "glitch-invasion-popup" : "glitch-original-popup");
-    popup.setAttribute("aria-hidden", "true");
+    popup.className = "glitch-scatter-popup glitch-invasion-popup gradual-invasion-popup";
     popup.style.width = width + "px";
-    popup.style.left = left + "px";
-    popup.style.top = top + "px";
-    if (isInvasionPopup) {
-      popup.style.background =
-        "linear-gradient(180deg, " + invasionColors[firstColorIndex] + ", " +
-        invasionColors[secondColorIndex] + ")";
-      popup.innerHTML =
-        '<span class="glitch-invasion-close">X</span>' +
-        '<div class="glitch-scatter-body"><strong>' + invasionTextStages[textIndex] + '</strong></div>';
-    } else {
-      popup.innerHTML =
-        '<div class="final-message-title"><span>' + finalMessage + '</span><b>×</b></div>' +
-        '<div class="glitch-original-body"><span class="final-message-symbol">!</span><strong>' + finalMessage + '</strong></div>';
-    }
+    popup.style.left = 8 + Math.random() * Math.max(0, maxLeft - 8) + "px";
+    popup.style.top = 8 + Math.random() * Math.max(0, maxTop - 8) + "px";
+    popup.style.background =
+      "linear-gradient(180deg, " + invasionColors[firstColorIndex] + ", " +
+      invasionColors[secondColorIndex] + ")";
+    popup.innerHTML =
+      '<button class="glitch-invasion-close" type="button" aria-label="Close popup">X</button>' +
+      '<div class="glitch-scatter-body"><strong>' + invasionTextStages[textIndex] + '</strong></div>';
+
+    popup.querySelector(".glitch-invasion-close").addEventListener("click", function () {
+      popup.remove();
+      currentInvasionPopups--;
+      totalInvasionPopupsClosed++;
+    });
 
     document.body.appendChild(popup);
-    glitchPopupCount++;
+    currentInvasionPopups++;
+  }
+
+  function startGradualInvasion() {
+    if (invasionPopupTimer !== null) return;
+    addGradualInvasionPopup();
+    invasionPopupTimer = window.setInterval(addGradualInvasionPopup, invasionPopupInterval);
+  }
+
+  function stopGradualInvasion() {
+    if (invasionPopupTimer === null) return;
+    window.clearInterval(invasionPopupTimer);
+    invasionPopupTimer = null;
   }
 
   function beginPopupScatter() {
@@ -309,6 +340,7 @@
   function beginFinalGlitch() {
     if (finalGlitchHasStarted) return;
     finalGlitchHasStarted = true;
+    stopGradualInvasion();
     window.dispatchEvent(new CustomEvent("amigos-final-glitch-started"));
     document.body.classList.add("page-glitching");
     beginPopupScatter();
@@ -319,6 +351,7 @@
     if (degradationHasStarted) return;
     degradationHasStarted = true;
     window.dispatchEvent(new CustomEvent("amigos-degradation-started"));
+    startGradualInvasion();
 
     let elapsed = 0;
     let interval = initialDegradationInterval;

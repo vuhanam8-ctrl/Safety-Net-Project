@@ -192,6 +192,15 @@ body {
   filter: contrast(1.2);
   animation: headline-memory-distortion 340ms steps(2,end) infinite;
 }
+
+/* The recovered Amigos Search is a standalone opening website, not part of the
+   later purple News shell. */
+.standalone-search-page { position: relative; z-index: 10000; width: 100%; min-height: 100vh; }
+.standalone-search-page[hidden] { display: none !important; }
+.search-entry-active { overflow-x: hidden; background: #fff; }
+.search-entry-active > #bg-canvas-container,
+.search-entry-active > .topbar,
+.search-entry-active > .amigos-page { display: none !important; }
 .story-copy-revealed { color: #27105f; text-shadow: .5px 0 rgba(122,0,205,.45); }
 
 @keyframes headline-memory-distortion {

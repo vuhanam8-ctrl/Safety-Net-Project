@@ -112,7 +112,10 @@ body {
 .shell-news-nav strong { margin-bottom: 6px; padding: 6px 8px; background: #aaa; color: #22305e; font-size: 14px; }
 .shell-news-nav a { padding: 4px 8px; color: #172a72; font-size: 13px; font-weight: bold; cursor: default; }
 .shell-quote h3, .shell-topics h3 { margin: -10px -10px 10px; padding: 6px 9px; background: #68459f; color: white; font-family: Georgia, serif; font-size: 14px; }
-.shell-quote p { font-style: italic; line-height: 1.45; }
+.shell-quote { padding: 14px; }
+.shell-quote h3 { margin: -14px -14px 14px; padding: 8px 10px; font-size: 17px; }
+.shell-quote p { font-size: 17px; font-style: italic; line-height: 1.5; }
+.shell-quote small { font-size: 14px; }
 .shell-promo { min-height: 130px; position: relative; overflow: hidden; background: repeating-linear-gradient(120deg,#ddd 0 8px,#222 8px 13px,#e7c52a 13px 19px); }
 .shell-promo::after { content:""; position:absolute; inset:14px 0 0; background:#f3f3ef; }
 .shell-person { position:absolute; z-index:2; width:48px; height:72px; left:42%; top:31px; border:2px solid #d62d28; border-radius:50%; background:linear-gradient(#777 45%,#222 46%); }

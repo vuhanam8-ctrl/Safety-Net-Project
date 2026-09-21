@@ -108,46 +108,48 @@
         display: flex;
         flex-direction: column;
         justify-content: flex-start;
-        width: 90%;
-        max-width: 900px;
+        width: 100%;
+        max-width: none;
         min-height: calc(100vh - 250px);
         margin: 0 auto;
-        padding: clamp(44px, 6vh, 72px) 0 32px;
+        padding: 24px 14px 34px;
       }
       .portal-board { font-family: Arial, sans-serif; }
-      .portal-section { margin-bottom: 12px; border: 1px solid #b9acd0; }
+      .portal-section { margin-bottom: 16px; border: 1px solid #b9acd0; }
       .portal-section-title {
         display: grid;
-        grid-template-columns: minmax(0,1fr) 64px 72px 170px;
-        padding: 6px 9px;
+        grid-template-columns: minmax(0,1fr) 82px 88px 205px;
+        min-height: 35px;
+        align-items: center;
+        padding: 7px 12px;
         background: #68459f;
         color: #fff;
-        font-size: 13px;
+        font-size: 16px;
         font-weight: bold;
       }
       .portal-section-title span:not(:first-child) { text-align: center; }
       .portal-row {
         display: grid;
-        grid-template-columns: minmax(0,1fr) 64px 72px 170px;
-        min-height: 54px;
+        grid-template-columns: minmax(0,1fr) 82px 88px 205px;
+        min-height: 82px;
         border-top: 1px solid #d8cdea;
         background: #faf9f5;
         color: #333;
       }
-      .portal-row-main { padding: 8px 10px; }
-      .portal-row-main a { color: #172a72; font-size: 14px; font-weight: bold; }
-      .portal-row-main p { margin: 3px 0 0; color: #666; font-size: 11px; line-height: 1.3; }
+      .portal-row-main { padding: 12px 14px; }
+      .portal-row-main a { color: #172a72; font-size: 17px; font-weight: bold; }
+      .portal-row-main p { margin: 6px 0 0; color: #666; font-size: 14px; line-height: 1.38; }
       .portal-stat, .portal-last {
         display: flex;
         align-items: center;
         justify-content: center;
-        padding: 6px;
+        padding: 10px;
         border-left: 1px solid #d8cdea;
         color: #68459f;
-        font-size: 11px;
+        font-size: 14px;
         text-align: center;
       }
-      .portal-last { align-items: flex-start; flex-direction: column; color: #555; text-align: left; }
+      .portal-last { align-items: flex-start; flex-direction: column; color: #555; font-size: 13px; line-height: 1.35; text-align: left; }
       .portal-last strong { color: #172a72; }
       .search-results {
         width: 100%;

@@ -7,24 +7,96 @@
     <style>
       * { box-sizing: border-box; }
       html, body { min-height: 100%; }
-      body { margin: 0; background: #fff; color: #000; font-family: Arial, sans-serif; }
-      .search-page { min-height: 100vh; background: #fff; }
+      html { background: #3700c0; }
+      body {
+        position: relative;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+        background:
+          radial-gradient(circle at 15% 76%, rgba(135, 0, 170, .9) 0 8%, transparent 24%),
+          radial-gradient(circle at 82% 23%, rgba(105, 0, 125, .82) 0 9%, transparent 27%),
+          linear-gradient(135deg, #190055, #69007d 48%, #320069 100%);
+        color: #000;
+        font-family: Arial, sans-serif;
+      }
+      body::before {
+        position: fixed;
+        inset: 0;
+        z-index: -1;
+        background-image:
+          radial-gradient(circle, rgba(255,255,255,.46) 0 2px, transparent 2.5px),
+          radial-gradient(circle, rgba(255,255,255,.2) 0 1px, transparent 1.5px);
+        background-position: 0 0, 15px 15px;
+        background-size: 31px 31px;
+        content: "";
+        mask-image: linear-gradient(115deg, #000, transparent 34%, transparent 66%, #000);
+        pointer-events: none;
+      }
+      body::after {
+        position: fixed;
+        right: -12vw;
+        bottom: 7vh;
+        left: -12vw;
+        z-index: -1;
+        height: 70px;
+        border-top: 5px solid rgba(255,255,255,.55);
+        border-radius: 50%;
+        content: "";
+        filter: blur(1px);
+        pointer-events: none;
+        transform: rotate(-2deg);
+      }
+      .search-shell {
+        width: min(calc(100% - clamp(24px, 7vw, 120px)), 1920px);
+        min-height: calc(100vh - 56px);
+        margin: 28px auto;
+        padding: 6px;
+        border: 2px solid #9670ff;
+        background: #af9bcf;
+        box-shadow: 0 0 0 2px rgba(55,0,192,.75), 0 16px 42px rgba(15,0,55,.5);
+      }
+      .search-shell-bar {
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        gap: 24px;
+        padding: 0 14px;
+        border: 2px solid #9670ff;
+        background: linear-gradient(180deg, #7355bd 12%, #3700c0 64%, #a1716c 110%, #f7cd26 126%);
+        color: #fff;
+      }
+      .search-shell-bar strong { font-family: Georgia, serif; font-size: 18px; }
+      .search-shell-bar nav { display: flex; align-self: stretch; }
+      .search-shell-bar a { display: flex; align-items: center; padding: 0 12px; color: #fff; font-weight: 800; text-decoration: none; }
+      .search-shell-bar a:hover, .search-shell-bar a.active { background: rgba(255,255,255,.13); }
+      .search-shell-banner {
+        height: 46px;
+        margin: 6px 0;
+        border: 2px solid #f8f9f1;
+        background:
+          linear-gradient(to bottom right,#f7cd26,#7c0ad8 50%,#3700c0) bottom right/51% 51% no-repeat,
+          linear-gradient(to bottom left,#f7cd26,#7c0ad8 50%,#3700c0) bottom left/51% 51% no-repeat,
+          linear-gradient(to top left,#f7cd26,#7c0ad8 50%,#3700c0) top left/51% 51% no-repeat,
+          linear-gradient(to top right,#f7cd26,#7c0ad8 50%,#3700c0) top right/51% 51% no-repeat;
+        animation: search-banner-pulse 5s ease-in-out infinite alternate;
+      }
+      @keyframes search-banner-pulse { to { filter: hue-rotate(22deg) brightness(1.08); } }
+      .search-page { min-height: calc(100vh - 184px); border: 2px solid #3700c0; background: #fff; }
       .search-content {
         display: flex;
         flex-direction: column;
         justify-content: center;
         width: 90%;
         max-width: 900px;
-        min-height: 100vh;
+        min-height: calc(100vh - 184px);
         margin: 0 auto;
-        transform: scale(1.18);
-        transform-origin: center;
       }
       .search-content.showing-results {
         display: block;
         width: 90%;
         max-width: 900px;
-        min-height: calc(100vh - 52px);
+        min-height: calc(100vh - 184px);
         margin-right: auto;
         margin-left: auto;
         padding-top: 90px;
@@ -93,19 +165,26 @@
       .directory-extra { font-size: 15px; font-weight: bold; }
       .directory-topic { font-style: italic; }
       .search-footer {
-        position: fixed;
-        right: 0;
-        bottom: 0;
-        left: 0;
+        position: static;
+        margin-top: 6px;
         padding: 16px;
-        border-top: 1px solid #ddd;
-        background: #f5f5f5;
-        color: #555;
+        border: 2px solid #f8f9f1;
+        background: linear-gradient(180deg, #7355bd 12%, #3700c0 64%, #a1716c 110%, #f7cd26 126%);
+        color: #fff;
         font-size: 13px;
+        font-weight: bold;
         text-align: center;
+        text-shadow: 1px 1px #3700c0;
       }
       [hidden] { display: none !important; }
+      @media (max-width: 1100px) {
+        .search-results { width: 100%; margin-left: 0; }
+      }
       @media (max-width: 760px) {
+        .search-shell { width: calc(100% - 16px); margin: 8px auto; }
+        .search-shell-bar { align-items: flex-start; flex-direction: column; gap: 4px; padding-top: 8px; }
+        .search-shell-bar nav { width: 100%; min-height: 34px; overflow-x: auto; }
+        .search-shell-bar a { padding: 0 9px; }
         .search-content { width: 86%; transform: none; }
         .search-form { grid-template-columns: 1fr; gap: 8px; }
         .search-button { width: 150px; }
@@ -114,7 +193,19 @@
     </style>
   </head>
   <body>
-    <main class="search-page">
+    <div class="search-shell">
+      <header class="search-shell-bar">
+        <strong>Amigos 4.0</strong>
+        <nav aria-label="Amigos sections">
+          <a class="active" href="search.html">Search</a>
+          <a href="index.html">News</a>
+          <a href="https://thuydan0812.github.io/Amigos4.0/">Blog</a>
+          <a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games</a>
+          <a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Messenger</a>
+        </nav>
+      </header>
+      <div class="search-shell-banner" aria-hidden="true"></div>
+      <main class="search-page">
       <section id="search-content" class="search-content">
         <h1 class="search-heading"><span class="search-name">SEARCH</span></h1>
         <nav class="search-tabs" aria-label="Search categories">
@@ -138,8 +229,9 @@
           </ul>
         </section>
       </section>
-    </main>
-    <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
+      </main>
+      <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
+    </div>
     <script>
       const input = document.getElementById("search-input");
       const suggestion = document.getElementById("search-suggestion");

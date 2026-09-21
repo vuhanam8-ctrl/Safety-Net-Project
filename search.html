@@ -152,6 +152,23 @@
       .search-side-directory-item { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; text-decoration: underline; }
       .search-side-form label { display: block; margin: 7px 0 3px; color: #68459f; font-size: 12px; }
       .search-side-form input[type="text"], .search-side-form input[type="password"] { width: 100%; height: 25px; border: 1px solid #9670ff; background: #fff; }
+      .login-autofill-wrap { position: relative; }
+      .login-autofill-menu {
+        position: absolute;
+        z-index: 20;
+        top: calc(100% + 2px);
+        left: 0;
+        width: 100%;
+        padding: 3px;
+        border: 1px solid #777;
+        background: #fff;
+        box-shadow: 1px 2px 5px rgba(0,0,0,.3);
+      }
+      .login-autofill-menu[hidden] { display: none; }
+      .login-autofill-option { width: 100%; margin: 0 !important; padding: 6px 7px !important; border: 0 !important; background: #fff !important; color: #222; text-align: left; }
+      .login-autofill-option:hover, .login-autofill-option:focus { background: #ece5ff !important; outline: 1px solid #9670ff; }
+      .login-autofill-option strong, .login-autofill-option small { display: block; }
+      .login-autofill-option small { margin-top: 2px; color: #666; font-size: 9px; font-weight: normal; }
       .search-side-form button { margin-top: 8px; padding: 4px 9px; border: 2px outset #ccc; background: #f7cd26; font-weight: bold; }
       .search-side-form-row { display: flex; align-items: center; gap: 5px; margin-top: 7px; font-size: 11px; }
       .search-side-form-row label { display: inline; margin: 0; color: #333; }
@@ -300,7 +317,7 @@
       </section>
       <div class="search-layout">
         <aside class="search-side" aria-label="Search directory navigation">
-          <section id="login-box" class="search-side-box search-side-login"><h2>Login</h2><form id="directory-login" class="search-side-form"><label for="directory-username">Username:</label><input id="directory-username" type="text" placeholder="Click to recover archive login" autocomplete="username"><label for="directory-password">Password:</label><input id="directory-password" type="password" placeholder="Click to recover archive key" autocomplete="current-password"><div class="search-side-form-row"><input id="remember-login" type="checkbox"><label for="remember-login">Remember me</label></div><button type="submit">Log In</button><p class="login-timeline-hint">Archive ID: month/year of the 2007 emergency.<br>Key: sobriety date in MMDDYYYY format.</p><p id="login-status" class="search-side-status" aria-live="polite"></p></form><div id="directory-profile" class="directory-profile" hidden><strong>marshall_1207</strong><div class="directory-profile-picture" role="img" aria-label="Blank profile picture"></div><button id="directory-logout" type="button">Log Out</button></div></section>
+          <section id="login-box" class="search-side-box search-side-login"><h2>Login</h2><form id="directory-login" class="search-side-form"><label for="directory-username">Username:</label><div class="login-autofill-wrap"><input id="directory-username" type="text" placeholder="Username" autocomplete="off" aria-controls="login-autofill-menu" aria-expanded="false"><div id="login-autofill-menu" class="login-autofill-menu" hidden><button id="login-autofill-option" class="login-autofill-option" type="button"><strong>marshall_1207</strong><small>Saved Amigos account</small></button></div></div><label for="directory-password">Password:</label><input id="directory-password" type="password" placeholder="Password" autocomplete="off"><div class="search-side-form-row"><input id="remember-login" type="checkbox"><label for="remember-login">Remember me</label></div><button type="submit">Log In</button><p class="login-timeline-hint">Select the saved account to continue.</p><p id="login-status" class="search-side-status" aria-live="polite"></p></form><div id="directory-profile" class="directory-profile" hidden><strong>marshall_1207</strong><div class="directory-profile-picture" role="img" aria-label="Blank profile picture"></div><button id="directory-logout" type="button">Log Out</button></div></section>
           <section class="search-side-box"><h2>Search</h2><form id="directory-search" class="search-side-form"><div class="directory-search-controls"><input id="directory-search-input" type="text" aria-label="Search the directory"><button type="submit">Go</button></div><div class="directory-search-options">Search inside the recovery directory.<br>Matching sections update below.</div><p id="directory-search-status" class="search-side-status" aria-live="polite"></p></form></section>
         </aside>
         <main class="search-page">
@@ -343,6 +360,8 @@
       const loginStatus = document.getElementById("login-status");
       const directoryUsername = document.getElementById("directory-username");
       const directoryPassword = document.getElementById("directory-password");
+      const loginAutofillMenu = document.getElementById("login-autofill-menu");
+      const loginAutofillOption = document.getElementById("login-autofill-option");
       const directoryProfile = document.getElementById("directory-profile");
       const directoryLogout = document.getElementById("directory-logout");
       const directorySearch = document.getElementById("directory-search");
@@ -351,15 +370,25 @@
 
       let directoryLoggedIn = sessionStorage.getItem("amigos-directory-login") === "true";
 
-      function recoverArchiveLogin() {
-        if (!directoryUsername.value && !directoryPassword.value) {
-          directoryUsername.value = "marshall_1207";
-          directoryPassword.value = "04202008";
-        }
+      function setAutofillMenu(open) {
+        loginAutofillMenu.hidden = !open;
+        directoryUsername.setAttribute("aria-expanded", String(open));
       }
 
-      directoryUsername.addEventListener("click", recoverArchiveLogin);
-      directoryPassword.addEventListener("click", recoverArchiveLogin);
+      directoryUsername.addEventListener("click", function () {
+        setAutofillMenu(true);
+      });
+
+      loginAutofillOption.addEventListener("click", function () {
+        directoryUsername.value = "marshall_1207";
+        directoryPassword.value = "04202008";
+        setAutofillMenu(false);
+        directoryPassword.focus();
+      });
+
+      document.addEventListener("click", function (event) {
+        if (!event.target.closest(".login-autofill-wrap")) setAutofillMenu(false);
+      });
 
       function renderLoginState() {
         directoryLogin.hidden = directoryLoggedIn;
@@ -375,7 +404,7 @@
         const credentialsMatch = directoryUsername.value.trim().toLowerCase() === "marshall_1207" && directoryPassword.value === "04202008";
         if (!credentialsMatch) {
           loginBox.classList.add("login-required");
-          loginStatus.textContent = "Timeline details do not match.";
+          loginStatus.textContent = "Incorrect username or password.";
           return;
         }
 

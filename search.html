@@ -150,6 +150,15 @@
       .search-side-box p { font-size: 12px; line-height: 1.45; }
       .search-side-box a { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; }
       .search-side-directory-item { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; text-decoration: underline; }
+      .search-side-form label { display: block; margin: 7px 0 3px; color: #68459f; font-size: 12px; }
+      .search-side-form input[type="text"], .search-side-form input[type="password"] { width: 100%; height: 25px; border: 1px solid #9670ff; background: #fff; }
+      .search-side-form button { margin-top: 8px; padding: 4px 9px; border: 2px outset #ccc; background: #f7cd26; font-weight: bold; }
+      .search-side-form-row { display: flex; align-items: center; gap: 5px; margin-top: 7px; font-size: 11px; }
+      .search-side-form-row label { display: inline; margin: 0; color: #333; }
+      .search-side-status { min-height: 16px; margin: 7px 0 0; color: #68459f; font-size: 10px; }
+      .directory-search-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px; }
+      .directory-search-controls button { margin-top: 0; }
+      .directory-search-options { margin-top: 7px; color: #555; font-size: 10px; line-height: 1.45; }
       .search-side-box small { color: #777; }
       .search-side-promo { min-height: 145px; text-align: center; }
       .search-side-promo strong { display: block; margin: 10px 0; }
@@ -189,6 +198,7 @@
       }
       .portal-row-main { padding: 12px 14px; }
       .portal-row-main a { color: #172a72; font-size: 17px; font-weight: bold; }
+      .portal-row-title { color: #172a72; font-size: 17px; font-weight: bold; }
       .portal-row-main p { margin: 6px 0 0; color: #666; font-size: 14px; line-height: 1.38; }
       .portal-stat, .portal-last {
         display: flex;
@@ -282,8 +292,8 @@
       </section>
       <div class="search-layout">
         <aside class="search-side" aria-label="Search directory navigation">
-          <section class="search-side-box search-side-promo"><small>ADVERTISEMENT</small><strong>FREE SUPPORT RESOURCES!</strong><p>Find confidential treatment and recovery information.</p><button type="button">Learn More</button></section>
-          <section class="search-side-box"><h2>Directory</h2><span class="search-side-directory-item">Front Page</span><span class="search-side-directory-item">Recovery News</span><span class="search-side-directory-item">Personal Stories</span><span class="search-side-directory-item">Interactive Support</span><span class="search-side-directory-item">Community</span></section>
+          <section class="search-side-box"><h2>Login</h2><form id="directory-login" class="search-side-form"><label for="directory-username">Username:</label><input id="directory-username" type="text" autocomplete="username"><label for="directory-password">Password:</label><input id="directory-password" type="password" autocomplete="current-password"><div class="search-side-form-row"><input id="remember-login" type="checkbox"><label for="remember-login">Remember me</label></div><button type="submit">Log In</button><p id="login-status" class="search-side-status" aria-live="polite"></p></form></section>
+          <section class="search-side-box"><h2>Search</h2><form id="directory-search" class="search-side-form"><div class="directory-search-controls"><input id="directory-search-input" type="text" aria-label="Search the directory"><button type="submit">Go</button></div><div class="directory-search-options">Search inside the recovery directory.<br>Matching sections update below.</div><p id="directory-search-status" class="search-side-status" aria-live="polite"></p></form></section>
         </aside>
         <main class="search-page">
       <section id="search-content" class="search-content">
@@ -303,6 +313,12 @@
             <header class="portal-section-title"><span>Entertainment</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
             <article class="portal-row"><div class="portal-row-main"><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games — Interactive recovery and awareness</a><p>Explore choices and pathways to care through creative interactive experiences.</p></div><div class="portal-stat">9</div><div class="portal-stat">44</div><div class="portal-last"><strong>New activity available</strong><span>Friday, 12:33 AM</span></div></article>
           </section>
+
+          <section class="portal-section">
+            <header class="portal-section-title"><span>Other Resources</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
+            <article class="portal-row"><div class="portal-row-main"><span class="portal-row-title">Employment and rebuilding stability</span><p>Practical discussion about returning to work, rebuilding routines and finding community assistance.</p></div><div class="portal-stat">5</div><div class="portal-stat">32</div><div class="portal-last"><strong>Finding a fresh start</strong><span>Thursday, 10:28 PM</span></div></article>
+            <article class="portal-row"><div class="portal-row-main"><span class="portal-row-title">Community notices and mutual aid</span><p>Local notices for support groups, donated resources and recovery-friendly community events.</p></div><div class="portal-stat">9</div><div class="portal-stat">25</div><div class="portal-last"><strong>New support meeting</strong><span>Friday, 4:27 AM</span></div></article>
+          </section>
         </section>
       </section>
         </main>
@@ -313,6 +329,40 @@
       </div>
       <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
     </div>
+    <script>
+      const directoryLogin = document.getElementById("directory-login");
+      const loginStatus = document.getElementById("login-status");
+      const directorySearch = document.getElementById("directory-search");
+      const directorySearchInput = document.getElementById("directory-search-input");
+      const directorySearchStatus = document.getElementById("directory-search-status");
+
+      directoryLogin.addEventListener("submit", function (event) {
+        event.preventDefault();
+        loginStatus.textContent = "Demo directory — no account data is sent.";
+      });
+
+      function filterDirectory() {
+        const query = directorySearchInput.value.trim().toLowerCase();
+        let visibleRows = 0;
+        document.querySelectorAll(".portal-section").forEach(function (section) {
+          let sectionMatches = 0;
+          section.querySelectorAll(".portal-row").forEach(function (row) {
+            const matches = query === "" || row.textContent.toLowerCase().includes(query);
+            row.hidden = !matches;
+            if (matches) sectionMatches++;
+          });
+          section.hidden = sectionMatches === 0;
+          visibleRows += sectionMatches;
+        });
+        directorySearchStatus.textContent = query === "" ? "" : visibleRows + " matching result" + (visibleRows === 1 ? "" : "s") + ".";
+      }
+
+      directorySearch.addEventListener("submit", function (event) {
+        event.preventDefault();
+        filterDirectory();
+      });
+      directorySearchInput.addEventListener("input", filterDirectory);
+    </script>
     <script src="sketchUI.js?v=search-shared-ambient-7"></script>
   </body>
 </html>

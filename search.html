@@ -53,8 +53,8 @@
       }
       .search-shell-bar strong { font-family: Georgia, serif; font-size: 18px; }
       .search-shell-bar nav { display: flex; align-self: stretch; }
-      .search-shell-bar a { display: flex; align-items: center; padding: 0 12px; color: #fff; font-weight: 800; text-decoration: none; }
-      .search-shell-bar a:hover, .search-shell-bar a.active { background: rgba(255,255,255,.13); }
+      .search-shell-bar nav a, .search-shell-bar nav span { display: flex; align-items: center; padding: 0 12px; color: #fff; font-weight: 800; text-decoration: none; }
+      .search-shell-bar nav a:hover, .search-shell-bar nav .active { background: rgba(255,255,255,.13); }
       .search-shell-bar .whats-new { margin-left: auto; padding: 3px 9px; border: 2px solid #b9acd0; background: transparent; font: bold 12px Arial, sans-serif; }
       .search-site-header {
         min-height: 64px;
@@ -68,8 +68,8 @@
       .search-site-brand { color: #3700c0; font: bold 30px Georgia, serif; }
       .search-site-brand span { margin-left: 4px; color: #f7cd26; font: bold 18px Arial, sans-serif; }
       .search-site-nav { justify-self: center; display: flex; gap: 14px; margin-top: 5px; }
-      .search-site-nav a { color: #3700c0; font-size: 12px; font-weight: bold; text-decoration: none; }
-      .search-site-nav a + a::before { margin-right: 14px; content: "|"; }
+      .search-site-nav span { color: #3700c0; font-size: 12px; font-weight: bold; }
+      .search-site-nav span + span::before { margin-right: 14px; content: "|"; }
       .search-shell-banner {
         height: 54px;
         position: relative;
@@ -149,6 +149,7 @@
       .search-side-box h2 { margin: -10px -10px 10px; padding: 6px 9px; background: #68459f; color: #fff; font: bold 14px Georgia, serif; }
       .search-side-box p { font-size: 12px; line-height: 1.45; }
       .search-side-box a { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; }
+      .search-side-directory-item { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; text-decoration: underline; }
       .search-side-box small { color: #777; }
       .search-side-promo { min-height: 145px; text-align: center; }
       .search-side-promo strong { display: block; margin: 10px 0; }
@@ -247,18 +248,18 @@
     <header class="search-shell-bar">
       <strong>Amigos 4.0</strong>
       <nav aria-label="Amigos sections">
-        <a class="active" href="search.html">Search</a>
-        <a href="https://thuydan0812.github.io/Amigos4.0/">Blog</a>
-        <a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games</a>
-        <a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Messenger</a>
-      </nav>
-      <a class="whats-new" href="index.html">What's New?</a>
+          <a class="active" href="search.html">Search</a>
+          <span>Blog</span>
+          <span>Games</span>
+          <span>Messenger</span>
+        </nav>
+      <button class="whats-new" type="button">What's New?</button>
     </header>
     <div class="search-shell">
       <header class="search-site-header">
         <div class="search-site-brand">AMIGOS!<span>Search</span></div>
         <nav class="search-site-nav" aria-label="Search sections">
-          <a href="index.html">Front Page</a><a href="index.html">World</a><a href="index.html">Vietnam</a><a href="index.html">Health</a><a href="index.html">Community</a><a href="index.html">In Depth</a>
+          <span>Front Page</span><span>World</span><span>Vietnam</span><span>Health</span><span>Community</span><span>In Depth</span>
         </nav>
       </header>
       <div class="banner search-shell-banner" aria-label="You saw the addiction. Did you see the person?"></div>
@@ -282,7 +283,7 @@
       <div class="search-layout">
         <aside class="search-side" aria-label="Search directory navigation">
           <section class="search-side-box search-side-promo"><small>ADVERTISEMENT</small><strong>FREE SUPPORT RESOURCES!</strong><p>Find confidential treatment and recovery information.</p><button type="button">Learn More</button></section>
-          <section class="search-side-box"><h2>Directory</h2><a href="index.html">Front Page</a><a href="index.html">Recovery News</a><a href="https://thuydan0812.github.io/Amigos4.0/">Personal Stories</a><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Interactive Support</a><a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Community</a></section>
+          <section class="search-side-box"><h2>Directory</h2><span class="search-side-directory-item">Front Page</span><span class="search-side-directory-item">Recovery News</span><span class="search-side-directory-item">Personal Stories</span><span class="search-side-directory-item">Interactive Support</span><span class="search-side-directory-item">Community</span></section>
         </aside>
         <main class="search-page">
       <section id="search-content" class="search-content">
@@ -290,19 +291,16 @@
           <section class="portal-section">
             <header class="portal-section-title"><span>Recovery &amp; Support Centre</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
             <article class="portal-row"><div class="portal-row-main"><a href="index.html">News — Recovery reports and trusted support information</a><p>Updates about voluntary treatment, emergency contacts and confidential community services.</p></div><div class="portal-stat">20</div><div class="portal-stat">70</div><div class="portal-last"><strong>Support directory updated</strong><span>Today, 10:13 AM</span></div></article>
-            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Questions, guidance and finding the right help</a><p>Ask about recovery options, approaching a loved one and where to begin without judgement.</p></div><div class="portal-stat">8</div><div class="portal-stat">39</div><div class="portal-last"><strong>How do I start?</strong><span>Today, 1:33 PM</span></div></article>
           </section>
 
           <section class="portal-section">
             <header class="portal-section-title"><span>Community Discussion</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
             <article class="portal-row"><div class="portal-row-main"><a href="https://thuydan0812.github.io/Amigos4.0/">Blog — Personal stories and community voices</a><p>A place to share progress, setbacks and the moments that helped someone ask for support.</p></div><div class="portal-stat">14</div><div class="portal-stat">40</div><div class="portal-last"><strong>One day at a time</strong><span>Sunday, 6:24 AM</span></div></article>
             <article class="portal-row"><div class="portal-row-main"><a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Messenger — Peer support and conversation</a><p>Conversations for people supporting someone affected by substance use.</p></div><div class="portal-stat">11</div><div class="portal-stat">166</div><div class="portal-last"><strong>Listening without blame</strong><span>Saturday, 7:28 PM</span></div></article>
-            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Health, harm reduction and safety</a><p>Practical information about overdose risks, safer choices and urgent medical care.</p></div><div class="portal-stat">26</div><div class="portal-stat">128</div><div class="portal-last"><strong>Recognising warning signs</strong><span>Saturday, 11:37 PM</span></div></article>
           </section>
 
           <section class="portal-section">
-            <header class="portal-section-title"><span>Learning &amp; Resources</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
-            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Understanding addiction and recovery</a><p>Learn how health, environment and support networks can shape a person’s experience.</p></div><div class="portal-stat">18</div><div class="portal-stat">51</div><div class="portal-last"><strong>Beyond the stereotype</strong><span>Monday, 9:13 PM</span></div></article>
+            <header class="portal-section-title"><span>Entertainment</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
             <article class="portal-row"><div class="portal-row-main"><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games — Interactive recovery and awareness</a><p>Explore choices and pathways to care through creative interactive experiences.</p></div><div class="portal-stat">9</div><div class="portal-stat">44</div><div class="portal-last"><strong>New activity available</strong><span>Friday, 12:33 AM</span></div></article>
           </section>
         </section>

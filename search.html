@@ -85,6 +85,56 @@
       }
       .search-shell-banner canvas { display: block; width: 100% !important; height: 100% !important; }
       @keyframes search-banner-pulse { to { filter: hue-rotate(22deg) brightness(1.08); } }
+      .portal-prelude { margin-bottom: 6px; padding-bottom: 4px; background: #af9bcf; color: #2c2c2c; }
+      .portal-announcement-bar {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0,1fr));
+        min-height: 40px;
+        align-items: center;
+        border: 2px solid #9670ff;
+        background: #f7f4df;
+        color: #68459f;
+        font-size: 14px;
+        font-weight: bold;
+        text-align: center;
+      }
+      .portal-announcement-bar span { padding: 7px 12px; }
+      .portal-feature-grid {
+        display: grid;
+        grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px);
+        gap: 6px;
+        padding: 6px 6px 0;
+      }
+      .portal-feature-ad {
+        min-height: 96px;
+        display: grid;
+        grid-template-columns: minmax(180px,.85fr) minmax(0,1.15fr) auto;
+        align-items: center;
+        border: 2px solid #9670ff;
+        background: #fff;
+        overflow: hidden;
+      }
+      .portal-feature-ad-mark {
+        align-self: stretch;
+        display: grid;
+        place-items: center;
+        background: linear-gradient(135deg,#3700c0,#9670ff 62%,#f7cd26);
+        color: #fff;
+        font: bold 20px Georgia, serif;
+        text-align: center;
+      }
+      .portal-feature-ad-copy { padding: 10px 14px; }
+      .portal-feature-ad-copy strong { display: block; margin-bottom: 5px; font-size: 17px; }
+      .portal-feature-ad-copy small { color: #666; font-size: 12px; }
+      .portal-feature-ad button { margin-right: 14px; padding: 6px 14px; border: 2px outset #ccc; background: #f7cd26; font-weight: bold; white-space: nowrap; }
+      .portal-directory-label {
+        margin: 3px calc(clamp(170px,14vw,300px) + 12px) 0;
+        padding: 2px 0;
+        border-bottom: 1px solid #68459f;
+        color: #3700c0;
+        font-size: 11px;
+        font-weight: bold;
+      }
       .search-layout {
         display: grid;
         grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px);
@@ -178,6 +228,9 @@
       }
       [hidden] { display: none !important; }
       @media (max-width: 900px) {
+        .portal-feature-grid { grid-template-columns: minmax(0,1fr); }
+        .portal-feature-spacer { display: none; }
+        .portal-directory-label { margin-right: 6px; margin-left: 6px; }
         .search-layout { grid-template-columns: minmax(0,1fr); }
         .search-side { display: none; }
         .search-footer { margin-right: 0; margin-left: 0; }
@@ -190,6 +243,11 @@
         .search-shell-bar a { padding: 0 9px; }
         .search-shell-bar .whats-new { display: none; }
         .search-site-nav { max-width: 100%; overflow-x: auto; }
+        .portal-announcement-bar { grid-template-columns: 1fr; }
+        .portal-announcement-bar span + span { border-top: 1px solid #d8cdea; }
+        .portal-feature-ad { grid-template-columns: 1fr; }
+        .portal-feature-ad-mark { min-height: 64px; }
+        .portal-feature-ad button { width: calc(100% - 28px); margin: 0 14px 12px; }
         .search-content { width: 86%; transform: none; }
         .portal-section-title { grid-template-columns: 1fr; }
         .portal-section-title span:not(:first-child), .portal-stat, .portal-last { display: none; }
@@ -217,6 +275,23 @@
         </nav>
       </header>
       <div class="banner search-shell-banner" aria-label="You saw the addiction. Did you see the person?"></div>
+      <section class="portal-prelude" aria-label="Recovery directory introduction">
+        <div class="portal-announcement-bar">
+          <span>CONFIDENTIAL SUPPORT IS AVAILABLE</span>
+          <span>RECOVERY BEGINS WITH ONE HONEST CONVERSATION</span>
+          <span>SEE THE PERSON, NOT THE ADDICTION</span>
+        </div>
+        <div class="portal-feature-grid">
+          <div class="portal-feature-spacer" aria-hidden="true"></div>
+          <section class="portal-feature-ad">
+            <div class="portal-feature-ad-mark">YOU ARE<br>NOT ALONE</div>
+            <div class="portal-feature-ad-copy"><strong>Find voluntary treatment and recovery support</strong><small>Confidential guidance for individuals, families and friends in Vietnam.</small></div>
+            <button type="button">Find Help</button>
+          </section>
+          <div class="portal-feature-spacer" aria-hidden="true"></div>
+        </div>
+        <div class="portal-directory-label">AMIGOS RECOVERY &amp; SUPPORT DIRECTORY</div>
+      </section>
       <div class="search-layout">
         <aside class="search-side" aria-label="Search directory navigation">
           <section class="search-side-box search-side-promo"><small>ADVERTISEMENT</small><strong>FREE SUPPORT RESOURCES!</strong><p>Find confidential treatment and recovery information.</p><button type="button">Learn More</button></section>

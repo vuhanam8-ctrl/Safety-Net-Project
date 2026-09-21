@@ -137,7 +137,7 @@
       }
       .search-layout {
         display: grid;
-        grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px);
+        grid-template-columns: clamp(180px,11vw,220px) minmax(0,1fr);
         gap: 6px;
         align-items: stretch;
         padding: 6px;
@@ -145,8 +145,11 @@
         background: #af9bcf;
       }
       .search-side { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
-      .search-side-box { padding: 10px; border: 1px solid #c9c8c2; background: linear-gradient(110deg,#fff,#e9e7df); color: #2c2c2c; }
-      .search-side-box h2 { margin: -10px -10px 10px; padding: 6px 9px; background: #68459f; color: #fff; font: bold 14px Georgia, serif; }
+      .search-side-box { padding: 8px; border: 2px solid #9670ff; background: #f7f4df; color: #2c2c2c; }
+      .search-side-box h2 { position: relative; margin: -8px -8px 8px; padding: 4px 8px; border-bottom: 1px solid #9670ff; background: linear-gradient(90deg,#f7cd26,#9670ff,#f7cd26); color: #3700c0; font: bold 13px Arial, sans-serif; text-align: center; }
+      .search-side > .search-side-box h2::before, .search-side > .search-side-box h2::after { content: "★"; position: absolute; top: 3px; color: #3700c0; }
+      .search-side > .search-side-box h2::before { left: 7px; }
+      .search-side > .search-side-box h2::after { right: 7px; }
       .search-side-box p { font-size: 12px; line-height: 1.45; }
       .search-side-box a { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; }
       .search-side-directory-item { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; text-decoration: underline; }
@@ -184,10 +187,6 @@
       .directory-search-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px; }
       .directory-search-controls button { margin-top: 0; }
       .directory-search-options { margin-top: 7px; color: #555; font-size: 10px; line-height: 1.45; }
-      .top-posters-box h2 { position: relative; text-align: center; }
-      .top-posters-box h2::before, .top-posters-box h2::after { content: "★"; position: absolute; top: 5px; color: #f7cd26; }
-      .top-posters-box h2::before { left: 8px; }
-      .top-posters-box h2::after { right: 8px; }
       .top-poster { padding: 7px 1px 9px; border-bottom: 1px solid #d8cdea; }
       .top-poster:last-child { border-bottom: 0; }
       .top-poster-name { display: block; color: #172a72; font-size: 12px; font-weight: bold; text-decoration: underline; overflow-wrap: anywhere; }
@@ -359,10 +358,6 @@
         </section>
       </section>
         </main>
-        <aside class="search-side" aria-label="Support information">
-          <section class="search-side-box"><h2>Quote of the Day</h2><p><em>“I finally summoned up the courage to say three words that would change my life: I need help.”</em></p><small>— Elton John</small></section>
-          <section class="search-side-box"><h2>Need Support?</h2><p>You are not alone. Help can begin with one honest conversation.</p><a href="tel:115">115 — Medical emergency</a><a href="tel:+84963061414">0963 061 414 — Tomorrow Hotline</a></section>
-        </aside>
       </div>
       <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
     </div>

@@ -184,6 +184,17 @@
       .directory-search-controls { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 4px; }
       .directory-search-controls button { margin-top: 0; }
       .directory-search-options { margin-top: 7px; color: #555; font-size: 10px; line-height: 1.45; }
+      .top-posters-box h2 { position: relative; text-align: center; }
+      .top-posters-box h2::before, .top-posters-box h2::after { content: "★"; position: absolute; top: 5px; color: #f7cd26; }
+      .top-posters-box h2::before { left: 8px; }
+      .top-posters-box h2::after { right: 8px; }
+      .top-poster { padding: 7px 1px 9px; border-bottom: 1px solid #d8cdea; }
+      .top-poster:last-child { border-bottom: 0; }
+      .top-poster-name { display: block; color: #172a72; font-size: 12px; font-weight: bold; text-decoration: underline; overflow-wrap: anywhere; }
+      .top-poster-role { display: block; margin: 2px 0 5px; color: #666; font-size: 9px; line-height: 1.25; }
+      .top-poster-meter { height: 7px; border: 1px solid #9670ff; border-radius: 7px; background: #fff; overflow: hidden; }
+      .top-poster-meter span { display: block; height: 100%; background: linear-gradient(90deg,#3700c0,#9670ff,#f7cd26); }
+      .top-poster-count { display: block; margin-top: 3px; color: #68459f; font-size: 9px; text-align: right; }
       .search-side-box small { color: #777; }
       .search-side-promo { min-height: 145px; text-align: center; }
       .search-side-promo strong { display: block; margin: 10px 0; }
@@ -319,6 +330,7 @@
         <aside class="search-side" aria-label="Search directory navigation">
           <section id="login-box" class="search-side-box search-side-login"><h2>Login</h2><form id="directory-login" class="search-side-form"><label for="directory-username">Username:</label><div class="login-autofill-wrap"><input id="directory-username" type="text" placeholder="Username" autocomplete="off" aria-controls="login-autofill-menu" aria-expanded="false"><div id="login-autofill-menu" class="login-autofill-menu" hidden><button id="login-autofill-option" class="login-autofill-option" type="button"><strong>marshall_1207</strong><small>Saved Amigos account</small></button></div></div><label for="directory-password">Password:</label><input id="directory-password" type="password" placeholder="Password" autocomplete="off"><div class="search-side-form-row"><input id="remember-login" type="checkbox"><label for="remember-login">Remember me</label></div><button type="submit">Log In</button><p class="login-timeline-hint">Select the saved account to continue.</p><p id="login-status" class="search-side-status" aria-live="polite"></p></form><div id="directory-profile" class="directory-profile" hidden><strong>marshall_1207</strong><div class="directory-profile-picture" role="img" aria-label="Blank profile picture"></div><button id="directory-logout" type="button">Log Out</button></div></section>
           <section class="search-side-box"><h2>Search</h2><form id="directory-search" class="search-side-form"><div class="directory-search-controls"><input id="directory-search-input" type="text" aria-label="Search the directory"><button type="submit">Go</button></div><div class="directory-search-options">Search inside the recovery directory.<br>Matching sections update below.</div><p id="directory-search-status" class="search-side-status" aria-live="polite"></p></form></section>
+          <section class="search-side-box top-posters-box"><h2>Top Posters</h2><div class="top-poster"><span class="top-poster-name">hope_after_rain</span><span class="top-poster-role">Recovery peer · sharing safer next steps</span><div class="top-poster-meter"><span style="width:92%"></span></div><span class="top-poster-count">184 supportive posts</span></div><div class="top-poster"><span class="top-poster-name">second_chance_vn</span><span class="top-poster-role">Community advocate · treatment resources</span><div class="top-poster-meter"><span style="width:76%"></span></div><span class="top-poster-count">151 supportive posts</span></div><div class="top-poster"><span class="top-poster-name">quiet_recovery</span><span class="top-poster-role">Lived-experience voice · stigma-free stories</span><div class="top-poster-meter"><span style="width:61%"></span></div><span class="top-poster-count">122 supportive posts</span></div><div class="top-poster"><span class="top-poster-name">listen_without_blame</span><span class="top-poster-role">Peer listener · family and friend support</span><div class="top-poster-meter"><span style="width:48%"></span></div><span class="top-poster-count">96 supportive posts</span></div><div class="top-poster"><span class="top-poster-name">clear_morning</span><span class="top-poster-role">Harm-reduction volunteer · practical guidance</span><div class="top-poster-meter"><span style="width:34%"></span></div><span class="top-poster-count">68 supportive posts</span></div></section>
         </aside>
         <main class="search-page">
       <section id="search-content" class="search-content">

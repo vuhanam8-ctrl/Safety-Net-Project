@@ -107,11 +107,12 @@
       .search-content {
         display: flex;
         flex-direction: column;
-        justify-content: center;
+        justify-content: flex-start;
         width: 90%;
         max-width: 900px;
         min-height: calc(100vh - 250px);
         margin: 0 auto;
+        padding: clamp(44px, 6vh, 72px) 0 32px;
       }
       .search-content.showing-results {
         display: block;
@@ -171,6 +172,42 @@
       }
       .search-button:hover { background: #000; color: #fff; cursor: pointer; }
       .small-links { margin-top: 35px; color: blue; text-align: center; text-decoration: underline; }
+      .portal-board { margin-top: 42px; font-family: Arial, sans-serif; }
+      .search-content.showing-results .portal-board { display: none; }
+      .portal-section { margin-bottom: 12px; border: 1px solid #b9acd0; }
+      .portal-section-title {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 64px 72px 170px;
+        padding: 6px 9px;
+        background: #68459f;
+        color: #fff;
+        font-size: 13px;
+        font-weight: bold;
+      }
+      .portal-section-title span:not(:first-child) { text-align: center; }
+      .portal-row {
+        display: grid;
+        grid-template-columns: minmax(0,1fr) 64px 72px 170px;
+        min-height: 54px;
+        border-top: 1px solid #d8cdea;
+        background: #faf9f5;
+        color: #333;
+      }
+      .portal-row-main { padding: 8px 10px; }
+      .portal-row-main a { color: #172a72; font-size: 14px; font-weight: bold; }
+      .portal-row-main p { margin: 3px 0 0; color: #666; font-size: 11px; line-height: 1.3; }
+      .portal-stat, .portal-last {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 6px;
+        border-left: 1px solid #d8cdea;
+        color: #68459f;
+        font-size: 11px;
+        text-align: center;
+      }
+      .portal-last { align-items: flex-start; flex-direction: column; color: #555; text-align: left; }
+      .portal-last strong { color: #172a72; }
       .search-results {
         width: min(calc(100vw - 50px), 1100px);
         max-width: none;
@@ -218,6 +255,9 @@
         .search-form { grid-template-columns: 1fr; gap: 8px; }
         .search-button { width: 150px; }
         .search-name { display: block; letter-spacing: 4px; }
+        .portal-section-title { grid-template-columns: 1fr; }
+        .portal-section-title span:not(:first-child), .portal-stat, .portal-last { display: none; }
+        .portal-row { grid-template-columns: 1fr; }
       }
     </style>
   </head>
@@ -260,6 +300,26 @@
           <button id="search-button" class="search-button" type="button">Web Search</button>
         </div>
         <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
+        <section class="portal-board" aria-label="Recovery and support directory">
+          <section class="portal-section">
+            <header class="portal-section-title"><span>Recovery &amp; Support Centre</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
+            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Announcements and trusted support information</a><p>Updates about voluntary treatment, emergency contacts and confidential community services.</p></div><div class="portal-stat">20</div><div class="portal-stat">70</div><div class="portal-last"><strong>Support directory updated</strong><span>Today, 10:13 AM</span></div></article>
+            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Questions, guidance and finding the right help</a><p>Ask about recovery options, approaching a loved one and where to begin without judgement.</p></div><div class="portal-stat">8</div><div class="portal-stat">39</div><div class="portal-last"><strong>How do I start?</strong><span>Today, 1:33 PM</span></div></article>
+          </section>
+
+          <section class="portal-section">
+            <header class="portal-section-title"><span>Community Discussion</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
+            <article class="portal-row"><div class="portal-row-main"><a href="https://thuydan0812.github.io/Amigos4.0/">Recovery stories</a><p>A place to share progress, setbacks and the moments that helped someone ask for support.</p></div><div class="portal-stat">14</div><div class="portal-stat">40</div><div class="portal-last"><strong>One day at a time</strong><span>Sunday, 6:24 AM</span></div></article>
+            <article class="portal-row"><div class="portal-row-main"><a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Family, friends and peer support</a><p>Conversations for people supporting someone affected by substance use.</p></div><div class="portal-stat">11</div><div class="portal-stat">166</div><div class="portal-last"><strong>Listening without blame</strong><span>Saturday, 7:28 PM</span></div></article>
+            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Health, harm reduction and safety</a><p>Practical information about overdose risks, safer choices and urgent medical care.</p></div><div class="portal-stat">26</div><div class="portal-stat">128</div><div class="portal-last"><strong>Recognising warning signs</strong><span>Saturday, 11:37 PM</span></div></article>
+          </section>
+
+          <section class="portal-section">
+            <header class="portal-section-title"><span>Learning &amp; Resources</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
+            <article class="portal-row"><div class="portal-row-main"><a href="index.html">Understanding addiction and recovery</a><p>Learn how health, environment and support networks can shape a person’s experience.</p></div><div class="portal-stat">18</div><div class="portal-stat">51</div><div class="portal-last"><strong>Beyond the stereotype</strong><span>Monday, 9:13 PM</span></div></article>
+            <article class="portal-row"><div class="portal-row-main"><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Interactive awareness activities</a><p>Explore choices and pathways to care through creative interactive experiences.</p></div><div class="portal-stat">9</div><div class="portal-stat">44</div><div class="portal-last"><strong>New activity available</strong><span>Friday, 12:33 AM</span></div></article>
+          </section>
+        </section>
         <section id="search-results" class="search-results" hidden>
           <h2>Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”</h2>
           <ul class="directory-results">

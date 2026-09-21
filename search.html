@@ -300,7 +300,7 @@
       </section>
       <div class="search-layout">
         <aside class="search-side" aria-label="Search directory navigation">
-          <section id="login-box" class="search-side-box search-side-login"><h2>Login</h2><form id="directory-login" class="search-side-form"><label for="directory-username">Username:</label><input id="directory-username" type="text" placeholder="case_122007" autocomplete="username"><label for="directory-password">Password:</label><input id="directory-password" type="password" placeholder="MMDDYYYY" autocomplete="current-password"><div class="search-side-form-row"><input id="remember-login" type="checkbox"><label for="remember-login">Remember me</label></div><button type="submit">Log In</button><p class="login-timeline-hint">Archive ID: month/year of the 2007 emergency.<br>Key: sobriety date in MMDDYYYY format.</p><p id="login-status" class="search-side-status" aria-live="polite"></p></form><div id="directory-profile" class="directory-profile" hidden><strong>case_122007</strong><div class="directory-profile-picture" role="img" aria-label="Blank profile picture"></div><button id="directory-logout" type="button">Log Out</button></div></section>
+          <section id="login-box" class="search-side-box search-side-login"><h2>Login</h2><form id="directory-login" class="search-side-form"><label for="directory-username">Username:</label><input id="directory-username" type="text" value="case_122007" autocomplete="username"><label for="directory-password">Password:</label><input id="directory-password" type="password" value="04202008" autocomplete="current-password"><div class="search-side-form-row"><input id="remember-login" type="checkbox"><label for="remember-login">Remember me</label></div><button type="submit">Log In</button><p class="login-timeline-hint">Archive ID: month/year of the 2007 emergency.<br>Key: sobriety date in MMDDYYYY format.</p><p id="login-status" class="search-side-status" aria-live="polite"></p></form><div id="directory-profile" class="directory-profile" hidden><strong>case_122007</strong><div class="directory-profile-picture" role="img" aria-label="Blank profile picture"></div><button id="directory-logout" type="button">Log Out</button></div></section>
           <section class="search-side-box"><h2>Search</h2><form id="directory-search" class="search-side-form"><div class="directory-search-controls"><input id="directory-search-input" type="text" aria-label="Search the directory"><button type="submit">Go</button></div><div class="directory-search-options">Search inside the recovery directory.<br>Matching sections update below.</div><p id="directory-search-status" class="search-side-status" aria-live="polite"></p></form></section>
         </aside>
         <main class="search-page">
@@ -378,6 +378,8 @@
       directoryLogout.addEventListener("click", function () {
         directoryLoggedIn = false;
         sessionStorage.removeItem("amigos-directory-login");
+        directoryUsername.value = "case_122007";
+        directoryPassword.value = "04202008";
         renderLoginState();
       });
 

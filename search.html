@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amigos Search</title>
+    <script src="libraries/p5.min.js"></script>
     <style>
       * { box-sizing: border-box; }
       html, body { min-height: 100%; }
@@ -13,10 +14,7 @@
         min-height: 100vh;
         margin: 0;
         overflow-x: hidden;
-        background:
-          radial-gradient(circle at 15% 76%, rgba(135, 0, 170, .9) 0 8%, transparent 24%),
-          radial-gradient(circle at 82% 23%, rgba(105, 0, 125, .82) 0 9%, transparent 27%),
-          linear-gradient(135deg, #190055, #69007d 48%, #320069 100%);
+        background: transparent;
         color: #000;
         font-family: Arial, sans-serif;
       }
@@ -24,14 +22,7 @@
         position: fixed;
         inset: 0;
         z-index: -1;
-        background-image:
-          radial-gradient(circle, rgba(255,255,255,.46) 0 2px, transparent 2.5px),
-          radial-gradient(circle, rgba(255,255,255,.2) 0 1px, transparent 1.5px);
-        background-position: 0 0, 15px 15px;
-        background-size: 31px 31px;
-        content: "";
-        mask-image: linear-gradient(115deg, #000, transparent 34%, transparent 66%, #000);
-        pointer-events: none;
+        content: none;
       }
       body::after {
         position: fixed;
@@ -42,11 +33,10 @@
         height: 70px;
         border-top: 5px solid rgba(255,255,255,.55);
         border-radius: 50%;
-        content: "";
-        filter: blur(1px);
-        pointer-events: none;
-        transform: rotate(-2deg);
+        content: none;
       }
+      #bg-canvas-container { position: fixed; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+      #bg-canvas-container canvas { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
       .search-shell {
         width: min(calc(100% - clamp(24px, 7vw, 120px)), 1920px);
         margin: 4px auto 30px;
@@ -93,15 +83,7 @@
           linear-gradient(to top right,#f7cd26,#7c0ad8 50%,#3700c0) top right/51% 51% no-repeat;
         animation: search-banner-pulse 5s ease-in-out infinite alternate;
       }
-      .search-shell-banner span {
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        width: max-content;
-        color: #fff;
-        font: bold 24px Georgia, serif;
-        transform: translate(-50%, -50%);
-      }
+      .search-shell-banner canvas { display: block; width: 100% !important; height: 100% !important; }
       @keyframes search-banner-pulse { to { filter: hue-rotate(22deg) brightness(1.08); } }
       .search-layout {
         display: grid;
@@ -240,6 +222,7 @@
     </style>
   </head>
   <body>
+    <div id="bg-canvas-container" aria-hidden="true"></div>
     <header class="search-shell-bar">
       <strong>Amigos 4.0</strong>
       <nav aria-label="Amigos sections">
@@ -257,7 +240,7 @@
           <a href="index.html">Front Page</a><a href="index.html">World</a><a href="index.html">Vietnam</a><a href="index.html">Health</a><a href="index.html">Community</a><a href="index.html">In Depth</a>
         </nav>
       </header>
-      <div class="search-shell-banner" aria-hidden="true"><span>You saw the addiction. Did you see the person?</span></div>
+      <div class="banner search-shell-banner" aria-label="You saw the addiction. Did you see the person?"></div>
       <div class="search-layout">
         <aside class="search-side" aria-label="Search directory navigation">
           <section class="search-side-box search-side-promo"><small>ADVERTISEMENT</small><strong>FREE SUPPORT RESOURCES!</strong><p>Find confidential treatment and recovery information.</p><button type="button">Learn More</button></section>
@@ -335,5 +318,6 @@
         content.classList.add("showing-results");
       }
     </script>
+    <script src="sketchUI.js?v=search-shared-ambient-7"></script>
   </body>
 </html>

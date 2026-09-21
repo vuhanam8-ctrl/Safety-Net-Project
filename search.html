@@ -114,66 +114,7 @@
         margin: 0 auto;
         padding: clamp(44px, 6vh, 72px) 0 32px;
       }
-      .search-content.showing-results {
-        display: block;
-        width: 90%;
-        max-width: 900px;
-        min-height: calc(100vh - 250px);
-        margin-right: auto;
-        margin-left: auto;
-        padding-top: 90px;
-        transform: none;
-      }
-      .search-heading { margin: 0 0 25px; line-height: 1; text-align: center; }
-      .search-name {
-        color: #f7cd26;
-        font-family: "Comic Sans MS", "Comic Sans", cursive;
-        font-size: clamp(70px, 11vw, 138px);
-        font-weight: bold;
-        letter-spacing: 8px;
-      }
-      .search-tabs { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 10px; font-size: 16px; }
-      .search-tabs span { color: blue; text-decoration: underline; }
-      .search-tabs span:first-child { color: #000; font-weight: bold; text-decoration: none; }
-      .search-form { display: grid; grid-template-columns: minmax(0, 1fr) 150px; }
-      .search-input-area { position: relative; }
-      .search-input {
-        width: 100%;
-        height: 38px;
-        padding: 5px 8px;
-        border: 2px inset #ccc;
-        background: #fff;
-        color: #000;
-        font: 16px Arial, sans-serif;
-      }
-      .search-suggestion {
-        position: absolute;
-        top: 38px;
-        left: 0;
-        z-index: 2;
-        width: 100%;
-        padding: 9px;
-        border: 1px solid #777;
-        background: #fff;
-        color: blue;
-        cursor: pointer;
-        font-size: 15px;
-        text-align: left;
-        text-decoration: underline;
-      }
-      .search-button {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        height: 38px;
-        border: 2px outset #ccc;
-        background: #f0c34d;
-        font: bold 18px "Times New Roman", serif;
-      }
-      .search-button:hover { background: #000; color: #fff; cursor: pointer; }
-      .small-links { margin-top: 35px; color: blue; text-align: center; text-decoration: underline; }
-      .portal-board { margin-top: 42px; font-family: Arial, sans-serif; }
-      .search-content.showing-results .portal-board { display: none; }
+      .portal-board { font-family: Arial, sans-serif; }
       .portal-section { margin-bottom: 12px; border: 1px solid #b9acd0; }
       .portal-section-title {
         display: grid;
@@ -209,10 +150,9 @@
       .portal-last { align-items: flex-start; flex-direction: column; color: #555; text-align: left; }
       .portal-last strong { color: #172a72; }
       .search-results {
-        width: min(calc(100vw - 50px), 1100px);
+        width: 100%;
         max-width: none;
-        margin-top: 50px;
-        margin-left: calc((min(90vw, 900px) - min(calc(100vw - 50px), 1100px)) / 2);
+        margin: 28px 0 0;
         font-family: "Times New Roman", serif;
       }
       .search-results h2 { margin-bottom: 28px; font: normal 20px Arial, sans-serif; }
@@ -235,9 +175,6 @@
         text-shadow: 1px 1px #3700c0;
       }
       [hidden] { display: none !important; }
-      @media (max-width: 1100px) {
-        .search-results { width: 100%; margin-left: 0; }
-      }
       @media (max-width: 900px) {
         .search-layout { grid-template-columns: minmax(0,1fr); }
         .search-side { display: none; }
@@ -252,9 +189,6 @@
         .search-shell-bar .whats-new { display: none; }
         .search-site-nav { max-width: 100%; overflow-x: auto; }
         .search-content { width: 86%; transform: none; }
-        .search-form { grid-template-columns: 1fr; gap: 8px; }
-        .search-button { width: 150px; }
-        .search-name { display: block; letter-spacing: 4px; }
         .portal-section-title { grid-template-columns: 1fr; }
         .portal-section-title span:not(:first-child), .portal-stat, .portal-last { display: none; }
         .portal-row { grid-template-columns: 1fr; }
@@ -288,18 +222,6 @@
         </aside>
         <main class="search-page">
       <section id="search-content" class="search-content">
-        <h1 class="search-heading"><span class="search-name">SEARCH</span></h1>
-        <nav class="search-tabs" aria-label="Search categories">
-          <span>Web</span><span>Images</span><span>Video</span><span>Local</span><span>More</span>
-        </nav>
-        <div class="search-form">
-          <div class="search-input-area">
-            <input id="search-input" class="search-input" type="text" aria-label="Search" autocomplete="off">
-            <button id="search-suggestion" class="search-suggestion" type="button" hidden>SDG 3.5.1 substance abuse treatment in Vietnam</button>
-          </div>
-          <button id="search-button" class="search-button" type="button">Web Search</button>
-        </div>
-        <p class="small-links">Search Preferences &nbsp;–&nbsp; Search Services</p>
         <section class="portal-board" aria-label="Recovery and support directory">
           <section class="portal-section">
             <header class="portal-section-title"><span>Recovery &amp; Support Centre</span><span>Topics</span><span>Posts</span><span>Latest update</span></header>
@@ -320,8 +242,8 @@
             <article class="portal-row"><div class="portal-row-main"><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Interactive awareness activities</a><p>Explore choices and pathways to care through creative interactive experiences.</p></div><div class="portal-stat">9</div><div class="portal-stat">44</div><div class="portal-last"><strong>New activity available</strong><span>Friday, 12:33 AM</span></div></article>
           </section>
         </section>
-        <section id="search-results" class="search-results" hidden>
-          <h2>Search results for: “SDG 3.5.1 substance abuse treatment in Vietnam”</h2>
+        <section id="search-results" class="search-results" aria-label="Amigos network links">
+          <h2>Explore the Amigos network</h2>
           <ul class="directory-results">
             <li><a class="directory-category" href="index.html">News</a> <a class="directory-extra" href="index.html">[Extra!]</a> · <a class="directory-topic" href="index.html">Recovery Reports</a>, <a class="directory-topic" href="index.html">Treatment</a>, <a class="directory-topic" href="index.html">Support Services</a>, <a class="directory-topic" href="index.html">Vietnam</a> ...</li>
             <li><a class="directory-category" href="https://thuydan0812.github.io/Amigos4.0/">Blog</a> <a class="directory-extra" href="https://thuydan0812.github.io/Amigos4.0/">[Extra!]</a> · <a class="directory-topic" href="https://thuydan0812.github.io/Amigos4.0/">Personal Stories</a>, <a class="directory-topic" href="https://thuydan0812.github.io/Amigos4.0/">Community Voices</a>, <a class="directory-topic" href="https://thuydan0812.github.io/Amigos4.0/">Reflection</a> ...</li>
@@ -338,46 +260,6 @@
       </div>
       <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
     </div>
-    <script>
-      const input = document.getElementById("search-input");
-      const suggestion = document.getElementById("search-suggestion");
-      const button = document.getElementById("search-button");
-      const results = document.getElementById("search-results");
-      const content = document.getElementById("search-content");
-      const recommendedSearch = suggestion.textContent.trim();
-      const clickSound = new Audio("assets/audio/COMM2754-2026-S2-A2w08-ComputerClick-EditedSound.wav");
-      clickSound.volume = 0.4;
-
-      input.addEventListener("focus", () => { suggestion.hidden = false; });
-      input.addEventListener("input", () => {
-        if (input.value.trim() !== "") return;
-        suggestion.hidden = true;
-        results.hidden = true;
-        content.classList.remove("showing-results");
-      });
-      suggestion.addEventListener("click", () => {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(() => {});
-        input.value = recommendedSearch;
-        showResults();
-      });
-      button.addEventListener("click", () => {
-        clickSound.currentTime = 0;
-        clickSound.play().catch(() => {});
-        if (input.value.trim() === "") input.value = recommendedSearch;
-        showResults();
-      });
-      input.addEventListener("keydown", event => {
-        if (event.key !== "Enter") return;
-        event.preventDefault();
-        button.click();
-      });
-      function showResults() {
-        suggestion.hidden = true;
-        results.hidden = false;
-        content.classList.add("showing-results");
-      }
-    </script>
     <script src="sketchUI.js?v=search-shared-ambient-7"></script>
   </body>
 </html>

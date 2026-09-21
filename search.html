@@ -49,20 +49,15 @@
       }
       .search-shell {
         width: min(calc(100% - clamp(24px, 7vw, 120px)), 1920px);
-        min-height: calc(100vh - 56px);
-        margin: 28px auto;
-        padding: 6px;
-        border: 2px solid #9670ff;
-        background: #af9bcf;
-        box-shadow: 0 0 0 2px rgba(55,0,192,.75), 0 16px 42px rgba(15,0,55,.5);
+        margin: 4px auto 30px;
       }
       .search-shell-bar {
-        min-height: 42px;
+        width: 100%;
+        height: 40px;
         display: flex;
         align-items: center;
         gap: 24px;
-        padding: 0 14px;
-        border: 2px solid #9670ff;
+        padding: 0 16px;
         background: linear-gradient(180deg, #7355bd 12%, #3700c0 64%, #a1716c 110%, #f7cd26 126%);
         color: #fff;
       }
@@ -70,8 +65,25 @@
       .search-shell-bar nav { display: flex; align-self: stretch; }
       .search-shell-bar a { display: flex; align-items: center; padding: 0 12px; color: #fff; font-weight: 800; text-decoration: none; }
       .search-shell-bar a:hover, .search-shell-bar a.active { background: rgba(255,255,255,.13); }
+      .search-shell-bar .whats-new { margin-left: auto; padding: 3px 9px; border: 2px solid #b9acd0; background: transparent; font: bold 12px Arial, sans-serif; }
+      .search-site-header {
+        min-height: 64px;
+        display: grid;
+        grid-template-columns: 1fr;
+        align-items: start;
+        padding: 8px 12px 6px;
+        border: 2px solid #9670ff;
+        background: linear-gradient(0deg, #f7cd26 6%, #9670ff 36%, #d2cdf3 120%);
+      }
+      .search-site-brand { color: #3700c0; font: bold 30px Georgia, serif; }
+      .search-site-brand span { margin-left: 4px; color: #f7cd26; font: bold 18px Arial, sans-serif; }
+      .search-site-nav { justify-self: center; display: flex; gap: 14px; margin-top: 5px; }
+      .search-site-nav a { color: #3700c0; font-size: 12px; font-weight: bold; text-decoration: none; }
+      .search-site-nav a + a::before { margin-right: 14px; content: "|"; }
       .search-shell-banner {
-        height: 46px;
+        height: 54px;
+        position: relative;
+        overflow: hidden;
         margin: 6px 0;
         border: 2px solid #f8f9f1;
         background:
@@ -81,22 +93,49 @@
           linear-gradient(to top right,#f7cd26,#7c0ad8 50%,#3700c0) top right/51% 51% no-repeat;
         animation: search-banner-pulse 5s ease-in-out infinite alternate;
       }
+      .search-shell-banner span {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: max-content;
+        color: #fff;
+        font: bold 24px Georgia, serif;
+        transform: translate(-50%, -50%);
+      }
       @keyframes search-banner-pulse { to { filter: hue-rotate(22deg) brightness(1.08); } }
-      .search-page { min-height: calc(100vh - 184px); border: 2px solid #3700c0; background: #fff; }
+      .search-layout {
+        display: grid;
+        grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px);
+        gap: 6px;
+        align-items: stretch;
+        padding: 6px;
+        border: 6px solid #af9bcf;
+        background: #af9bcf;
+      }
+      .search-side { display: flex; min-width: 0; flex-direction: column; gap: 6px; }
+      .search-side-box { padding: 10px; border: 1px solid #c9c8c2; background: linear-gradient(110deg,#fff,#e9e7df); color: #2c2c2c; }
+      .search-side-box h2 { margin: -10px -10px 10px; padding: 6px 9px; background: #68459f; color: #fff; font: bold 14px Georgia, serif; }
+      .search-side-box p { font-size: 12px; line-height: 1.45; }
+      .search-side-box a { display: block; padding: 4px 2px; color: #172a72; font-size: 13px; font-weight: bold; }
+      .search-side-box small { color: #777; }
+      .search-side-promo { min-height: 145px; text-align: center; }
+      .search-side-promo strong { display: block; margin: 10px 0; }
+      .search-side-promo button { width: 100%; padding: 6px; border: 0; background: #67449e; color: #fff; font-weight: bold; }
+      .search-page { min-height: calc(100vh - 250px); border: 2px solid #3700c0; background: #fff; }
       .search-content {
         display: flex;
         flex-direction: column;
         justify-content: center;
         width: 90%;
         max-width: 900px;
-        min-height: calc(100vh - 184px);
+        min-height: calc(100vh - 250px);
         margin: 0 auto;
       }
       .search-content.showing-results {
         display: block;
         width: 90%;
         max-width: 900px;
-        min-height: calc(100vh - 184px);
+        min-height: calc(100vh - 250px);
         margin-right: auto;
         margin-left: auto;
         padding-top: 90px;
@@ -166,7 +205,7 @@
       .directory-topic { font-style: italic; }
       .search-footer {
         position: static;
-        margin-top: 6px;
+        margin: 6px calc(clamp(170px,14vw,300px) + 12px) 0;
         padding: 16px;
         border: 2px solid #f8f9f1;
         background: linear-gradient(180deg, #7355bd 12%, #3700c0 64%, #a1716c 110%, #f7cd26 126%);
@@ -180,11 +219,19 @@
       @media (max-width: 1100px) {
         .search-results { width: 100%; margin-left: 0; }
       }
+      @media (max-width: 900px) {
+        .search-layout { grid-template-columns: minmax(0,1fr); }
+        .search-side { display: none; }
+        .search-footer { margin-right: 0; margin-left: 0; }
+      }
       @media (max-width: 760px) {
-        .search-shell { width: calc(100% - 16px); margin: 8px auto; }
+        .search-shell { width: calc(100% - 16px); margin: 4px auto 16px; }
         .search-shell-bar { align-items: flex-start; flex-direction: column; gap: 4px; padding-top: 8px; }
+        .search-shell-bar { height: auto; }
         .search-shell-bar nav { width: 100%; min-height: 34px; overflow-x: auto; }
         .search-shell-bar a { padding: 0 9px; }
+        .search-shell-bar .whats-new { display: none; }
+        .search-site-nav { max-width: 100%; overflow-x: auto; }
         .search-content { width: 86%; transform: none; }
         .search-form { grid-template-columns: 1fr; gap: 8px; }
         .search-button { width: 150px; }
@@ -193,19 +240,30 @@
     </style>
   </head>
   <body>
+    <header class="search-shell-bar">
+      <strong>Amigos 4.0</strong>
+      <nav aria-label="Amigos sections">
+        <a class="active" href="search.html">Search</a>
+        <a href="https://thuydan0812.github.io/Amigos4.0/">Blog</a>
+        <a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games</a>
+        <a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Messenger</a>
+      </nav>
+      <a class="whats-new" href="index.html">What's New?</a>
+    </header>
     <div class="search-shell">
-      <header class="search-shell-bar">
-        <strong>Amigos 4.0</strong>
-        <nav aria-label="Amigos sections">
-          <a class="active" href="search.html">Search</a>
-          <a href="index.html">News</a>
-          <a href="https://thuydan0812.github.io/Amigos4.0/">Blog</a>
-          <a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Games</a>
-          <a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Messenger</a>
+      <header class="search-site-header">
+        <div class="search-site-brand">AMIGOS!<span>Search</span></div>
+        <nav class="search-site-nav" aria-label="Search sections">
+          <a href="index.html">Front Page</a><a href="index.html">World</a><a href="index.html">Vietnam</a><a href="index.html">Health</a><a href="index.html">Community</a><a href="index.html">In Depth</a>
         </nav>
       </header>
-      <div class="search-shell-banner" aria-hidden="true"></div>
-      <main class="search-page">
+      <div class="search-shell-banner" aria-hidden="true"><span>You saw the addiction. Did you see the person?</span></div>
+      <div class="search-layout">
+        <aside class="search-side" aria-label="Search directory navigation">
+          <section class="search-side-box search-side-promo"><small>ADVERTISEMENT</small><strong>FREE SUPPORT RESOURCES!</strong><p>Find confidential treatment and recovery information.</p><button type="button">Learn More</button></section>
+          <section class="search-side-box"><h2>Directory</h2><a href="index.html">Front Page</a><a href="index.html">Recovery News</a><a href="https://thuydan0812.github.io/Amigos4.0/">Personal Stories</a><a href="https://editor.p5js.org/iamBao/full/nwv94ywIX">Interactive Support</a><a href="https://ziohere.github.io/Pareidolia-HangTran-a3/">Community</a></section>
+        </aside>
+        <main class="search-page">
       <section id="search-content" class="search-content">
         <h1 class="search-heading"><span class="search-name">SEARCH</span></h1>
         <nav class="search-tabs" aria-label="Search categories">
@@ -229,7 +287,12 @@
           </ul>
         </section>
       </section>
-      </main>
+        </main>
+        <aside class="search-side" aria-label="Support information">
+          <section class="search-side-box"><h2>Quote of the Day</h2><p><em>“I finally summoned up the courage to say three words that would change my life: I need help.”</em></p><small>— Elton John</small></section>
+          <section class="search-side-box"><h2>Need Support?</h2><p>You are not alone. Help can begin with one honest conversation.</p><a href="tel:115">115 — Medical emergency</a><a href="tel:+84963061414">0963 061 414 — Tomorrow Hotline</a></section>
+        </aside>
+      </div>
       <footer class="search-footer">Amigos Search &nbsp;|&nbsp; About &nbsp;|&nbsp; Help &nbsp;|&nbsp; Privacy Policy &nbsp;|&nbsp; Terms of Service</footer>
     </div>
     <script>

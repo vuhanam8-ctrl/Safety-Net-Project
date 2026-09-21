@@ -57,19 +57,31 @@
       .search-shell-bar nav a:hover, .search-shell-bar nav .active { background: rgba(255,255,255,.13); }
       .search-shell-bar .whats-new { margin-left: auto; padding: 3px 9px; border: 2px solid #b9acd0; background: transparent; font: bold 12px Arial, sans-serif; }
       .search-site-header {
-        min-height: 64px;
-        display: grid;
-        grid-template-columns: 1fr;
-        align-items: start;
-        padding: 8px 12px 6px;
+        min-height: 88px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        padding: 12px;
         border: 2px solid #9670ff;
-        background: linear-gradient(0deg, #f7cd26 6%, #9670ff 36%, #d2cdf3 120%);
+        background: #f7f4df;
       }
-      .search-site-brand { color: #3700c0; font: bold 30px Georgia, serif; }
-      .search-site-brand span { margin-left: 4px; color: #f7cd26; font: bold 18px Arial, sans-serif; }
-      .search-site-nav { justify-self: center; display: flex; gap: 14px; margin-top: 5px; }
-      .search-site-nav span { color: #3700c0; font-size: 12px; font-weight: bold; }
-      .search-site-nav span + span::before { margin-right: 14px; content: "|"; }
+      .search-forum-title { color: #7c0ad8; font-size: 13px; font-weight: bold; text-align: center; }
+      .search-site-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px; }
+      .search-site-nav button {
+        min-width: 92px;
+        padding: 7px 12px;
+        border: 1px solid #111;
+        border-radius: 0;
+        background: linear-gradient(180deg,#555 0,#111 46%,#2b2b2b 55%,#000 100%);
+        box-shadow: inset 0 1px 0 rgba(255,255,255,.45);
+        color: #fff;
+        font: 13px Arial, sans-serif;
+        text-shadow: 0 1px #000;
+      }
+      .search-site-nav button::before { margin-right: 6px; color: #f7cd26; content: "✦"; }
+      .search-site-nav button:hover { background: linear-gradient(180deg,#7355bd,#3700c0 55%,#170050); }
       .search-shell-banner {
         height: 54px;
         position: relative;
@@ -86,19 +98,6 @@
       .search-shell-banner canvas { display: block; width: 100% !important; height: 100% !important; }
       @keyframes search-banner-pulse { to { filter: hue-rotate(22deg) brightness(1.08); } }
       .portal-prelude { margin-bottom: 6px; padding-bottom: 4px; background: #af9bcf; color: #2c2c2c; }
-      .portal-announcement-bar {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0,1fr));
-        min-height: 40px;
-        align-items: center;
-        border: 2px solid #9670ff;
-        background: #f7f4df;
-        color: #68459f;
-        font-size: 14px;
-        font-weight: bold;
-        text-align: center;
-      }
-      .portal-announcement-bar span { padding: 7px 12px; }
       .portal-feature-grid {
         display: grid;
         grid-template-columns: clamp(170px,14vw,300px) minmax(0,1fr) clamp(170px,14vw,300px);
@@ -276,8 +275,6 @@
         .search-shell-bar a { padding: 0 9px; }
         .search-shell-bar .whats-new { display: none; }
         .search-site-nav { max-width: 100%; overflow-x: auto; }
-        .portal-announcement-bar { grid-template-columns: 1fr; }
-        .portal-announcement-bar span + span { border-top: 1px solid #d8cdea; }
         .portal-feature-ad { grid-template-columns: 1fr; }
         .portal-feature-ad-mark { min-height: 64px; }
         .portal-feature-ad button { width: calc(100% - 28px); margin: 0 14px 12px; }
@@ -302,18 +299,13 @@
     </header>
     <div class="search-shell">
       <header class="search-site-header">
-        <div class="search-site-brand">AMIGOS!<span>Search</span></div>
+        <div class="search-forum-title">RECOVERY &amp; SUPPORT COMMUNITY DIRECTORY...</div>
         <nav class="search-site-nav" aria-label="Search sections">
-          <span>Front Page</span><span>World</span><span>Vietnam</span><span>Health</span><span>Community</span><span>In Depth</span>
+          <button type="button">Home</button><button type="button">Stories</button><button type="button">Support</button><button type="button">Resources</button><button type="button">Login</button>
         </nav>
       </header>
       <div class="banner search-shell-banner" aria-label="You saw the addiction. Did you see the person?"></div>
       <section class="portal-prelude" aria-label="Recovery directory introduction">
-        <div class="portal-announcement-bar">
-          <span>CONFIDENTIAL SUPPORT IS AVAILABLE</span>
-          <span>RECOVERY BEGINS WITH ONE HONEST CONVERSATION</span>
-          <span>SEE THE PERSON, NOT THE ADDICTION</span>
-        </div>
         <div class="portal-feature-grid">
           <div class="portal-feature-spacer" aria-hidden="true"></div>
           <section class="portal-feature-ad">

@@ -138,6 +138,62 @@ body {
 .amigos-footer { margin-top: 6px; padding: 14px 42px; border: 2px solid #f8f9f1; background: var(--amigos-gradient); color: white; font-weight: bold; text-align: center; text-shadow: 1px 1px var(--amigos-purple); }
 .amigos-footer p { margin: 3px 0; }
 
+/* AMIGOS 4.0 layout-reference adaptation for the News page. */
+.amigos-page { width: min(80vw,1920px); }
+.amigos-header {
+  min-height: 88px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 0;
+  background: linear-gradient(0deg,#f7cd26 5%,#ffe5ff 36%,#97fe71 120%);
+}
+.amigos-brand { width: 100%; color: #3700c0; font: bold clamp(14px,1.2vw,20px) Arial,sans-serif; text-align: center; }
+.amigos-main-nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 0; margin-top: 0; }
+.amigos-main-nav .navBtn, .amigos-main-nav button {
+  display: flex;
+  min-width: 76px;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  border: 0;
+  background: linear-gradient(180deg,#c6109f 12%,#3700c0 64%,#c7ad66 110%,#f7cd26 126%);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 800;
+}
+.amigos-main-nav .navBtn:hover, .amigos-main-nav .navBtn.active, .amigos-main-nav button:hover { background: linear-gradient(0deg,#7355bd 12%,#3700c0 64%,#a1716c 110%,#f7cd26 126%); }
+.amigos-main-nav a { color: #fff; text-decoration: none; }
+.amigos-main-nav a + a::before { display: none; }
+.banner { border: 3px solid #db00ac; }
+.amigos-layout {
+  grid-template-columns: minmax(0,.6fr) minmax(0,1.8fr) minmax(0,.6fr);
+  gap: 8px;
+  padding: 40px;
+  border: 0;
+  background: linear-gradient(0deg,#f7cd26 5%,#ffe5ff 36%,#97fe71 120%);
+}
+.amigos-centre-column { padding: 0 6px; }
+.amigos-centre-column .bbc-placeholder-grid { grid-template-columns: 1fr; }
+.amigos-centre-column .lead-story { grid-template-columns: 1fr; }
+.amigos-centre-column .bbc-placeholder-side { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); }
+.amigos-box { border: 3px solid #db00ac; background: #f7efca; }
+.amigos-left-column .amigos-box:nth-child(2n) { background: #d6ecc6; }
+.shell-quote { background: #f9e6f1; }
+.shell-quote h3 { background: linear-gradient(90deg,#33ff58,#339947,#f7cd26); color: #3700c0; }
+.shell-reference-topics { padding: 0 8px 8px; background: #f7efca; }
+.shell-reference-topics h3 { margin: 0 -8px 8px; padding: 5px; border-bottom: 2px solid #53a643; background: #f7cd26; color: #ba7410; font-size: 13px; text-align: center; }
+.shell-reference-topics a { display: block; padding: 7px 1px; border-bottom: 1px dotted #777; color: #172a72; font-size: 11px; font-weight: bold; }
+.shell-reference-follow { padding: 0 8px 12px; background: repeating-linear-gradient(120deg,#9500a8 0 7px,#3700c0 7px 11px,#e0bb00 11px 16px); }
+.shell-reference-follow h3 { margin: 0 -8px 10px; padding: 6px; background: #3700c0; color: #fff; font-size: 13px; }
+.shell-reference-follow h3 small { color: #ffd400; }
+.shell-reference-follow div { display: flex; gap: 6px; }
+.shell-reference-follow a { display: grid; width: 46px; height: 46px; place-items: center; border: 1px solid #eee; background: linear-gradient(0deg,#ffe5e5,#f3eabf 42%,#b3eab4); color: #7c0ad8; font-size: 20px; font-weight: bold; text-decoration: none; }
+.amigos-footer { border: 3px solid #db00ac; background: linear-gradient(180deg,#33ff58,#339947,#f7cd26); }
+
 /* Keep the complete existing Safety Net page in the new layout's middle column. */
 .amigos-centre-column .search-page { width: 100%; min-height: 0; }
 .amigos-centre-column .search-content { display: block; width: 100%; max-width: none; min-height: 0; padding: 0; }

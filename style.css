@@ -184,6 +184,9 @@ body {
 .amigos-left-column .amigos-box:nth-child(2n) { background: #d6ecc6; }
 .shell-quote { background: #f9e6f1; }
 .shell-quote h3 { background: linear-gradient(90deg,#33ff58,#339947,#f7cd26); color: #3700c0; }
+.sidebar-news-tools { gap: 7px; padding: 8px; border: 3px solid #db00ac; background: #f7efca; }
+.sidebar-news-tools .bbc-side-module { border-top-color: #68459f; }
+.sidebar-news-tools .bbc-placeholder-search { border: 1px solid #d7d4cb; }
 .shell-reference-topics { padding: 0 8px 8px; background: #f7efca; }
 .shell-reference-topics h3 { margin: 0 -8px 8px; padding: 5px; border-bottom: 2px solid #53a643; background: #f7cd26; color: #ba7410; font-size: 13px; text-align: center; }
 .shell-reference-topics a { display: block; padding: 7px 1px; border-bottom: 1px dotted #777; color: #172a72; font-size: 11px; font-weight: bold; }

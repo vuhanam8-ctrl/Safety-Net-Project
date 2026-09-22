@@ -466,6 +466,7 @@
               <a>Audio/Video</a>
             </nav>
           </div>
+          <div id="shell-left-advertisement-list" class="shell-advertisement-list" aria-label="Advertisements"></div>
         </aside>
 
         <section class="amigos-centre-column">
@@ -523,12 +524,6 @@
                 </div>
               </main>
 
-              <aside class="bbc-placeholder-side">
-                <section class="bbc-placeholder-search"><strong>Search Amigos News Online</strong><div><input aria-label="Placeholder news search"><button type="button">GO</button></div></section>
-                <section class="bbc-side-module"><h3>WORLD NEWS SUMMARY</h3><p>The Detroit MC enters recovery as the press turns a health crisis into celebrity spectacle.</p></section>
-                <section class="bbc-side-module"><h3>IN DEPTH</h3><div class="side-row"><p>What the British entertainer reveals about voluntary rehabilitation.</p></div></section>
-                <section class="bbc-side-module"><h3>TALKING POINT</h3><p>When does reporting become exploitation?</p></section>
-              </aside>
             </div>
           </section>
 
@@ -635,6 +630,12 @@
         </section>
 
         <aside class="amigos-right-column">
+          <aside class="bbc-placeholder-side sidebar-news-tools" aria-label="News tools">
+            <section class="bbc-placeholder-search"><strong>Search Amigos News Online</strong><div><input aria-label="Placeholder news search"><button type="button">GO</button></div></section>
+            <section class="bbc-side-module"><h3>WORLD NEWS SUMMARY</h3><p>The Detroit MC enters recovery as the press turns a health crisis into celebrity spectacle.</p></section>
+            <section class="bbc-side-module"><h3>IN DEPTH</h3><div class="side-row"><p>What the British entertainer reveals about voluntary rehabilitation.</p></div></section>
+            <section class="bbc-side-module"><h3>TALKING POINT</h3><p>When does reporting become exploitation?</p></section>
+          </aside>
           <div class="amigos-box shell-quote">
             <h3>Quote of the Day</h3>
             <p>“I finally summed up the courage to say the words that would change my life: I need help.”</p>
@@ -658,6 +659,7 @@
 
     <script>
       const shellAdvertisementList = document.getElementById("shell-advertisement-list");
+      const shellLeftAdvertisementList = document.getElementById("shell-left-advertisement-list");
       const whatsNewButton = document.getElementById("whats-new-button");
       const projectInfoModal = document.getElementById("project-info-modal");
       const projectInfoClose = document.getElementById("project-info-close");
@@ -763,7 +765,7 @@
         }
       ];
 
-      const advertisementZones = [shellAdvertisementList];
+      const advertisementZones = [shellLeftAdvertisementList, shellAdvertisementList];
 
       advertisements
         .sort(function () {

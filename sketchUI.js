@@ -2,8 +2,15 @@ const scrollingAdSketch = (p) => {
   const message = "You saw the addiction. Did you see the person?";
   let x = 0;
   let messageWidth = 0;
+  let cloverImage;
+  const cloverSize = 32;
+  const cloverGap = 12;
   let flowers = [];
   let wasHovering = false;
+
+  p.preload = () => {
+    cloverImage = p.loadImage("assets/images/amigos-clover.gif");
+  };
 
   p.setup = () => {
     const container = document.querySelector(".banner");
@@ -34,12 +41,20 @@ const scrollingAdSketch = (p) => {
 
     p.noStroke();
     p.fill(255);
-    const repeatWidth = messageWidth + 400;
+    const decoratedWidth = messageWidth + (cloverSize * 2) + (cloverGap * 2);
+    const repeatWidth = decoratedWidth + 300;
     for (let currentX = x; currentX < p.width; currentX += repeatWidth) {
-      p.text(message, currentX, p.height / 2);
+      if (cloverImage && cloverImage.width > 0) {
+        p.image(cloverImage, currentX, (p.height - cloverSize) / 2, cloverSize, cloverSize);
+      }
+      const textX = currentX + cloverSize + cloverGap;
+      p.text(message, textX, p.height / 2);
+      if (cloverImage && cloverImage.width > 0) {
+        p.image(cloverImage, textX + messageWidth + cloverGap, (p.height - cloverSize) / 2, cloverSize, cloverSize);
+      }
     }
     x -= 1.5;
-    if (x <= -messageWidth) x += repeatWidth;
+    if (x <= -decoratedWidth) x += repeatWidth;
   };
 
   p.windowResized = () => {

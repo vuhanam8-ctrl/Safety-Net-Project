@@ -10,10 +10,23 @@ const scrollingAdSketch = (p) => {
   let tokens = [];
   let wasHovering = false;
 
+  const makeNearWhiteTransparent = image => {
+    image.loadPixels();
+    for (let index = 0; index < image.pixels.length; index += 4) {
+      const nearWhite =
+        image.pixels[index] > 240 &&
+        image.pixels[index + 1] > 240 &&
+        image.pixels[index + 2] > 240;
+      if (nearWhite) image.pixels[index + 3] = 0;
+    }
+    image.updatePixels();
+  };
+
   p.preload = () => {
     cloverImage = p.loadImage("assets/images/amigos-clover.gif");
     tokenImages = ["Red", "Green", "Pink"].map(color => p.loadImage(
-      `assets/images/COMM2754-2026-S2-A3w12-AntiToken${color}-FinishedSet.png`
+      `assets/images/COMM2754-2026-S2-A3w12-AntiToken${color}-FinishedSet.png`,
+      makeNearWhiteTransparent
     ));
   };
 

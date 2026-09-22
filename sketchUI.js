@@ -3,7 +3,7 @@ const scrollingAdSketch = (p) => {
   let x = 0;
   let messageWidth = 0;
   let cloverImage;
-  const cloverSize = 32;
+  const cloverSize = 34;
   let cloverWidth = cloverSize;
   const cloverGap = 12;
   let flowers = [];
@@ -23,9 +23,10 @@ const scrollingAdSketch = (p) => {
     p.textSize(24);
     p.textAlign(p.LEFT, p.CENTER);
     messageWidth = p.textWidth(message);
-    if (cloverImage && cloverImage.height > 0) {
-      cloverWidth = (cloverImage.width / cloverImage.height) * cloverSize;
-    }
+    // The source GIF is a widescreen frame with large transparent side margins.
+    // Crop that empty space so the visible four-leaf clover stays round instead
+    // of looking horizontally compressed at banner size.
+    cloverWidth = cloverSize;
     x = p.width;
   };
 
@@ -49,12 +50,32 @@ const scrollingAdSketch = (p) => {
     const repeatWidth = decoratedWidth + 300;
     for (let currentX = x; currentX < p.width; currentX += repeatWidth) {
       if (cloverImage && cloverImage.width > 0) {
-        p.image(cloverImage, currentX, (p.height - cloverSize) / 2, cloverWidth, cloverSize);
+        p.image(
+          cloverImage,
+          currentX,
+          (p.height - cloverSize) / 2,
+          cloverWidth,
+          cloverSize,
+          cloverImage.width * 0.22,
+          0,
+          cloverImage.width * 0.56,
+          cloverImage.height
+        );
       }
       const textX = currentX + cloverWidth + cloverGap;
       p.text(message, textX, p.height / 2);
       if (cloverImage && cloverImage.width > 0) {
-        p.image(cloverImage, textX + messageWidth + cloverGap, (p.height - cloverSize) / 2, cloverWidth, cloverSize);
+        p.image(
+          cloverImage,
+          textX + messageWidth + cloverGap,
+          (p.height - cloverSize) / 2,
+          cloverWidth,
+          cloverSize,
+          cloverImage.width * 0.22,
+          0,
+          cloverImage.width * 0.56,
+          cloverImage.height
+        );
       }
     }
     x -= 1.5;

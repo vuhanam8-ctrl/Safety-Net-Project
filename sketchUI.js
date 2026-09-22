@@ -4,6 +4,7 @@ const scrollingAdSketch = (p) => {
   let messageWidth = 0;
   let cloverImage;
   const cloverSize = 32;
+  let cloverWidth = cloverSize;
   const cloverGap = 12;
   let flowers = [];
   let wasHovering = false;
@@ -22,6 +23,9 @@ const scrollingAdSketch = (p) => {
     p.textSize(24);
     p.textAlign(p.LEFT, p.CENTER);
     messageWidth = p.textWidth(message);
+    if (cloverImage && cloverImage.height > 0) {
+      cloverWidth = (cloverImage.width / cloverImage.height) * cloverSize;
+    }
     x = p.width;
   };
 
@@ -41,16 +45,16 @@ const scrollingAdSketch = (p) => {
 
     p.noStroke();
     p.fill(255);
-    const decoratedWidth = messageWidth + (cloverSize * 2) + (cloverGap * 2);
+    const decoratedWidth = messageWidth + (cloverWidth * 2) + (cloverGap * 2);
     const repeatWidth = decoratedWidth + 300;
     for (let currentX = x; currentX < p.width; currentX += repeatWidth) {
       if (cloverImage && cloverImage.width > 0) {
-        p.image(cloverImage, currentX, (p.height - cloverSize) / 2, cloverSize, cloverSize);
+        p.image(cloverImage, currentX, (p.height - cloverSize) / 2, cloverWidth, cloverSize);
       }
-      const textX = currentX + cloverSize + cloverGap;
+      const textX = currentX + cloverWidth + cloverGap;
       p.text(message, textX, p.height / 2);
       if (cloverImage && cloverImage.width > 0) {
-        p.image(cloverImage, textX + messageWidth + cloverGap, (p.height - cloverSize) / 2, cloverSize, cloverSize);
+        p.image(cloverImage, textX + messageWidth + cloverGap, (p.height - cloverSize) / 2, cloverWidth, cloverSize);
       }
     }
     x -= 1.5;
